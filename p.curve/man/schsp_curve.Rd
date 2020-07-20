@@ -4,10 +4,12 @@
 \alias{schsp_curve}
 \title{Schweder and Spjøtvoll's p-value plot}
 \usage{
-schsp_curve(studies)
+schsp_curve(studies, ...)
 }
 \arguments{
 \item{studies}{A dataframe of studies to be plotted, as returned by \code{draw_studies()}. Minimally, a dataframe with columns \code{rank} and \code{p.value}.}
+
+\item{...}{Other aesthetics, passed at the plot level}
 }
 \value{
 A \code{ggplot2} plot

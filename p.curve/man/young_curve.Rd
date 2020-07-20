@@ -4,7 +4,7 @@
 \alias{young_curve}
 \title{Young's p-value plot}
 \usage{
-young_curve(studies, alpha = 0.05, draw_alpha = TRUE)
+young_curve(studies, alpha = 0.05, draw_alpha = TRUE, ...)
 }
 \arguments{
 \item{studies}{A dataframe of studies to be plotted, as returned by \code{draw_studies()}. Minimally, a dataframe with columns \code{rank} and \code{p.value}.}
@@ -12,6 +12,8 @@ young_curve(studies, alpha = 0.05, draw_alpha = TRUE)
 \item{alpha}{Threshold for statistical significance; default (.05)}
 
 \item{draw_alpha}{Draw a horizontal line at \code{alpha}?}
+
+\item{...}{Other aesthetics, passed at the plot level}
 }
 \value{
 A \code{ggplot2} plot

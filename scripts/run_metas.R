@@ -10,12 +10,11 @@ library(tictoc)
 ## TODO: 
 ## - "mixture" simulations
 ## - reorganize and rename
-## - finishing documenting p-curve.R
 ## - implement tests as tests
 
 ## Local package with simulation functions
-devtools::load_all(reset = TRUE, recompile = TRUE, file.path('..', 'p.curve'))
-?qq_linear
+devtools::load_all(file.path('..', 'p.curve'))
+# devtools::document(file.path('..', 'p.curve'))
 # source('test_scratch.R')
 
 
@@ -24,10 +23,64 @@ devtools::load_all(reset = TRUE, recompile = TRUE, file.path('..', 'p.curve'))
 ## 45 sec
 set.seed(2020-06-25)
 tic()
-combined_df = many_metas(delta = c(0, .2, .4, .6), 
-                         NN = 5, N = 20, n = 25) %>% 
+combined_df = many_metas(NN = 500, 
+                         delta = c(0, .2, .4, .6), 
+                         N = 20, n = 25) %>% 
     mutate(delta = as_factor(delta))
 toc()
+
+combined_df
+
+## Sample plots ----
+## Young
+combined_df %>% 
+    group_by(delta) %>% 
+    slice(13, 17, 21, 25) %>% 
+    ungroup() %>% 
+    select(meta_idx, studies) %>% 
+    unnest(studies) %>% 
+    mutate(delta = as.factor(delta)) %>% 
+    young_curve(color = delta) +
+    facet_grid(rows = vars(delta), cols = vars(meta_idx), 
+               as.table = TRUE,
+               switch = 'y') +
+    labs(x = 'rank (ascending)', 
+         y = 'p') +
+    scale_color_brewer(palette = 'Set1', guide = FALSE)
+
+## Sch-Sp
+combined_df %>% 
+    group_by(delta) %>% 
+    slice(13, 17, 21, 25) %>% 
+    ungroup() %>% 
+    select(meta_idx, studies) %>% 
+    unnest(studies) %>% 
+    mutate(delta = as.factor(delta)) %>% 
+    schsp_curve(color = delta) +
+    facet_grid(rows = vars(delta), cols = vars(meta_idx), 
+               as.table = TRUE,
+               switch = 'y') +
+    labs(x = '1 - p', 
+         y = 'rank (descending)') +
+    scale_color_brewer(palette = 'Set1', guide = FALSE)
+
+## Simonsohn et al.
+combined_df %>% 
+    group_by(delta) %>% 
+    slice(13, 17, 21, 25) %>% 
+    ungroup() %>% 
+    select(meta_idx, studies) %>% 
+    unnest(studies) %>% 
+    mutate(delta = as.factor(delta)) %>% 
+    simonsohn_curve(color = delta) +
+    facet_grid(rows = vars(delta), cols = vars(meta_idx), 
+               as.table = TRUE,
+               switch = 'y') +
+    labs(x = 'p-value', 
+         y = 'count') +
+    scale_y_continuous(breaks = scales::pretty_breaks()) +
+    scale_color_brewer(palette = 'Set1', guide = FALSE)
+
 
 
 ## Slopes ----
@@ -38,26 +91,8 @@ combined_df %>%
     ggplot(aes(delta, slope, color = delta)) +
     # geom_beeswarm(alpha = .10) +
     geom_violin(draw_quantiles = .5, fill = NA) +
+    scale_color_brewer(palette = 'Set1', guide = FALSE) +
     facet_wrap(vars(method), scales = 'free')
-
-## TODO: do this with facets rather than nested cowplots
-combined_df %>% 
-    group_by(delta) %>% 
-    slice(1) %>% 
-    ungroup() %>% 
-    mutate(qq_plot = map(studies, qq_plot), 
-           schsp_curve = map(studies, schsp_curve), 
-           young_curve = map(studies, young_curve)) %>% 
-    select(delta, meta_idx, qq_plot, schsp_curve, young_curve) %>% 
-    pivot_longer(cols = c(qq_plot, schsp_curve, young_curve), 
-                 names_to = 'method', values_to = 'plot') %>% 
-    group_by(method) %>% 
-    summarize(plot = list(plot_grid(plotlist = plot, 
-                                    labels = delta))) %>% 
-    ungroup() %>% 
-    summarize(plot = list(plot_grid(plotlist = plot, 
-                                    labels = method))) %>% 
-    pull(plot)
 
 
 
@@ -67,13 +102,6 @@ combined_df %>%
                  lst(median, sd)) #%>% view()
 
 
-# ggplot(combined_df, aes(schsp_slope, color = true_effect)) +
-#     geom_density()
-# 
-# combined_df %>% 
-#     group_by(true_effect) %>% 
-#     summarize_at(vars(schsp_slope), 
-#                  funs(median, sd))
 
 ## There's not an exact relationship between Young and Sch-Sp slopes, 
 ## even when N (and so the max rank) is constant
@@ -88,6 +116,7 @@ ggplot(combined_df, aes(young_slope, qq_slope)) +
 
 
 ## QQ linearity tests ----
+## TODO: this is awful
 combined_df %>% 
     select(delta, meta_idx, f_comp, aic_comp) %>% 
     pivot_longer(c(f_comp, aic_comp), 
@@ -103,6 +132,27 @@ combined_df %>%
                                  'significant' = 'yellow')) +
     facet_wrap(vars(delta))
 
+test_levels = c('AIC: linear' = 'linear', 
+                'AIC: quadratic' = 'quadratic', 
+                'F-test: non-sig.' = 'non-significant', 
+                'F-test: sig.' = 'significant')
+
+combined_df %>% 
+    select(delta, meta_idx, f_comp, aic_comp) %>% 
+    pivot_longer(c(f_comp, aic_comp), 
+                 names_to = 'test') %>% 
+    count(delta, test, value) %>% 
+    mutate(value = fct_relevel(value, !!!test_levels), 
+           value = fct_recode(value, !!!test_levels), 
+           test = fct_recode(test, 'AIC' = 'aic_comp', 'F-test' = 'f_comp')) %>% 
+    ggplot(aes(delta, n, fill = value)) +
+    geom_col(position = 'fill') +
+    facet_wrap(vars(test), nrow = 2) +
+    scale_fill_viridis_d() +
+    scale_y_continuous(labels = scales::percent_format(), 
+                       name = 'share of inferences')
+
+
 combined_df %>% 
     select(delta, meta_idx, f_comp, aic_comp) %>% 
     pivot_longer(c(f_comp, aic_comp), 
@@ -114,7 +164,10 @@ combined_df %>%
                                  TRUE ~ NA_character_), 
            correct_call = value == exp_value) %>% 
     group_by(delta, test) %>% 
-    summarize(accuracy = sum(correct_call) / n())
+    summarize(accuracy = sum(correct_call) / n()) %>% 
+    ungroup() %>% 
+    pivot_wider(names_from = test, values_from = accuracy) %>% 
+    rename(AIC = aic_comp, `F-test` = f_comp)
 
 
 ## Do the QQ tests work better w/ null effects with larger samples? 

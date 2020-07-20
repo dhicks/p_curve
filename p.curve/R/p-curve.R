@@ -57,14 +57,16 @@ draw_studies = function(N, delta, n, seed = NULL) {
 #' @param studies A dataframe of studies to be plotted, as returned by `draw_studies()`. Minimally, a dataframe with columns `rank` and `p.value`.
 #' @param alpha Threshold for statistical significance; default (.05)
 #' @param draw_alpha Draw a horizontal line at `alpha`?
+#' @param ... Other aesthetics, passed at the plot level
 #' @return A `ggplot2` plot
 #' @details Young's p-curve plots the p-value of each study against its rank, by ascending p-value (1 = smallest p-value). It is equivalent to a QQ-plot against a uniform distribution, with the x-axis running from 1 to the number of studies rather than the quantiles `(1:N)/N`.
 #' @export
 young_curve = function(studies,
                        alpha = .05,
-                       draw_alpha = TRUE) {
+                       draw_alpha = TRUE,
+                       ...) {
     plot = ggplot2::ggplot(studies,
-                           ggplot2::aes(rank, p.value)) +
+                           ggplot2::aes(rank, p.value, ...)) +
         ggplot2::geom_point()
     if (draw_alpha) {
         plot = plot + ggplot2::geom_hline(yintercept = alpha)
@@ -150,25 +152,40 @@ qq_linear = function(studies, alpha = .05) {
 
 
 ## Simonsohn et al.'s p-curve ----
-## TODO
-# studies_med$studies[[2]] %>%
-#     # filter(p.value < .05) %>%
-#     ggplot(aes(p.value)) +
-#     stat_bin(binwidth = .01, geom = 'point') +
-#     stat_bin(binwidth = .01, geom = 'line')
-
+#' Simonsohn et al.'s p-curve
+#'
+#' Simonsohn et al.'s p-curve is equivalent to a histogram with binwidth .01 on the subset of p-values below .05
+#' @param studies A dataframe of studies to be plotted, as returned by `draw_studies()`.  Minimally, a dataframe with column `p.value`.
+#' @param ... Other aesthetics, passed at the plot level
+#' @return A `ggplot2` plot
+#' @details Very very small p-values (below 1e-90) are trimmed to keep the plot from drawing a value at 0.
+#' @export
+simonsohn_curve = function(studies, ...) {
+    studies %>%
+        filter(p.value < .05) %>%
+        ggplot(aes(p.value, ...)) +
+        geom_freqpoly(breaks = c(0:5 / 100),
+                      position = position_nudge(x = .005)) +
+        stat_bin(geom = 'point',
+                 breaks = c(0:5 / 100),
+                 position = position_nudge(x = .005)) +
+        geom_rug() +
+        xlim(1e-90, .05)
+}
 
 ## Schweder and Spjøtvoll's p-value plot ----
 #' Schweder and Spjøtvoll's p-value plot
 #'
 #' Schweder and Spjøtvolls "p-value plot."
 #' @param studies A dataframe of studies to be plotted, as returned by `draw_studies()`. Minimally, a dataframe with columns `rank` and `p.value`.
+#' @param ... Other aesthetics, passed at the plot level
 #' @return A `ggplot2` plot
 #' @details Schweder and Spjøtvoll's p-value plot plots the descending rank of each study (1 = largest p-value) against 1-p.  It stands in a 1-1 relationship with Young's p-value plot, and so a QQ-plot; but swaps the axes.
 #' @export
-schsp_curve = function(studies) {
+schsp_curve = function(studies, ...) {
     ggplot(studies, aes(1 - p.value,
-                        max(rank) - rank)) +
+                        max(rank) - rank,
+                        ...)) +
         geom_point()
 }
 
