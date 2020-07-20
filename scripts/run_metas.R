@@ -13,7 +13,9 @@ library(tictoc)
 ## - finishing documenting p-curve.R
 ## - implement tests as tests
 
-devtools::load_all('p.curve')
+## Local package with simulation functions
+devtools::load_all(reset = TRUE, recompile = TRUE, file.path('..', 'p.curve'))
+?qq_linear
 # source('test_scratch.R')
 
 
@@ -23,7 +25,7 @@ devtools::load_all('p.curve')
 set.seed(2020-06-25)
 tic()
 combined_df = many_metas(delta = c(0, .2, .4, .6), 
-                         NN = 500, N = 20, n = 25) %>% 
+                         NN = 5, N = 20, n = 25) %>% 
     mutate(delta = as_factor(delta))
 toc()
 

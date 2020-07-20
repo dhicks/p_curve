@@ -2,7 +2,7 @@
 % Please edit documentation in R/p-curve.R
 \name{young_curve}
 \alias{young_curve}
-\title{Young's p-curve}
+\title{Young's p-value plot}
 \usage{
 young_curve(studies, alpha = 0.05, draw_alpha = TRUE)
 }
@@ -17,7 +17,7 @@ young_curve(studies, alpha = 0.05, draw_alpha = TRUE)
 A \code{ggplot2} plot
 }
 \description{
-S. Stanley Young's "p-value plot" or "p-curve."
+S. Stanley Young's "p-value plot" or "p-curve." Equivalent to a QQ-plot against a uniform distribution with a rescaled x-axis.
 }
 \details{
 Young's p-curve plots the p-value of each study against its rank, by ascending p-value (1 = smallest p-value). It is equivalent to a QQ-plot against a uniform distribution, with the x-axis running from 1 to the number of studies rather than the quantiles \code{(1:N)/N}.

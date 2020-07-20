@@ -49,11 +49,11 @@ draw_studies = function(N, delta, n, seed = NULL) {
 
 
 
-## Plots ----
+## Young's p-value plot ----
 
-#' Young's p-curve
+#' Young's p-value plot
 #'
-#' S. Stanley Young's "p-value plot" or "p-curve."
+#' S. Stanley Young's "p-value plot" or "p-curve." Equivalent to a QQ-plot against a uniform distribution with a rescaled x-axis.
 #' @param studies A dataframe of studies to be plotted, as returned by `draw_studies()`. Minimally, a dataframe with columns `rank` and `p.value`.
 #' @param alpha Threshold for statistical significance; default (.05)
 #' @param draw_alpha Draw a horizontal line at `alpha`?
@@ -120,13 +120,13 @@ qq_slope = function(studies) {
 #' @param alpha Threshold for statistical significance; used by the automated F-test.
 #' @details Two checks are used: an F-test for the ANOVA of the two regression models, and a comparison of AICs.
 #' @return A one-row `tibble::tibble` with the following columns:
-#' @param f_stat Observed value of the F statistic
-#' @param alpha Threshold for statistical significance used in the F-test
-#' @param f_p p-value of the F statistic
-#' @param f_comp Inference from the F-test; one of `significant` or `non-significant`
-#' @param aic_linear AIC statistic of the linear regression
-#' @param aic_quad AIC statistic of the quadratic regression
-#' @param aic_comp Inference from comparing AICs; one of `quadratic` or `linear`
+#'   \item{f_stat}{Observed value of the F statistic}
+#'   \item{alpha}{Threshold for statistical significance used in the F-test}
+#'   \item{f_p}{p-value of the F statistic}
+#'   \item{f_comp}{Inference from the F-test; one of `significant` or `non-significant`}
+#'   \item{aic_linear}{AIC statistic of the linear regression}
+#'   \item{aic_quad}{AIC statistic of the quadratic regression}
+#'   \item{aic_comp}{Inference from comparing AICs; one of `quadratic` or `linear`}
 qq_linear = function(studies, alpha = .05) {
     ## Checks linearity of the QQ plot by comparing linear and quadratic fits, using (a) F-test and (b) AICs
     model_linear = lm(p.value ~ p.uniform, data = studies)
@@ -157,15 +157,27 @@ qq_linear = function(studies, alpha = .05) {
 #     stat_bin(binwidth = .01, geom = 'point') +
 #     stat_bin(binwidth = .01, geom = 'line')
 
-#*[pick up documentation here]*
-## Schweder and Spjøtvoll's p-curve ----
+
+## Schweder and Spjøtvoll's p-value plot ----
+#' Schweder and Spjøtvoll's p-value plot
+#'
+#' Schweder and Spjøtvolls "p-value plot."
+#' @param studies A dataframe of studies to be plotted, as returned by `draw_studies()`. Minimally, a dataframe with columns `rank` and `p.value`.
+#' @return A `ggplot2` plot
+#' @details Schweder and Spjøtvoll's p-value plot plots the descending rank of each study (1 = largest p-value) against 1-p.  It stands in a 1-1 relationship with Young's p-value plot, and so a QQ-plot; but swaps the axes.
+#' @export
 schsp_curve = function(studies) {
     ggplot(studies, aes(1 - p.value,
                         max(rank) - rank)) +
         geom_point()
 }
 
-## Schweder and Spjøtvoll slope
+#' Slope of Schweder and Spjøtvoll's p-value plot
+#'
+#' Calculates the slope of Schweder and Spjøtvoll's p-value plot using a linear regression.
+#' @param studies A dataframe of studies, as returned by `draw_studies()`. Minimally, a dataframe with columns `rank` and `p.value`.
+#' @return The slope, a length-1 numeric
+#' @export
 schsp_slope = function(studies) {
     model = studies %>%
         mutate(rank.rev = max(rank) - rank,
@@ -177,8 +189,27 @@ schsp_slope = function(studies) {
 
 
 ## Do many meta-analyses ----
-many_metas = function(NN, ## how many meta-studies
+#' Run the simulation
+#'
+#' Top-level function for running the simulation
+#' @param NN Number of times to run the simulation for each condition
+#' @param N Number of studies to conduct in each simulation run (vector)
+#' @param delta Real effect size (vector)
+#' @param n Sample size per group for each simulated study (vector)
+#' @details The condition parameters `N`, `delta`, and `n` can be vectors; the function will automatically construct all combinations.  `NN` must have length 1.
+#' @return A dataframe containing one row per simulation run and the following columns:
+#'   \item{meta_idx}{Index of the simulation run within the condition}
+#'   \item{N, delta, n}{Simulation conditions}
+#'   \item{studies}{Nested samples and t-test results for each study}
+#'   \item{young_slope, schsp_slope, qq_slope}{Slopes for the Young, Schweder and Spjøtvoll, and QQ plots}
+#'   \item{f_stat, alpha, f_p, f_comp}{F statistic, alpha threshold, p-value, and inference for the F test of linearity of the QQ plot}
+#'   \item{aic_linear, aic_quad, aic_comp}{AIC values for the linear and quadratic regression, and inference, for the AIC test of linearity of the QQ plot}
+many_metas = function(NN,
                       N, delta, n) {
+    assertthat::assert_that(assertthat::are_equal(length(NN),
+                                                  1L),
+                            msg = 'NN must be length 1')
+
     meta_params = purrr::cross_df(tibble::lst(meta_idx = 1:NN,
                                               N, delta, n))
     # return(meta_params)
