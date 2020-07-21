@@ -2,8 +2,3 @@ Package: placeholder
 Type: Paper
 Title: Does not matter
 Version: 0.0.1
-Imports: 
-    tidyverse,
-    cowplot, 
-    tictoc
-
