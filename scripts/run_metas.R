@@ -11,6 +11,7 @@ library(tictoc)
 
 
 ## TODO: 
+## - header + intro ¶ for this doc
 ## - docs: ex of how to pass just homogeneous effects vs passing mixed effects
 ## - reorganize and rename
 ## - implement tests as tests
