@@ -27,7 +27,7 @@ devtools::load_all(file.path('..', 'p.curve'))
 ## 45 sec
 set.seed(2020-06-25)
 tic()
-combined_df = many_metas(NN = 500, 
+combined_df = many_metas(NN = 50, 
                          delta = list(0, .2, .4, .6, list(0, .6)), 
                          N = 20, n = 25) %>% 
     mutate(delta_fct = as_factor(delta_chr))
