@@ -8,4 +8,5 @@ before_install:
   - wget https://github.com/lierdakil/pandoc-crossref/releases/download/v0.3.7.0/pandoc-crossref-Linux-2.10.tar.xz --output-document pandoc-crossref.tar.xz
   - tar xf pandoc-crossref.tar.xz
   - export PATH=$PWD:$PATH
+  - tlmgr install unicode-math
   
