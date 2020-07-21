@@ -2,7 +2,7 @@
 % Please edit documentation in R/p-curve.R
 \name{many_metas}
 \alias{many_metas}
-\title{Run the simulation}
+\title{Run the simulation: "Do many meta-analyses"}
 \usage{
 many_metas(NN, N, delta, n)
 }
@@ -18,7 +18,7 @@ many_metas(NN, N, delta, n)
 \value{
 A dataframe containing one row per simulation run and the following columns:
 \item{meta_idx}{Index of the simulation run within the condition}
-\item{N, delta, n}{Simulation conditions}
+\item{N, delta, n}{Simulation conditions.  To pass mixed conditions, construct \code{delta} as a list of lists.}
 \item{studies}{Nested samples and t-test results for each study}
 \item{young_slope, schsp_slope, qq_slope}{Slopes for the Young, Schweder and Spjøtvoll, and QQ plots}
 \item{f_stat, alpha, f_p, f_comp}{F statistic, alpha threshold, p-value, and inference for the F test of linearity of the QQ plot}

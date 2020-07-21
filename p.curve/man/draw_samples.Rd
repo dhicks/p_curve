@@ -16,3 +16,6 @@ draw_samples(delta, n, sigma = 1)
 \description{
 Draws samples of size \code{n} from two normal distributions.
 }
+\details{
+If \code{delta} has length > 1, means will be recycled, silently creating subsamples within the second group.  This simulates a case where the intervention group is heterogeneous, with even samples from two latent populations.
+}

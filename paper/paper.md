@@ -63,6 +63,8 @@ Young and collaborators do not appear to have validated the p-value plot method 
 
 The current study is an automatically-reproduced simulation study of Young's p-value plot, systematically testing it across three kinds of cases, using formal analyses of the graphs, and comparing it to Schweder and Spjøtvoll's p-value plot and Simonsohn, Nelson, and Simmons' p-curve.  
 
+*[why use simulations]*
+
 Each run of the simulation is composed of $N$ studies.  To make the study parameters easy to understand, each study is based on a two-sample t-test.  Two samples, each of size $n$, are drawn from Gaussian distributions with mean 0 and $\delta$, respectively, and common standard deviation $\sigma$.  In the basic "single process" case, $\delta$ is the same for all studies in the simulation run, and so $\delta$ corresponds to the true effect size of the (single) process being studied.  
 
 A *condition* of the simulation fixes the values of these parameters.  Conditions can be systematically varied to compare, e.g., different effect sizes, and multiple runs $NN$ in each condition allow us to analyze the frequentist properties of Young's p-value plot within and across conditions.  In particular, 4 different effect sizes are used — corresponding to null, small, moderate, and moderate-large effects — and each condition is simulated with 500 runs.  500 runs per condition was chosen because this should produce good estimates of central tendency and variation without requiring significant computation time.  Note that 500 runs is probably too few to produce good estimates of extreme values, e.g., 5th percentiles.  The primary conditions examined in the current study are summarized in [@tbl:params].  
@@ -78,6 +80,8 @@ A *condition* of the simulation fixes the values of these parameters.  Condition
 Table: Base parameter values used in the current simulation study {#tbl:params}
 
 
+
+*[conceptions of evidence: severity and likelihoodist]*
 
 
 

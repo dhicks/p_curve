@@ -1,9 +1,12 @@
+library(magrittr)
+
 #' Draw samples
 #'
 #' Draws samples of size `n` from two normal distributions.
 #' @param delta Real difference in means
 #' @param n Sample size for each group
 #' @param sigma Standard deviation, same for both groups
+#' @details If `delta` has length > 1, means will be recycled, silently creating subsamples within the second group.  This simulates a case where the intervention group is heterogeneous, with even samples from two latent populations.
 #' @export
 
 draw_samples = function(delta, n, sigma = 1) {
@@ -27,7 +30,7 @@ t_test = function(samples) {
 #'
 #' Do several studies using draw_samples() and t_test().  This simulates doing a meta-analysis of `N` studies.
 #' @param N Number of studies
-#' @param delta Real effect size
+#' @param delta Real effect size, or multiple sizes for a mixed/heterogeneous case
 #' @param n Sample size (per group)
 #' @param seed Seed for the RNG; if `NULL` (the default) no seed will be used
 #' @return A `tibble::tibble` with one row per study. Column `samples` contains the samples for each study.
@@ -37,10 +40,11 @@ draw_studies = function(N, delta, n, seed = NULL) {
         set.seed(seed)
     }
     tibble::tibble(study_id = 1:N) %>%
-        dplyr::mutate(delta = delta,
+        dplyr::mutate(delta = list(delta),
                       n = n) %>%
         dplyr::mutate(samples = purrr::map2(delta, n,
-                                            draw_samples)) %>%
+                                            ~draw_samples(purrr::simplify(.x),
+                                                          .y))) %>%
         dplyr::mutate(test = purrr::map(samples, t_test)) %>%
         tidyr::unnest(test) %>%
         dplyr::mutate(rank = rank(p.value),
@@ -197,16 +201,26 @@ schsp_curve = function(studies, ...) {
 #' @export
 schsp_slope = function(studies) {
     model = studies %>%
-        mutate(rank.rev = max(rank) - rank,
+        dplyr::mutate(rank.rev = max(rank) - rank,
                p.value.rev = 1 - p.value) %>%
         lm(rank.rev ~ p.value.rev, data = .)
     slope = model$coefficients[['p.value.rev']]
     return(slope)
 }
 
+#' Convenience function to coerce single and mixed deltas to characters
+flatten_to_chr = function(alist) {
+    len = purrr::map_int(alist, length)
+    return = purrr::map2_chr(alist, len,
+                      ~ifelse(identical(.y, 1L),
+                              as.character(.x),
+                              'mixed'))
+    return(return)
+}
+# flatten_to_chr(list(0, .2, list(0, .7)))
 
 ## Do many meta-analyses ----
-#' Run the simulation
+#' Run the simulation: "Do many meta-analyses"
 #'
 #' Top-level function for running the simulation
 #' @param NN Number of times to run the simulation for each condition
@@ -216,7 +230,7 @@ schsp_slope = function(studies) {
 #' @details The condition parameters `N`, `delta`, and `n` can be vectors; the function will automatically construct all combinations.  `NN` must have length 1.
 #' @return A dataframe containing one row per simulation run and the following columns:
 #'   \item{meta_idx}{Index of the simulation run within the condition}
-#'   \item{N, delta, n}{Simulation conditions}
+#'   \item{N, delta, n}{Simulation conditions.  To pass mixed conditions, construct `delta` as a list of lists.}
 #'   \item{studies}{Nested samples and t-test results for each study}
 #'   \item{young_slope, schsp_slope, qq_slope}{Slopes for the Young, Schweder and Spjøtvoll, and QQ plots}
 #'   \item{f_stat, alpha, f_p, f_comp}{F statistic, alpha threshold, p-value, and inference for the F test of linearity of the QQ plot}
@@ -233,7 +247,8 @@ many_metas = function(NN,
 
     meta_params %>%
         dplyr::mutate(studies = purrr::pmap(list(N, delta, n),
-                                            draw_studies)) %>%
+                                            draw_studies),
+                      delta_chr = flatten_to_chr(delta)) %>%
         dplyr::mutate(young_slope = purrr::map_dbl(studies,
                                                    young_slope),
                schsp_slope = purrr::map_dbl(studies, schsp_slope),

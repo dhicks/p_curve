@@ -9,7 +9,7 @@ draw_studies(N, delta, n, seed = NULL)
 \arguments{
 \item{N}{Number of studies}
 
-\item{delta}{Real effect size}
+\item{delta}{Real effect size, or multiple sizes for a mixed/heterogeneous case}
 
 \item{n}{Sample size (per group)}
 

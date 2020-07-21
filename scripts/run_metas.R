@@ -8,9 +8,9 @@ library(tictoc)
 
 
 ## TODO: 
-## - "mixture" simulations
 ## - reorganize and rename
 ## - implement tests as tests
+## - CI to knit
 
 ## Local package with simulation functions
 devtools::load_all(file.path('..', 'p.curve'))
@@ -19,14 +19,14 @@ devtools::load_all(file.path('..', 'p.curve'))
 
 
 ## Run simulations ----
-## 4 effect sizes x 500 meta-studies x 20 studies x 25 samples
+## 5 effect sizes x 500 meta-studies x 20 studies x 25 samples
 ## 45 sec
 set.seed(2020-06-25)
 tic()
 combined_df = many_metas(NN = 500, 
-                         delta = c(0, .2, .4, .6), 
+                         delta = list(0, .2, .4, .6, list(0, .6)), 
                          N = 20, n = 25) %>% 
-    mutate(delta = as_factor(delta))
+    mutate(delta_fct = as_factor(delta_chr))
 toc()
 
 combined_df
@@ -37,11 +37,10 @@ combined_df %>%
     group_by(delta) %>% 
     slice(13, 17, 21, 25) %>% 
     ungroup() %>% 
-    select(meta_idx, studies) %>% 
+    select(delta_fct, meta_idx, studies) %>% 
     unnest(studies) %>% 
-    mutate(delta = as.factor(delta)) %>% 
-    young_curve(color = delta) +
-    facet_grid(rows = vars(delta), cols = vars(meta_idx), 
+    young_curve(color = delta_fct) +
+    facet_grid(rows = vars(delta_fct), cols = vars(meta_idx), 
                as.table = TRUE,
                switch = 'y') +
     labs(x = 'rank (ascending)', 
@@ -53,11 +52,10 @@ combined_df %>%
     group_by(delta) %>% 
     slice(13, 17, 21, 25) %>% 
     ungroup() %>% 
-    select(meta_idx, studies) %>% 
+    select(delta_fct, meta_idx, studies) %>% 
     unnest(studies) %>% 
-    mutate(delta = as.factor(delta)) %>% 
-    schsp_curve(color = delta) +
-    facet_grid(rows = vars(delta), cols = vars(meta_idx), 
+    schsp_curve(color = delta_fct) +
+    facet_grid(rows = vars(delta_fct), cols = vars(meta_idx), 
                as.table = TRUE,
                switch = 'y') +
     labs(x = '1 - p', 
@@ -69,11 +67,10 @@ combined_df %>%
     group_by(delta) %>% 
     slice(13, 17, 21, 25) %>% 
     ungroup() %>% 
-    select(meta_idx, studies) %>% 
+    select(delta_fct, meta_idx, studies) %>% 
     unnest(studies) %>% 
-    mutate(delta = as.factor(delta)) %>% 
-    simonsohn_curve(color = delta) +
-    facet_grid(rows = vars(delta), cols = vars(meta_idx), 
+    simonsohn_curve(color = delta_fct) +
+    facet_grid(rows = vars(delta_fct), cols = vars(meta_idx), 
                as.table = TRUE,
                switch = 'y') +
     labs(x = 'p-value', 
@@ -85,10 +82,10 @@ combined_df %>%
 
 ## Slopes ----
 combined_df %>% 
-    select(delta, meta_idx, matches('slope')) %>% 
+    select(delta_fct, meta_idx, matches('slope')) %>% 
     pivot_longer(cols = matches('slope'), 
                  names_to = 'method', values_to = 'slope') %>% 
-    ggplot(aes(delta, slope, color = delta)) +
+    ggplot(aes(delta_fct, slope, color = delta_fct)) +
     # geom_beeswarm(alpha = .10) +
     geom_violin(draw_quantiles = .5, fill = NA) +
     scale_color_brewer(palette = 'Set1', guide = FALSE) +
@@ -97,7 +94,7 @@ combined_df %>%
 
 
 combined_df %>% 
-    group_by(delta) %>% 
+    group_by(delta_fct) %>% 
     summarize_at(vars(matches('slope')), 
                  lst(median, sd)) #%>% view()
 
@@ -117,20 +114,20 @@ ggplot(combined_df, aes(young_slope, qq_slope)) +
 
 ## QQ linearity tests ----
 ## TODO: this is awful
-combined_df %>% 
-    select(delta, meta_idx, f_comp, aic_comp) %>% 
-    pivot_longer(c(f_comp, aic_comp), 
-                 names_to = 'test') %>% 
-    group_by(test, delta) %>% 
-    count(value) %>% 
-    mutate(share = n / sum(n)) %>% 
-    ggplot(aes(test, share, fill = value)) +
-    geom_col() +
-    scale_fill_manual(values = c('linear' = 'red', 
-                                 'quadratic' = 'blue', 
-                                 'non-significant' = 'green', 
-                                 'significant' = 'yellow')) +
-    facet_wrap(vars(delta))
+# combined_df %>% 
+#     select(delta, meta_idx, f_comp, aic_comp) %>% 
+#     pivot_longer(c(f_comp, aic_comp), 
+#                  names_to = 'test') %>% 
+#     group_by(test, delta) %>% 
+#     count(value) %>% 
+#     mutate(share = n / sum(n)) %>% 
+#     ggplot(aes(test, share, fill = value)) +
+#     geom_col() +
+#     scale_fill_manual(values = c('linear' = 'red', 
+#                                  'quadratic' = 'blue', 
+#                                  'non-significant' = 'green', 
+#                                  'significant' = 'yellow')) +
+#     facet_wrap(vars(delta))
 
 test_levels = c('AIC: linear' = 'linear', 
                 'AIC: quadratic' = 'quadratic', 
@@ -138,32 +135,33 @@ test_levels = c('AIC: linear' = 'linear',
                 'F-test: sig.' = 'significant')
 
 combined_df %>% 
-    select(delta, meta_idx, f_comp, aic_comp) %>% 
+    select(delta_fct, meta_idx, f_comp, aic_comp) %>% 
     pivot_longer(c(f_comp, aic_comp), 
                  names_to = 'test') %>% 
-    count(delta, test, value) %>% 
+    count(delta_fct, test, value) %>% 
     mutate(value = fct_relevel(value, !!!test_levels), 
            value = fct_recode(value, !!!test_levels), 
            test = fct_recode(test, 'AIC' = 'aic_comp', 'F-test' = 'f_comp')) %>% 
-    ggplot(aes(delta, n, fill = value)) +
+    ggplot(aes(delta_fct, n, fill = value)) +
     geom_col(position = 'fill') +
     facet_wrap(vars(test), nrow = 2) +
     scale_fill_viridis_d() +
+    xlab('real effect') +
     scale_y_continuous(labels = scales::percent_format(), 
                        name = 'share of inferences')
 
 
 combined_df %>% 
-    select(delta, meta_idx, f_comp, aic_comp) %>% 
+    select(delta_fct, meta_idx, f_comp, aic_comp) %>% 
     pivot_longer(c(f_comp, aic_comp), 
                  names_to = 'test') %>% 
-    mutate(exp_value = case_when(delta == 0 & test == 'f_comp' ~ 'non-significant', 
-                                 delta != 0 & test == 'f_comp' ~ 'significant',
-                                 delta == 0 & test == 'aic_comp' ~ 'linear', 
-                                 delta != 0 & test == 'aic_comp' ~ 'quadratic',
+    mutate(exp_value = case_when(delta_fct == 0 & test == 'f_comp' ~ 'non-significant', 
+                                 delta_fct != 0 & test == 'f_comp' ~ 'significant',
+                                 delta_fct == 0 & test == 'aic_comp' ~ 'linear', 
+                                 delta_fct != 0 & test == 'aic_comp' ~ 'quadratic',
                                  TRUE ~ NA_character_), 
            correct_call = value == exp_value) %>% 
-    group_by(delta, test) %>% 
+    group_by(delta_fct, test) %>% 
     summarize(accuracy = sum(correct_call) / n()) %>% 
     ungroup() %>% 
     pivot_wider(names_from = test, values_from = accuracy) %>% 
