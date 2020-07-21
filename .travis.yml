@@ -2,7 +2,8 @@ language: r
 
 pandoc_version: 2.10
 
-script: make ms
+apt_packages:
+  - texlive-fonts-recommended
 
 before_install:
   - wget https://github.com/lierdakil/pandoc-crossref/releases/download/v0.3.7.0/pandoc-crossref-Linux-2.10.tar.xz --output-document pandoc-crossref.tar.xz
@@ -10,5 +11,7 @@ before_install:
   - export PATH=$PWD:$PATH
   - tlmgr install unicode-math
   - tlmgr install luaotfload
+
   
-  
+script: make ms
+
