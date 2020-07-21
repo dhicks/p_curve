@@ -1,13 +1,16 @@
 library(tidyverse)
 theme_set(theme_bw())
-library(ggbeeswarm)
 library(broom)
 library(cowplot)
+
+# library(ggbeeswarm)
+# library(tidytext)
 
 library(tictoc)
 
 
 ## TODO: 
+## - docs: ex of how to pass just homogeneous effects vs passing mixed effects
 ## - reorganize and rename
 ## - implement tests as tests
 ## - CI to knit
@@ -30,6 +33,50 @@ combined_df = many_metas(NN = 500,
 toc()
 
 combined_df
+
+
+## Model validation ----
+## Distribution of effects estimates
+## This shows that, at the study level, the simulation gives an unbiased (ie, in expectation) estimate of the effect, except for the mixed case
+combined_df %>% 
+    select(delta_fct, meta_idx, studies) %>% 
+    unnest(studies) %>% 
+    ggplot(aes(delta_fct, estimate2, color = delta_fct)) +
+    geom_violin(draw_quantiles = .5) +
+    labs(x = 'real effect', 
+         y = 'study-level effect estimate') +
+    scale_color_brewer(palette = 'Set1', guide = FALSE)
+
+combined_df %>% 
+    select(delta_fct, meta_idx, studies) %>% 
+    unnest(studies) %>% 
+    group_by(delta_fct) %>% 
+    summarize(across(estimate2, lst(mean, sd)), `NN*N` = n())
+
+## Simulation-run/meta-analytic effects estimate
+## This shows that, at the meta-analysis level (run of the simulation across N studies), the simulation gives an unbiased (in expectation) estimate of the effect, with less variance than the individual study estimates, except for the mixed case
+combined_df %>% 
+    select(delta_fct, meta_idx, studies) %>% 
+    unnest(studies) %>% 
+    group_by(delta_fct, meta_idx) %>% 
+    summarize(mean = mean(estimate2)) %>% 
+    ungroup() %>% 
+    ggplot(aes(delta_fct, mean, color = delta_fct)) +
+    geom_violin(draw_quantiles = .5) +
+    labs(x = 'real effect', 
+         y = 'meta-analytic effect estimate') +
+    scale_color_brewer(palette = 'Set1', guide = FALSE)
+
+## Because the mean of the mean is just the mean, this gives the same values as the table above
+# combined_df %>% 
+#     select(delta_fct, meta_idx, studies) %>% 
+#     unnest(studies) %>% 
+#     group_by(delta_fct, meta_idx) %>% 
+#     summarize(across(estimate2, lst(mean, sd))) %>% 
+#     group_by(delta_fct) %>% 
+#     summarize(across(estimate2_mean, lst(mean)), NN = n())
+
+
 
 ## Sample plots ----
 ## Young

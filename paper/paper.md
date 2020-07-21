@@ -15,6 +15,8 @@ In a recent series of papers, statistician S. Stanley Young and collaborators *[
 - air pollution epidemiology
 - Young's two arguments]*
 
+For the purpose of evaluating Young's p-value plot, simulations offer a number of advantages over exact methods.  First, for the target audience of this paper, well-written R code is likely to be more accessible than an exact analysis of the statistical properties of meta-analyses.  This makes it easier for readers to scrutinize the details of my argument.  Second, the simulation is modular, making it more extensible or modifiable by readers than an exact analysis.  The simulated data generating process and its analysis can be modified by simply rewriting two short functions and re-running the simulation.  An exact analysis of a different data-generating process might require a completely different formal approach.  Third, it may be algebraically intractable to give exact characterizations of constructions such as plots except in the limit (as sample size and/or number of studies goes to infinity).  
+
 
 # Methods #
 
@@ -61,25 +63,23 @@ Young and collaborators do not appear to have validated the p-value plot method 
 
 ## The current simulation study ##
 
-The current study is an automatically-reproduced simulation study of Young's p-value plot, systematically testing it across three kinds of cases, using formal analyses of the graphs, and comparing it to Schweder and Spjøtvoll's p-value plot and Simonsohn, Nelson, and Simmons' p-curve.  
-
-*[why use simulations]*
+The current study is an automatically-reproduced simulation study of Young's p-value plot, systematically testing it across five kinds of cases, using formal analyses of the graphs, and comparing it to Schweder and Spjøtvoll's p-value plot and Simonsohn, Nelson, and Simmons' p-curve.  
 
 Each run of the simulation is composed of $N$ studies.  To make the study parameters easy to understand, each study is based on a two-sample t-test.  Two samples, each of size $n$, are drawn from Gaussian distributions with mean 0 and $\delta$, respectively, and common standard deviation $\sigma$.  In the basic "single process" case, $\delta$ is the same for all studies in the simulation run, and so $\delta$ corresponds to the true effect size of the (single) process being studied.  
 
-A *condition* of the simulation fixes the values of these parameters.  Conditions can be systematically varied to compare, e.g., different effect sizes, and multiple runs $NN$ in each condition allow us to analyze the frequentist properties of Young's p-value plot within and across conditions.  In particular, 4 different effect sizes are used — corresponding to null, small, moderate, and moderate-large effects — and each condition is simulated with 500 runs.  500 runs per condition was chosen because this should produce good estimates of central tendency and variation without requiring significant computation time.  Note that 500 runs is probably too few to produce good estimates of extreme values, e.g., 5th percentiles.  The primary conditions examined in the current study are summarized in [@tbl:params].  
+A *condition* of the simulation fixes the values of these parameters.  Conditions can be systematically varied to compare, e.g., different effect sizes, and multiple runs $NN$ in each condition allow us to analyze the frequentist properties of Young's p-value plot within and across conditions.  In particular, 5 different effect sizes are used — corresponding to null, small, moderate, moderate-large effects, and a "mixed" or heterogeneous condition in which half the population has a null response and half the population has a moderate-large response — and each condition is simulated with 500 runs.  500 runs per condition was chosen because this should produce good estimates of central tendency and variation without requiring significant computation time.  Note that 500 runs is probably too few to produce good estimates of extreme values, e.g., 5th percentiles.  The primary conditions examined in the current study are summarized in [@tbl:params].  
 
 | parameter | meaning                             | value(s) |
 |:----------|:------------------------------------|---------:|
-| $\delta$  | study effect size                   | 0, .2, .4, .6 |
-| $\sigma$  | s.d. of study samples               | 1        |
+| $\delta$  | real effect size                    | 0, .2, .4, .6, (0, .6) |
+| $\sigma$  | s.d. of samples                     | 1        |
 | $n$       | study sample size                   | 25       |
 | $N$       | num. studies in each run            | 20       |
 | $NN$      | num. runs for each condition        | 500      |
 
-Table: Base parameter values used in the current simulation study {#tbl:params}
+Table: Base parameter values used in the current simulation study.  The real effect size of (0, .6) indicates the "mixed" or heterogeneous condition, in which half the population have no response and half the population have a strong response. {#tbl:params}
 
-
+The model can also simulate a "mixed," multi-process, or heterogeneous condition, in which subsets of the population have different responses to the intervention or exposure.  The current study uses a (0, .6) mixture, meaning that half of the population has a null effect or no response and half the population has a medium-strong response of .6.  These values were chosen to create a relatively dramatic or striking mixture that is less likely to look like a single-process or homogeneous case.  For this mixed case, the simulation draws $n$ control/non-exposed group samples (as with the single process case) and then, for the intervention/exposed group, draws $n/2$ samples from the no response subpopulation and $n/2$ samples from medium-strong response subpopulation.  This guarantees that the sample is balanced across the two (latent) subpopulations.  I expect that unbalanced samples will tend to produce less striking p-curves, as unbalanced samples will tend to look more like the majority subpopulation. 
 
 *[conceptions of evidence: severity and likelihoodist]*
 

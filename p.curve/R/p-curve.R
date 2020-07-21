@@ -17,7 +17,7 @@ draw_samples = function(delta, n, sigma = 1) {
 
 #' Tidy version of a t-test
 #'
-#' Given two samples, do an unpaired, two-sided t-test and return the results in tidy format. This simulates doing 1 study.
+#' Given two samples, do an unpaired, two-sided t-test and return the results in tidy format. This simulates the analysis for a single study.
 #' @param samples List of length 2; the two samples
 #' @return A one-row `tibble::tibble`
 #' @export
