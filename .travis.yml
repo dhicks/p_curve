@@ -9,4 +9,6 @@ before_install:
   - tar xf pandoc-crossref.tar.xz
   - export PATH=$PWD:$PATH
   - tlmgr install unicode-math
+  - tlmgr install luaotfload
+  
   
