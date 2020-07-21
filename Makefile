@@ -1,11 +1,10 @@
 PAPER := paper
 SCRIPT := scripts
 
-all: script paper
-
-paper: 
-	$(MAKE) -C $(PAPER)
+all: script ms
 
 script:
 	$(MAKE) -C $(SCRIPT)
 
+ms:
+	$(MAKE) -C $(PAPER)
