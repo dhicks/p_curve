@@ -12,6 +12,10 @@ pandoc_version: 2.10
 #  - tlmgr install unicode-math
 #  - tlmgr install luaotfload
 
+before_script:
+  - chmod +x ./_deploy.sh
   
-script: make script
+script: 
+  - make script
+  - ./_deploy.sh
 
