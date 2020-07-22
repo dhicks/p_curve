@@ -135,6 +135,10 @@ To apply the likelihood conception of evidence to Young and collaborator's skept
 
 ## Computationally reproducible analyses ##
 
+### severity
+
+### likelihood 
+
 
 
 # Discussion #

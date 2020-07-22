@@ -364,10 +364,10 @@ h2 = exprs('delta = 0.2' = delta_fct == '0.2',
 
 ## Calculate the likelihood ratios
 llr_df = likelihood_ratio(h1, h2, test_output, combined_df) %>% 
-    left_join(h_nought_xwalk, by = c('h1' = 'h_nought')) %>% 
-    rename(h1_label = h_nought_label) %>% 
-    left_join(h_nought_xwalk, by = c('h2' = 'h_nought')) %>% 
-    rename(h2_label = h_nought_label) %>% 
+    left_join(h_xwalk, by = c('h1' = 'h')) %>% 
+    rename(h1_label = h_label) %>% 
+    left_join(h_xwalk, by = c('h2' = 'h')) %>% 
+    rename(h2_label = h_label) %>% 
     left_join(output_xwalk, by = 'test_output') %>% 
     select(h1_label, h2_label, output_label, llr, 
            h1, h2, test_output, everything())
