@@ -142,16 +142,16 @@ qq_linear = function(studies, alpha = .05) {
     f_stat = anova(model_linear, model_quad)[['F']][[2]]
     f_p = anova(model_linear, model_quad)[['Pr(>F)']][[2]]
     f_comp = dplyr::if_else(f_p < alpha,
-                     'significant',
-                     'non-significant')
+                            'significant',
+                            'non-significant')
     aic_linear = AIC(model_linear)
     aic_quad = AIC(model_quad)
     aic_comp = dplyr::if_else(aic_quad < aic_linear,
-                       'quadratic',
-                       'linear')
+                              'quadratic',
+                              'linear')
     return(tibble::tibble(f_stat, alpha, f_p, f_comp,
-                  aic_linear, aic_quad,
-                  aic_comp))
+                          aic_linear, aic_quad,
+                          aic_comp))
 }
 
 
@@ -202,7 +202,7 @@ schsp_curve = function(studies, ...) {
 schsp_slope = function(studies) {
     model = studies %>%
         dplyr::mutate(rank.rev = max(rank) - rank,
-               p.value.rev = 1 - p.value) %>%
+                      p.value.rev = 1 - p.value) %>%
         lm(rank.rev ~ p.value.rev, data = .)
     slope = model$coefficients[['p.value.rev']]
     return(slope)
@@ -212,9 +212,9 @@ schsp_slope = function(studies) {
 flatten_to_chr = function(alist) {
     len = purrr::map_int(alist, length)
     return = purrr::map2_chr(alist, len,
-                      ~ifelse(identical(.y, 1L),
-                              as.character(.x),
-                              'mixed'))
+                             ~ifelse(identical(.y, 1L),
+                                     as.character(.x),
+                                     'mixed'))
     return(return)
 }
 # flatten_to_chr(list(0, .2, list(0, .7)))
@@ -251,10 +251,100 @@ many_metas = function(NN,
                       delta_chr = flatten_to_chr(delta)) %>%
         dplyr::mutate(young_slope = purrr::map_dbl(studies,
                                                    young_slope),
-               schsp_slope = purrr::map_dbl(studies, schsp_slope),
-               qq_slope = purrr::map_dbl(studies, qq_slope),
-               qq_linear = purrr::map(studies, qq_linear)) %>%
+                      schsp_slope = purrr::map_dbl(studies, schsp_slope),
+                      qq_slope = purrr::map_dbl(studies, qq_slope),
+                      qq_linear = purrr::map(studies, qq_linear)) %>%
         tidyr::unnest(qq_linear)
+}
+
+
+# Assess evidence ----
+#' Calculate p-value
+#'
+#' Calculate the p-value, as the share of simulation runs in which `test_output` is true, given the condition `h`
+#' @param h Bare (unquoted) expression for H0 (eg, `delta == 0.2`)
+#' @param test_output Bare (unquoted) expression for the test output (eg, `aic_comp == 'quadratic'`)
+#' @param dataf Data frame of simulation results, as returned by `many_metas()`
+#' @return Dataframe with columns
+#'   \item{h}{Expression for H0, as a string}
+#'   \item{test_output}{Expression for the test output, as a string}
+#'   \item{n_false}{Number of rows post-filtering where `test_output` is true}
+#'   \item{n_true}{Number of rows post-filtering where `test_output` is false}
+#'   \item{p}{Share of rows `n_true/(n_false + n_true)`}
+#' @export
+p_value = function(h, test_output, dataf) {
+    h = rlang::enquo(h)
+    test_output = rlang::enquo(test_output)
+
+    # return(rlang::as_label(h))
+
+    counted_df = dataf %>%
+        dplyr::filter(!!h) %>%
+        dplyr::mutate(test_output := !!test_output) %>%
+        dplyr::count(test_output, wt = n) %>%
+        dplyr::mutate(share = n / sum(n))
+
+    if (identical(nrow(counted_df), 1L)) {
+        ## If there's only 1 row, all the test_output values are the same
+        if (any(counted_df$test_output)) {
+            ## So if any test_output values are TRUE,
+            ## then they're all TRUE
+            p = counted_df %>%
+            transmute(n_false = 0,
+                      n_true = n,
+                      share_true = share)
+        } else {
+            ## Otherwise they're all FALSE
+            p = counted_df %>%
+                transmute(n_false = n,
+                          n_true = 0,
+                          share_true = 1 - share)
+        }
+    } else {
+        ## If there's more than one row, they have different values
+        p = counted_df %>%
+            tidyr::pivot_wider(names_from = test_output,
+                               values_from = c(n, share),
+                               names_repair = tolower)
+    }
+
+    return_df = p %>%
+        dplyr::mutate(h = rlang::as_label(h),
+                      test_output = rlang::as_label(test_output)) %>%
+        dplyr::select(h, test_output, n_false, n_true, p = share_true)
+
+    return(return_df)
+}
+
+#' Calculate the log likelihood ratio
+#'
+#' Calculate the log (base 10) likelihood ratio for the sets of hypotheses `h1` and `h2`.  Note that the interface is slightly different from `p_value()`: for the hypothesis and test output, that function takes bare expressions.  This function takes a list of calls, as created by `exprs()`.
+#' @param h1 List of `call` (created by `exprs()`) for H1
+#' @param h2 List of `call` for H2
+#' @param test_output List of `call` for the test output
+#' @param dataf Data frame of simulation results, as returned by `many_metas()`
+#' @return Dataframe with columns
+#'   \item{h1, h2, test_output}{Expression for H1, H2, and test output, as strings}
+#'   \item{llr} Log (base 10) likelihood ratio L(H1; d) / L(H2; d)
+#'   \item{n_false_h1, n_false_h2}{Number of rows post-filtering where `test_output` is true, for H1 and H2}
+#'   \item{n_true_h1, n_true_h2}{Number of rows post-filtering where `test_output` is false, for H1 and H2}
+likelihood_ratio = function(h1, h2, test_output, dataf) {
+    h1_df = purrr::cross(tibble::lst(h1, test_output)) %>%
+        purrr::map_dfr(~p_value(!!.[['h1']], !!.[['test_output']], dataf))
+    h2_df = purrr::cross(tibble::lst(h2, test_output)) %>%
+        purrr::map_dfr(~p_value(!!.[['h2']], !!.[['test_output']], combined_df))
+    # return(h2_df)
+
+    purrr::cross_df(lst(h1, h2)) %>%
+        dplyr::mutate(across(c(h1, h2), ~purrr::map_chr(., rlang::as_label))) %>%
+        dplyr::filter(h1 != h2) %>%
+        dplyr::left_join(h1_df, by = c('h1' = 'h')) %>%
+        dplyr::left_join(h2_df, by = c('h2' = 'h', 'test_output'),
+                         suffix = c('_h1', '_h2')) %>%
+        dplyr::rename(l_h1 = p_h1, l_h2 = p_h2) %>%
+        dplyr::mutate(llr = log10(l_h1) - log10(l_h2)) %>%
+        dplyr::select(h1, h2, test_output, llr, l_h1, l_h2,
+                      dplyr::everything())
 }
 
 

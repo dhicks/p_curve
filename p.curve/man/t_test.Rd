@@ -13,5 +13,5 @@ t_test(samples)
 A one-row \code{tibble::tibble}
 }
 \description{
-Given two samples, do an unpaired, two-sided t-test and return the results in tidy format. This simulates doing 1 study.
+Given two samples, do an unpaired, two-sided t-test and return the results in tidy format. This simulates the analysis for a single study.
 }

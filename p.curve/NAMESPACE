@@ -2,6 +2,7 @@
 
 export(draw_samples)
 export(draw_studies)
+export(p_value)
 export(qq_plot)
 export(qq_slope)
 export(schsp_curve)

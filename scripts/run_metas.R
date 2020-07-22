@@ -3,6 +3,7 @@ library(tidyverse)
 theme_set(theme_bw())
 library(broom)
 library(cowplot)
+library(rlang)
 
 # library(ggbeeswarm)
 # library(tidytext)
@@ -16,7 +17,8 @@ library(tictoc)
 ## - docs: ex of how to pass just homogeneous effects vs passing mixed effects
 ## - reorganize and rename
 ## - implement tests as tests
-## - CI to knit
+## - kable
+## - likelihood ratios
 
 ## Local package with simulation functions
 devtools::load_all(file.path('..', 'p.curve'))
@@ -287,3 +289,106 @@ combined_df %>%
 #     unnest(studies) %>% 
 #     ggplot(aes(p.value, color = N, group = N)) +
 #     geom_density()
+
+
+#+ Severity analysis
+## Severity analysis ----
+## The cleanest way to specify and pass around the H0 and test output values is as `rlang` expressions.  
+h_nought = exprs('delta = 0.2' = delta_fct == '0.2', 
+                 'delta = 0.4' = delta_fct == '0.4', 
+                 'delta = 0.6' = delta_fct == '0.6', 
+                 'delta = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
+                 'delta is mixed' = delta_fct == 'mixed', 
+                 'delta = 0' = delta_fct == '0', 
+                 'delta is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
+                 'delta is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
+test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
+    'iii-QQ' = qq_slope > .9 & qq_slope < 1.1,
+    'iv-AIC' = aic_comp == 'quadratic', 
+    'iv-F' = f_comp == 'significant')
+
+## These crosswalks let us attach short labels for hypotheses and outputs
+h_xwalk = tibble(h_label = names(h_nought), 
+                        h = map_chr(h_nought, as_label)) %>% 
+    mutate(h_label = fct_inorder(h_label))
+output_xwalk = tibble(output_label = names(test_output), 
+                      test_output = map_chr(test_output, as_label)) %>% 
+    mutate(output_label = fct_inorder(output_label))
+
+## We first build a list containing each combination of hypothesis and output, 
+## then calculate the p-value for each combination. 
+## The remaining steps just attach short labels and arrange the columns in a readable way
+p_df = cross(lst(h_nought, test_output)) %>% 
+    map_dfr(~p_value(!!.[['h_nought']], !!.[['test_output']], combined_df)) %>% 
+    left_join(h_xwalk, by = 'h') %>% 
+    rename(h_nought = h, h_nought_label = h_label) %>% 
+    left_join(output_xwalk, by = 'test_output') %>% 
+    select(h_nought_label, output_label, p, 
+           h_nought, test_output, n_false, n_true)
+
+ggplot(p_df, 
+       aes(output_label, p)) +
+    geom_point() +
+    geom_area(data = tibble(output_label = 0:length(test_output) + 0.5),
+              aes(y = .05), 
+              alpha = .5) +
+    facet_wrap(vars(h_nought_label))
+
+## *[kable]*
+p_df %>% 
+    select(h_nought_label, output_label, p, n_false, n_true)
+
+
+
+
+#+ Likelihood analysis
+## Likelihood analysis ----
+h1 = exprs('delta = 0' = delta_fct == '0', 
+           'delta is mixed' = delta_fct == 'mixed')
+
+h2 = exprs('delta = 0.2' = delta_fct == '0.2', 
+           'delta = 0.4' = delta_fct == '0.4', 
+           'delta = 0.6' = delta_fct == '0.6', 
+           'delta = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
+           'delta is mixed' = delta_fct == 'mixed', 
+           'delta = 0' = delta_fct == '0', 
+           'delta is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
+           'delta is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
+## test_output is the same as for the severity analysis
+# test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
+#     'iii-QQ' = qq_slope > .9 & qq_slope < 1.1,
+#     'iv-AIC' = aic_comp == 'quadratic', 
+#     'iv-F' = f_comp == 'significant')
+
+## We can use the same crosswalks as above
+
+## Calculate the likelihood ratios
+llr_df = likelihood_ratio(h1, h2, test_output, combined_df) %>% 
+    left_join(h_nought_xwalk, by = c('h1' = 'h_nought')) %>% 
+    rename(h1_label = h_nought_label) %>% 
+    left_join(h_nought_xwalk, by = c('h2' = 'h_nought')) %>% 
+    rename(h2_label = h_nought_label) %>% 
+    left_join(output_xwalk, by = 'test_output') %>% 
+    select(h1_label, h2_label, output_label, llr, 
+           h1, h2, test_output, everything())
+
+
+ggplot(llr_df, 
+       aes(output_label, llr, color = h2_label)) +
+    geom_point(size = 2) +
+    geom_hline(yintercept = 0, linetype = 'dashed') +
+    geom_ribbon(data = tibble(x = 0:length(test_output) + 0.5),
+                inherit.aes = FALSE,
+                aes(x = x, ymin = -.5, ymax = .5),
+                alpha = .1) +
+    geom_ribbon(data = tibble(x = 0:length(test_output) + 0.5),
+                inherit.aes = FALSE,
+                aes(x = x, ymin = -1, ymax = 1),
+                alpha = .1) +
+    facet_wrap(vars(h1_label)) +
+    scale_color_viridis_d(option = 'C') +
+    labs(color = 'H2', x = 'test output', y = 'log likelihood ratio')
+
+## *[kable]*
+# p_df %>% 
+#     select(h_nought_label, output_label, p, n_false, n_true)

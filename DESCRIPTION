@@ -5,6 +5,7 @@ Version: 0.0.0.9900
 Imports:
     rmarkdown,
     devtools,
+    rlang,
     tidyverse,
     cowplot,
     tictoc
