@@ -119,6 +119,8 @@ d. $a \vee b \vee c$ (that is, any one of the non-zero effects)
 e. $\delta = \{0, .6\}$ for $H: \delta = 0$ and vice-versa (that is, the other skeptical hypothesis)
 f. $d \vee e$ (the disjunction of any one of the non-zero effects and the other skeptical hypothesis)
 
+*[overview figures]*
+
 In each case, insofar as the p-value is large $p > .05$, this implies that Young's p-value plot does not provide evidence to support the zero or mixture hypotheses.  
 
 ### Likelihood ###
@@ -131,13 +133,37 @@ If $K > 1$, then the evidence favors $H_1$; and $K < 1$ then the evidence favors
 
 To apply the likelihood conception of evidence to Young and collaborator's skeptical hypotheses about air pollution, $H_1$ will be the zero or mixture hypothesis, the rival hypothesis $H_2$ will be the hypotheses (a-f), and the data $d$ will be the analysis outputs (i-iv).  In each case, insofar as $K < 1$, this implies that Young's p-value plot does not provide evidence to support the zero or mixture hypotheses.  
 
+## Reproducibility ##
+
+The simulation, analysis, and outputs (figures and tables included here) are publicly available and automatically reproduced.  Code is available at <https://github.com/dhicks/p_curve> *[version]* and the automatically reproduced analysis can be viewed at <https://dhicks.github.io/p_curve/>.  
+
+The simulation and analysis are both written in R *[cite]* and make extensive use of the `tidyverse` suite of packages for R *[cite]* *[versions]*
+
 
 
 # Results #
 
 ## Model validation ##
 
+Figures @fig:estimates_study and @fig:estimates_meta *[and table]* validate the simulation, showing that both the individual studies and meta-analyses (average within each simulation run) produce unbiased estimates of the real effect size $\delta$.  The only exception is the mixed case, where half of the population experiences zero effect ($\delta = 0$) and half the population experiences a medium-strong effect ($\delta = 0.6$).  In this case the average effect is 0.3, and on average the simulation gives this estimate.  Note that the meta-analytic estimates have substantially less variance than the individual study estimates.  
+
+![Violin plots of study-level effects estimates, grouped by real effect size $\delta$.  For clarity of representation, all studies in the same condition are grouped together, regardless of simulation run. Horizontal bars indicate the median estimate.  With the exception of the mixed case, bars correspond closely to the real effect size, indicating that the simulation produces unbiased estimates as expected.](../out/estimates_study.png){#fig:estimates_study}
+
+![Violin plots of meta-analytic or simulation run-level effects estimates, grouped by real effect size $\delta$. Horizontal bars indicate the median estimate.  With the exception of the mixed case, bars correspond closely to the real effect size, indicating that the simulation produces unbiased estimates as expected.](../out/estimates_meta.png){#fig:estimates_meta}
+
 ## Visual analyses ##
+
+Figures @fig:samples_young, @fig:samples_schsp, and @fig:samples_simonsohn show 10 examples of Young's, \SchSp's, and Simonsohn et al.'s plots, respectively, across the five conditions.  Visual inspection makes it clear that the three kinds of plots are quite different from each other.  Indeed, Simonsohn et al.'s p-curve is so different from the other two that it is not discussed further.  As noted in the methods, Young's and \SchSp's plots are reflections of each other, but this does not mean that there is a 1-1 relationship between the slopes of regression lines for the two kinds of plots.  
+
+![Examples of Young's p-value plot, drawn at random.  Rows and colors correspond to conditions or real effects ($\delta$), from zero (0) to moderate-strong (0.6) and a mixed condition $\delta = \{0.0, 0.6\}$.  Columns correspond to indices for the simulation runs that produced these results, and are not meaningful.  (In particular, there is no relationship between simulation run $j$ in condition $a$ and simulation run $j$ in condition $b$.)  In Young's p-value plot, each point corresponds to a single p-value in the meta-analysis (simulation run); the x-axis is the ascending rank of the p-value in the set \P, and the y-axis is the p-value itself.](../out/samples_young.png){#fig:samples_young}
+
+![Examples of \SchSp's p-value plot, drawn at random *[cite]*.  Rows and colors correspond to conditions or real effects ($\delta$), from zero (0) to moderate-strong (0.6) and a mixed condition $\delta = \{0.0, 0.6\}$.  Columns correspond to indices for the simulation runs that produced these results, and are not meaningful.  (In particular, there is no relationship between simulation run $j$ in condition $a$ and simulation run $j$ in condition $b$.) In \SchSp's p-value plot, each point corresponds to a single p-value in the meta-analysis (simulation run); the y-axis is the p-value itself and the x-axis is the descending rank of the p-value.](../out/samples_schsp.png){#fig:samples_schsp}
+
+![Examples of Simonsohn et al.'s p-curve, drawn at random *[cite]*.  Rows and colors correspond to conditions or real effects ($\delta$), from zero (0) to moderate-strong (0.6) and a mixed condition $\delta = \{0.0, 0.6\}$.  Columns correspond to indices for the simulation runs that produced these results, and are not meaningful.  (In particular, there is no relationship between simulation run $j$ in condition $a$ and simulation run $j$ in condition $b$.) Simonsohn et al.'s p-curve is restricted to p-values below the conventional 0.05 threshold; empty plots correspond to cases in which no p-values were below the threshold.  These p-values are binned at the thresholds $0.01, 0.02, 0.03, 0.04, 0.05$, and each point corresponds to the number of p-values in the given bin.  This plot is equivalent to a histogram.](../out/samples_simonsohn.png){#fig:samples_simonsohn}
+
+My analysis focuses on Young's p-value plot.  As a preliminary observation, note that there is both substantial qualitative differences within effect sizes (within rows) and substantial qualitative similarity across effect sizes (comparing rows).  Larger effect sizes do tend to have a more obvious bend, but even small and zero effects can look nonlinear (\# 4 for $\delta = 0$; \# 163 for $\delta = 0.2$).  The mixed condition plots (bottom row) are not obviously distinct from the moderate effects $\delta = 0.4$ plots (middle row).  Across all effect sizes, plots tend to have both statistically significant and insignificant p-values, though of course this ratio tends to increase as the effect size increases and the underlying studies become more powerful.  
+
+*[method outputs]*
 
 ## Computationally reproducible analyses ##
 

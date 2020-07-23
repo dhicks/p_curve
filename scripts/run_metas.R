@@ -40,7 +40,8 @@ plot_defaults = list(height = 4, width = 6, scale = 1)
 ## 60-90 sec
 set.seed(2020-06-25)
 tic()
-combined_df = many_metas(NN = 500, 
+NN = 500
+combined_df = many_metas(NN = NN, 
                          delta = list(0, .2, .4, .6, list(0, .6)), 
                          N = 20, n = 25) %>% 
     mutate(delta_fct = as_factor(delta_chr))
@@ -99,7 +100,9 @@ do.call(write_plot, c('estimates_meta', plot_defaults))
 
 #+ Sample plots
 ## Sample plots ----
-sample_slice = seq.int(from = 13, by = 3, length.out = 10)
+# sample_slice = seq.int(from = 13, by = 3, length.out = 10)
+set.seed(2020-07-23)
+sample_slice = sample(1:NN, 10)
 samples_par = list(height = 4, width = 6, scale = 2)
 
 ## Young
@@ -407,3 +410,8 @@ do.call(write_plot, c('evidence_likelihood', plot_defaults))
 ## *[kable]*
 # p_df %>% 
 #     select(h_nought_label, output_label, p, n_false, n_true)
+
+
+#+ Reproducibility
+## Reproducibility ----
+sessionInfo()
