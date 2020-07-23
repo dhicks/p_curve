@@ -1,8 +1,9 @@
 #+ Setup
 library(tidyverse)
 theme_set(theme_bw())
-library(broom)
+# library(broom)
 library(cowplot)
+library(plotly)
 library(rlang)
 
 # library(ggbeeswarm)
@@ -388,7 +389,9 @@ llr_df = likelihood_ratio(h1, h2, test_output, combined_df) %>%
 
 ggplot(llr_df, 
        aes(output_label, llr, color = h2_label)) +
-    geom_point(size = 2) +
+    geom_point(size = 2, 
+               position = position_jitter(width = .25, height = 0,
+                                          seed = 2020-07-23)) +
     geom_hline(yintercept = 0, linetype = 'dashed') +
     geom_ribbon(data = tibble(x = 0:length(test_output) + 0.5),
                 inherit.aes = FALSE,
@@ -401,6 +404,8 @@ ggplot(llr_df,
     facet_wrap(vars(h1_label)) +
     scale_color_viridis_d(option = 'C') +
     labs(color = 'H2', x = 'test output', y = 'log likelihood ratio')
+
+ggplotly()
 
 do.call(write_plot, c('evidence_likelihood', plot_defaults))
 
