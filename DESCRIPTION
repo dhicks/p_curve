@@ -8,4 +8,5 @@ Imports:
     rlang,
     tidyverse,
     cowplot,
-    tictoc
+    tictoc, 
+    plotly
