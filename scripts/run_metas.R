@@ -10,7 +10,6 @@ library(rlang)
 
 library(tictoc)
 
-
 ## TODO: 
 ## - header + intro ¶ for this doc
 ## - readme and license for repo
@@ -25,10 +24,20 @@ devtools::load_all(file.path('..', 'p.curve'))
 # devtools::document(file.path('..', 'p.curve'))
 # source('test_scratch.R')
 
+out_folder = file.path('..', 'out')
+if (!dir.exists(out_folder)) {
+    dir.create(out_folder)
+}
+
+write_plot = function(name, ...) {
+    ggsave(file.path(out_folder, str_c(name, '.png')), ...)
+}
+plot_defaults = list(height = 4, width = 6, scale = 1)
+
 #+ Run simulations
 ## Run simulations ----
 ## 5 effect sizes x 500 meta-studies x 20 studies x 25 samples
-## 45 sec
+## 60-90 sec
 set.seed(2020-06-25)
 tic()
 combined_df = many_metas(NN = 500, 
@@ -53,6 +62,9 @@ combined_df %>%
          y = 'study-level effect estimate') +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
 
+do.call(write_plot, c('estimates_study', plot_defaults))
+
+# *[kable]*
 combined_df %>%
     select(delta_fct, meta_idx, studies) %>%
     unnest(studies) %>%
@@ -73,6 +85,8 @@ combined_df %>%
          y = 'meta-analytic effect estimate') +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
 
+do.call(write_plot, c('estimates_meta', plot_defaults))
+
 ## Because the mean of the mean is just the mean, this gives the same values as the table above
 # combined_df %>%
 #     select(delta_fct, meta_idx, studies) %>%
@@ -85,10 +99,13 @@ combined_df %>%
 
 #+ Sample plots
 ## Sample plots ----
+sample_slice = seq.int(from = 13, by = 3, length.out = 10)
+samples_par = list(height = 4, width = 6, scale = 2)
+
 ## Young
 combined_df %>%
     group_by(delta) %>%
-    slice(13, 17, 21, 25) %>%
+    slice(sample_slice) %>%
     ungroup() %>%
     select(delta_fct, meta_idx, studies) %>%
     unnest(studies) %>%
@@ -100,10 +117,12 @@ combined_df %>%
          y = 'p') +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
 
+do.call(write_plot, c('samples_young', samples_par))
+
 ## Sch-Sp
 combined_df %>%
     group_by(delta) %>%
-    slice(13, 17, 21, 25) %>%
+    slice(sample_slice) %>%
     ungroup() %>%
     select(delta_fct, meta_idx, studies) %>%
     unnest(studies) %>%
@@ -113,12 +132,15 @@ combined_df %>%
                switch = 'y') +
     labs(x = '1 - p',
          y = 'rank (descending)') +
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 3)) +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
+
+do.call(write_plot, c('samples_schsp', samples_par))
 
 ## Simonsohn et al.
 combined_df %>%
     group_by(delta) %>%
-    slice(13, 17, 21, 25) %>%
+    slice(sample_slice) %>%
     ungroup() %>%
     select(delta_fct, meta_idx, studies) %>%
     unnest(studies) %>%
@@ -128,13 +150,17 @@ combined_df %>%
                switch = 'y') +
     labs(x = 'p-value',
          y = 'count') +
+    scale_x_continuous(limits = c(1e-90, .05), 
+                       breaks = scales::pretty_breaks(n = 3)) +
     scale_y_continuous(breaks = scales::pretty_breaks()) +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
 
+do.call(write_plot, c('samples_simonsohn', samples_par))
 
 
 #+ Slopes
 ## Slopes ----
+## *[labels]*
 combined_df %>%
     select(delta_fct, meta_idx, matches('slope')) %>%
     pivot_longer(cols = matches('slope'),
@@ -145,7 +171,7 @@ combined_df %>%
     scale_color_brewer(palette = 'Set1', guide = FALSE) +
     facet_wrap(vars(method), scales = 'free')
 
-
+do.call(write_plot, c('slopes', plot_defaults))
 
 combined_df %>%
     group_by(delta_fct) %>%
@@ -168,22 +194,6 @@ ggplot(combined_df, aes(young_slope, qq_slope)) +
 
 #+ QQ linearity tests
 ## QQ linearity tests ----
-## TODO: this is awful
-# combined_df %>%
-#     select(delta, meta_idx, f_comp, aic_comp) %>%
-#     pivot_longer(c(f_comp, aic_comp),
-#                  names_to = 'test') %>%
-#     group_by(test, delta) %>%
-#     count(value) %>%
-#     mutate(share = n / sum(n)) %>%
-#     ggplot(aes(test, share, fill = value)) +
-#     geom_col() +
-#     scale_fill_manual(values = c('linear' = 'red',
-#                                  'quadratic' = 'blue',
-#                                  'non-significant' = 'green',
-#                                  'significant' = 'yellow')) +
-#     facet_wrap(vars(delta))
-
 test_levels = c('AIC: linear' = 'linear',
                 'AIC: quadratic' = 'quadratic',
                 'F-test: non-sig.' = 'non-significant',
@@ -205,6 +215,7 @@ combined_df %>%
     scale_y_continuous(labels = scales::percent_format(),
                        name = 'share of inferences')
 
+do.call(write_plot, c('linearity', plot_defaults))
 
 combined_df %>%
     select(delta_fct, meta_idx, f_comp, aic_comp) %>%
@@ -315,7 +326,7 @@ output_xwalk = tibble(output_label = names(test_output),
                       test_output = map_chr(test_output, as_label)) %>% 
     mutate(output_label = fct_inorder(output_label))
 
-## We first build a list containing each combination of hypothesis and output, 
+## We first build a list containing each combination of hypothesis and output,
 ## then calculate the p-value for each combination. 
 ## The remaining steps just attach short labels and arrange the columns in a readable way
 p_df = cross(lst(h_nought, test_output)) %>% 
@@ -333,6 +344,8 @@ ggplot(p_df,
               aes(y = .05), 
               alpha = .5) +
     facet_wrap(vars(h_nought_label))
+
+do.call(write_plot, c('evidence_severity', plot_defaults))
 
 ## *[kable]*
 p_df %>% 
@@ -388,6 +401,8 @@ ggplot(llr_df,
     facet_wrap(vars(h1_label)) +
     scale_color_viridis_d(option = 'C') +
     labs(color = 'H2', x = 'test output', y = 'log likelihood ratio')
+
+do.call(write_plot, c('evidence_likelihood', plot_defaults))
 
 ## *[kable]*
 # p_df %>% 
