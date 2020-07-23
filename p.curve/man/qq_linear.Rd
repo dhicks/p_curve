@@ -9,20 +9,23 @@ qq_linear(studies, alpha = 0.05)
 \arguments{
 \item{studies}{A dataframe of studies, as returned by \code{draw_studies()}. Minimally, a dataframe with columns \code{p.uniform} and \code{p.value}.}
 
-\item{alpha}{Threshold for statistical significance; used by the automated F-test.}
+\item{alpha}{Threshold for statistical significance; used by F-test and Kolmogorov-Smirnof test}
 }
 \value{
 A one-row \code{tibble::tibble} with the following columns:
 \item{f_stat}{Observed value of the F statistic}
-\item{alpha}{Threshold for statistical significance used in the F-test}
+\item{alpha}{Threshold for statistical significance used in the F-test and KS test}
 \item{f_p}{p-value of the F statistic}
-\item{f_comp}{Inference from the F-test; one of \code{significant} or \code{non-significant}}
+\item{f_comp}{Inference from the F-test; one of \code{non-linear} or \code{linear}}
 \item{aic_linear}{AIC statistic of the linear regression}
 \item{aic_quad}{AIC statistic of the quadratic regression}
-\item{aic_comp}{Inference from comparing AICs; one of \code{quadratic} or \code{linear}}
+\item{aic_comp}{Inference from comparing AICs; one of \code{non-linear} or \code{linear}}
+\item{ks_stat}{Observed value of the KS statistic}
+\item{ks_p}{p-value of the KS statistic}
+\item{ks_comp}{Inference from the KS stat; one of \code{non-linear} or \code{linear}}
 }
 \description{
-Checks the linearity of a QQ-plot (against a uniform distribution) by comparing linear and quadratic regressions of \code{p.value} against \code{p.uniform}.
+Checks the linearity of a QQ-plot (against a uniform distribution) by comparing linear and quadratic regressions of \code{p.value} against \code{p.uniform} and using a Kolmogorov-Smirnov test of uniformity.
 }
 \details{
 Two checks are used: an F-test for the ANOVA of the two regression models, and a comparison of AICs.

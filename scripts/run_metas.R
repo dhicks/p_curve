@@ -197,23 +197,24 @@ ggplot(combined_df, aes(young_slope, qq_slope)) +
 
 #+ QQ linearity tests
 ## QQ linearity tests ----
-test_levels = c('AIC: linear' = 'linear',
-                'AIC: quadratic' = 'quadratic',
-                'F-test: non-sig.' = 'non-significant',
-                'F-test: sig.' = 'significant')
+# test_levels = c('AIC: linear' = 'linear',
+#                 'AIC: quadratic' = 'quadratic',
+#                 'F-test: non-sig.' = 'non-significant',
+#                 'F-test: sig.' = 'significant')
 
 combined_df %>%
-    select(delta_fct, meta_idx, f_comp, aic_comp) %>%
-    pivot_longer(c(f_comp, aic_comp),
+    select(delta_fct, meta_idx, f_comp, aic_comp, ks_comp) %>%
+    pivot_longer(c(f_comp, aic_comp, ks_comp),
                  names_to = 'test') %>%
     count(delta_fct, test, value) %>%
-    mutate(value = fct_relevel(value, !!!test_levels),
-           value = fct_recode(value, !!!test_levels),
-           test = fct_recode(test, 'AIC' = 'aic_comp', 'F-test' = 'f_comp')) %>%
+    mutate(test = fct_recode(test, 
+                             'AIC' = 'aic_comp', 
+                             'F-test' = 'f_comp', 
+                             'KS test' = 'ks_comp')) %>%
     ggplot(aes(delta_fct, n, fill = value)) +
     geom_col(position = 'fill') +
-    facet_wrap(vars(test), nrow = 2) +
-    scale_fill_viridis_d() +
+    facet_wrap(vars(test), nrow = 3) +
+    scale_fill_viridis_d(option = 'C') +
     xlab('real effect') +
     scale_y_continuous(labels = scales::percent_format(),
                        name = 'share of inferences')
@@ -221,20 +222,18 @@ combined_df %>%
 do.call(write_plot, c('linearity', plot_defaults))
 
 combined_df %>%
-    select(delta_fct, meta_idx, f_comp, aic_comp) %>%
-    pivot_longer(c(f_comp, aic_comp),
+    select(delta_fct, meta_idx, f_comp, aic_comp, ks_comp) %>%
+    pivot_longer(c(f_comp, aic_comp, ks_comp),
                  names_to = 'test') %>%
-    mutate(exp_value = case_when(delta_fct == 0 & test == 'f_comp' ~ 'non-significant',
-                                 delta_fct != 0 & test == 'f_comp' ~ 'significant',
-                                 delta_fct == 0 & test == 'aic_comp' ~ 'linear',
-                                 delta_fct != 0 & test == 'aic_comp' ~ 'quadratic',
+    mutate(exp_value = case_when(delta_fct == 0 ~ 'linear',
+                                 delta_fct != 0 ~ 'non-linear',
                                  TRUE ~ NA_character_),
            correct_call = value == exp_value) %>%
     group_by(delta_fct, test) %>%
     summarize(accuracy = sum(correct_call) / n()) %>%
     ungroup() %>%
     pivot_wider(names_from = test, values_from = accuracy) %>%
-    rename(AIC = aic_comp, `F-test` = f_comp)
+    rename(AIC = aic_comp, `F-test` = f_comp, `KS test` = ks_comp)
 
 
 # ## Do the QQ tests work better w/ null effects with larger samples? 
@@ -318,8 +317,9 @@ h_nought = exprs('delta = 0.2' = delta_fct == '0.2',
                  'delta is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
 test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
     'iii-QQ' = qq_slope > .9 & qq_slope < 1.1,
-    'iv-AIC' = aic_comp == 'quadratic', 
-    'iv-F' = f_comp == 'significant')
+    'iv-AIC' = aic_comp == 'non-linear', 
+    'iv-F' = f_comp == 'non-linear', 
+    'iv-KS' = ks_comp == 'non-linear')
 
 ## These crosswalks let us attach short labels for hypotheses and outputs
 h_xwalk = tibble(h_label = names(h_nought), 
@@ -370,11 +370,8 @@ h2 = exprs('delta = 0.2' = delta_fct == '0.2',
            'delta = 0' = delta_fct == '0', 
            'delta is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
            'delta is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
+
 ## test_output is the same as for the severity analysis
-# test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
-#     'iii-QQ' = qq_slope > .9 & qq_slope < 1.1,
-#     'iv-AIC' = aic_comp == 'quadratic', 
-#     'iv-F' = f_comp == 'significant')
 
 ## We can use the same crosswalks as above
 

@@ -121,20 +121,22 @@ qq_slope = function(studies) {
 
 #' Test linearity of a QQ-plot
 #'
-#' Checks the linearity of a QQ-plot (against a uniform distribution) by comparing linear and quadratic regressions of `p.value` against `p.uniform`.
+#' Checks the linearity of a QQ-plot (against a uniform distribution) by comparing linear and quadratic regressions of `p.value` against `p.uniform` and using a Kolmogorov-Smirnov test of uniformity.
 #' @param studies A dataframe of studies, as returned by `draw_studies()`. Minimally, a dataframe with columns `p.uniform` and `p.value`.
-#' @param alpha Threshold for statistical significance; used by the automated F-test.
+#' @param alpha Threshold for statistical significance; used by F-test and Kolmogorov-Smirnof test
 #' @details Two checks are used: an F-test for the ANOVA of the two regression models, and a comparison of AICs.
 #' @return A one-row `tibble::tibble` with the following columns:
 #'   \item{f_stat}{Observed value of the F statistic}
-#'   \item{alpha}{Threshold for statistical significance used in the F-test}
+#'   \item{alpha}{Threshold for statistical significance used in the F-test and KS test}
 #'   \item{f_p}{p-value of the F statistic}
-#'   \item{f_comp}{Inference from the F-test; one of `significant` or `non-significant`}
+#'   \item{f_comp}{Inference from the F-test; one of `non-linear` or `linear`}
 #'   \item{aic_linear}{AIC statistic of the linear regression}
 #'   \item{aic_quad}{AIC statistic of the quadratic regression}
-#'   \item{aic_comp}{Inference from comparing AICs; one of `quadratic` or `linear`}
+#'   \item{aic_comp}{Inference from comparing AICs; one of `non-linear` or `linear`}
+#'   \item{ks_stat}{Observed value of the KS statistic}
+#'   \item{ks_p}{p-value of the KS statistic}
+#'   \item{ks_comp}{Inference from the KS stat; one of `non-linear` or `linear`}
 qq_linear = function(studies, alpha = .05) {
-    ## Checks linearity of the QQ plot by comparing linear and quadratic fits, using (a) F-test and (b) AICs
     model_linear = lm(p.value ~ p.uniform, data = studies)
     model_quad = lm(p.value ~ p.uniform + I(p.uniform^2),
                     data = studies)
@@ -142,16 +144,23 @@ qq_linear = function(studies, alpha = .05) {
     f_stat = anova(model_linear, model_quad)[['F']][[2]]
     f_p = anova(model_linear, model_quad)[['Pr(>F)']][[2]]
     f_comp = dplyr::if_else(f_p < alpha,
-                            'significant',
-                            'non-significant')
+                            'non-linear',
+                            'linear')
     aic_linear = AIC(model_linear)
     aic_quad = AIC(model_quad)
     aic_comp = dplyr::if_else(aic_quad < aic_linear,
-                              'quadratic',
+                              'non-linear',
                               'linear')
+
+    ks_test = ks.test(studies$p.value, studies$p.uniform)
+    ks_stat = ks_test$statistic
+    ks_p = ks_test$p.value
+    ks_comp = dplyr::if_else(ks_p < alpha, 'non-linear', 'linear')
+
+
     return(tibble::tibble(f_stat, alpha, f_p, f_comp,
-                          aic_linear, aic_quad,
-                          aic_comp))
+                          aic_linear, aic_quad, aic_comp,
+                          ks_stat, ks_p, ks_comp))
 }
 
 
