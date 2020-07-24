@@ -65,10 +65,11 @@ combined_df
 
 
 #' # Model validation
+#' Here we validate the model, showing that, at both the study level and meta-analysis level, the simulation gives an unbiased (ie, in expectation) estimate of the true effect, except for the mixed case
+#' 
 #+ model validation
 ## Model validation ----
 ## Distribution of effects estimates
-## This shows that, at the study level, the simulation gives an unbiased (ie, in expectation) estimate of the effect, except for the mixed case
 combined_df %>%
     select(delta_fct, meta_idx, studies) %>%
     unnest(studies) %>%

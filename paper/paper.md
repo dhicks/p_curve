@@ -147,13 +147,8 @@ The simulation and analysis are both written in R *[cite]* and make extensive us
 
 # Results #
 
-## Simulation validation ##
+Figures and tables included in the automatically reproduced analysis validate the simulation, showing that both the individual studies and meta-analyses (average within each simulation run) produce unbiased estimates of the real effect size $\delta$.  The only exception is the mixed case, where half of the population experiences zero effect ($\delta = 0$) and half the population experiences a medium-strong effect ($\delta = 0.6$).  In this case the average effect is 0.3, and on average the simulation gives this estimate.  
 
-[@Fig:estimates_study; @fig:estimates_meta] *[and table]* validate the simulation, showing that both the individual studies and meta-analyses (average within each simulation run) produce unbiased estimates of the real effect size $\delta$.  The only exception is the mixed case, where half of the population experiences zero effect ($\delta = 0$) and half the population experiences a medium-strong effect ($\delta = 0.6$).  In this case the average effect is 0.3, and on average the simulation gives this estimate.  Note that the meta-analytic estimates have substantially less variance than the individual study estimates.  
-
-![Violin plots of study-level effects estimates, grouped by real effect size $\delta$.  For clarity of representation, all studies in the same condition are grouped together, regardless of simulation run. Horizontal bars indicate the median estimate.  With the exception of the mixed case, bars correspond closely to the real effect size, indicating that the simulation produces unbiased estimates as expected.](../out/estimates_study.png){#fig:estimates_study}
-
-![Violin plots of meta-analytic or simulation run-level effects estimates, grouped by real effect size $\delta$. Horizontal bars indicate the median estimate.  With the exception of the mixed case, bars correspond closely to the real effect size, indicating that the simulation produces unbiased estimates as expected.](../out/estimates_meta.png){#fig:estimates_meta}
 
 ## Visual analyses ##
 
