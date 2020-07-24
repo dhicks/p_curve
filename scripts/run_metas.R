@@ -104,7 +104,7 @@ do.call(write_plot, c('estimates_meta', plot_defaults))
 # sample_slice = seq.int(from = 13, by = 3, length.out = 10)
 set.seed(2020-07-23)
 sample_slice = sample(1:NN, 10)
-samples_par = list(height = 4, width = 6, scale = 2)
+samples_par = list(height = 3.75, width = 6, scale = 2)
 
 ## Young
 combined_df %>%

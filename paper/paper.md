@@ -3,9 +3,11 @@ title: "Young's p-value plot does not provide evidence against air pollution haz
 author: "Daniel J. Hicks"
 institution: "University of California, Merced"
 email: hicks.daniel.j@gmail.com
-abstract: foo
+abstract: *[goes here]*
 bibliography: Young.bib
 ---
+
+<https://ehp.niehs.nih.gov/authors/research-articles>
 
 # Introduction #
 
@@ -189,6 +191,8 @@ Young and collaborators present compatibility with a "45-degree line" as evidenc
 
 ![Results of the severity analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.  Severity analysis results are reported as p-values:  small values (conventionally $< .05$) indicate a severe test of the null hypothesis.  Panels correspond to null hypotheses, and y-axis values correspond to the severity assessment (as a p-value) for the output with respect to the given null hypothesis.  The gray region indicates conventionally small values.  Only a few of these outputs provides evidence to support the hypothesis claimed by Young and collaborators:  a slope of approximately 1 provides evidence against a null hypothesis of a strong-medium effect (upper-right panel), and the Kolmogorov-Smirnov evaluation of nonlinearity provides evidence against a null hypothesis that the effect is small (for either target hypothesis) or zero (for the mixed target hypothesis).](../out/evidence_severity.png){#fig:evidence_severity}
 
+*[table]*
+
 The zero effect hypothesis is supposedly supported by a slope of approximately 1 on the QQ-plot (output iii-QQ in the plot).  This test is only severe against the null hypothesis of a moderate-strong effect ($\delta = 0.6$, upper right panel).  That is, the "45 degree line" test can distinguish zero effects from moderate-strong effects (and presumably stronger effects as well).  But it cannot distinguish zero effects from moderate effects ($\delta = 0.4$, top-middle panel) or any of the other conditions examined in this paper (bottom-left panel).  
 
 The mixed-effect hypothesis is supposedly supported by non-linearity *[cites]*.  Three quantified versions of this output are examined here:  comparing linear and quadratic regressions using AIC (iv-AIC) and an F-test (iv-F), and a Kolmogorov-Smirnov test against the uniform distribution (iv-KS).  The AIC and F-test evaluations of non-linearity do not provide severe tests against any of the alternative conditions.  The KS test does provide a severe test against the null of no effect ($\delta = 0$, middle-right panel) and small effects ($\delta = 0.2$, upper-left panel).  That is, testing the sample of p-values \P against uniformity can distinguish mixed effects from small and zero effects.  But it cannot distinguish mixed effects from moderate and stronger effects or any combination that includes moderate or stronger effects.  In addition, the bottom-right bar in  @fig:linearity indicates that, when the real effect is mixed, approximately 80% of the time the KS test concludes that the plot is linear.  So, in the terminology of the strong severity condition, the mixed case only infrequently passes the KS test in the first place.  
@@ -197,9 +201,11 @@ The mixed-effect hypothesis is supposedly supported by non-linearity *[cites]*. 
 
 ### Likelihood analysis
 
-@Fig:likelihood shows the results of the likelihood analysis.  Log likelihood ratios are reported, so results above $0.5$ support $H_1$ and results below $-0.5$ support $H_2$.  So, by the weak severity criterion, when the results of the likelihood analysis are $< 0.5$, the test output does not provide evidence supporting the target hypothesis of zero or mixed effect.  *Using the likelihood conception of evidence, a slope of one does not provide evidence to support the zero effect hypothesis and non-linearity does not provide evidence to support the mixed-effect hypothesis.*
+@Fig:evidence_likelihood shows the results of the likelihood analysis.  Log likelihood ratios are reported, so results above $0.5$ support $H_1$ and results below $-0.5$ support $H_2$.  So, by the weak severity criterion, when the results of the likelihood analysis are $< 0.5$, the test output does not provide evidence supporting the target hypothesis of zero or mixed effect.  *Using the likelihood conception of evidence, a slope of one does not provide evidence to support the zero effect hypothesis and non-linearity does not provide evidence to support the mixed-effect hypothesis.*
 
-![Results of the likelihood analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.  Each point gives the log likelihood ratio for a target vs. rival hypothesis, given an output.  Panels correspond to target hypothesis $H_1$, either a mixed effect $\delta = \{0, 0.6\}$ or a null effect $\delta = 0$; point color corresponds to rival hypothesis $H_2$.  Position on the x-axis indicates the output; points have been jittered horizontally to reduce overlap. Position on the y-axis indicates the strength of the evidence that the output provides to the hypotheses:  values greater than 0.5 support $H_1$ over $H_2$ and values less than -0.5 support $H_2$ over $H_1$.  (Points at the plot margins have infinite value due to division by zero.)  The dark shaded region indicates no support for either hypothesis; the light shaded region indicates "substantial" support for one hypothesis over the other; and the unshaded region indicates "strong" support.  With three exceptions, all points are in the region of no support or less than 0, indicating that they do not support the zero or mixed hypotheses.  An interactive version of this plot is included in the automatic reproduction of the analysis for this paper.](evidence_likelihood.png){#fig:likelihood}
+![Results of the likelihood analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.  Each point gives the log likelihood ratio for a target vs. rival hypothesis, given an output.  Panels correspond to target hypothesis $H_1$, either a mixed effect $\delta = \{0, 0.6\}$ or a null effect $\delta = 0$; point color corresponds to rival hypothesis $H_2$.  Position on the x-axis indicates the output; points have been jittered horizontally to reduce overlap. Position on the y-axis indicates the strength of the evidence that the output provides to the hypotheses:  values greater than 0.5 support $H_1$ over $H_2$ and values less than -0.5 support $H_2$ over $H_1$.  (Points at the plot margins have infinite value due to division by zero.)  The dark shaded region indicates no support for either hypothesis; the light shaded region indicates "substantial" support for one hypothesis over the other; and the unshaded region indicates "strong" support.  With three exceptions, all points are in the region of no support or less than 0, indicating that they do not support the zero or mixed hypotheses.  An interactive version of this plot is included in the automatic reproduction of the analysis for this paper.](../out/evidence_likelihood.png){#fig:evidence_likelihood}
+
+*[table]*
  
 The zero effect hypothesis (right panel) is supposedly supported by a slope of approximately 1 on the QQ-plot (output iii-QQ).  This output does provide strong support for the zero hypothesis against the rival of a moderate-strong effect ($\delta = 0.6$), and presumably stronger effects as well.  But it does not provide support for the zero hypothesis against weaker effects or any non-zero effect.  
 
@@ -210,9 +216,14 @@ The mixed effect hypothesis (left panel) is supposedly supported by non-linearit
 
 # Discussion #
 
-This simulation analysis finds that Young's p-value plot does not provide evidence for mixed effects or p-hacking based on the "hockey stick" shape or "gaps"; provides evidence for zero effect based on a slope of 1 only when compared to a moderately-strong effect; and provides evidence for mixed effects based on non-linearity only when compared to a zero or weak effect and only when non-linearity is evaluated using the Kolmogorov-Smirnov test.  Outside of the special situations noted, Young's p-value plot either does not provide evidence at all or provides evidence *against* the claims made by Young and collaborators.  
+This simulation analysis finds that Young's p-value plot does not provide evidence for mixed effects or p-hacking based on the "hockey stick" shape or "gaps"; provides evidence for zero effect based on a slope of 1 only when compared to a moderately-strong effect; and provides evidence for mixed effects based on non-linearity only using the Kolmogorov-Smirnov test and only when compared to a zero or weak effect.  Outside of the special situations noted, Young's p-value plot either does not provide evidence at all or provides evidence *against* the claims made by Young and collaborators.  
+
+- Young et al's specific claims
+
+- limitations
+
+- "End with a summary of the key findings and their implications for the study question/hypothesis, future research, and policy, as appropriate"
 
 
-
-# Conclusion #
-
+# Acknowledgments #
+# Data Sharing #
