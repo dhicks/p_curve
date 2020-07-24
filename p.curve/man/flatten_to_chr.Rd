@@ -9,3 +9,6 @@ flatten_to_chr(alist)
 \description{
 Convenience function to coerce single and mixed deltas to characters
 }
+\examples{
+flatten_to_chr(list(0, .2, list(0, .7)))
+}

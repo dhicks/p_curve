@@ -8,7 +8,6 @@ library(magrittr)
 #' @param sigma Standard deviation, same for both groups
 #' @details If `delta` has length > 1, means will be recycled, silently creating subsamples within the second group.  This simulates a case where the intervention group is heterogeneous, with even samples from two latent populations.
 #' @export
-
 draw_samples = function(delta, n, sigma = 1) {
     group1 = rnorm(n, mean = 0, sd = sigma)
     group2 = rnorm(n, mean = delta, sd = sigma)
@@ -136,6 +135,7 @@ qq_slope = function(studies) {
 #'   \item{ks_stat}{Observed value of the KS statistic}
 #'   \item{ks_p}{p-value of the KS statistic}
 #'   \item{ks_comp}{Inference from the KS stat; one of `non-linear` or `linear`}
+#' @export
 qq_linear = function(studies, alpha = .05) {
     model_linear = lm(p.value ~ p.uniform, data = studies)
     model_quad = lm(p.value ~ p.uniform + I(p.uniform^2),
@@ -218,6 +218,8 @@ schsp_slope = function(studies) {
 }
 
 #' Convenience function to coerce single and mixed deltas to characters
+#' @examples
+#' flatten_to_chr(list(0, .2, list(0, .7)))
 flatten_to_chr = function(alist) {
     len = purrr::map_int(alist, length)
     return = purrr::map2_chr(alist, len,
@@ -226,7 +228,6 @@ flatten_to_chr = function(alist) {
                                      'mixed'))
     return(return)
 }
-# flatten_to_chr(list(0, .2, list(0, .7)))
 
 ## Do many meta-analyses ----
 #' Run the simulation: "Do many meta-analyses"
@@ -244,6 +245,27 @@ flatten_to_chr = function(alist) {
 #'   \item{young_slope, schsp_slope, qq_slope}{Slopes for the Young, Schweder and Spjøtvoll, and QQ plots}
 #'   \item{f_stat, alpha, f_p, f_comp}{F statistic, alpha threshold, p-value, and inference for the F test of linearity of the QQ plot}
 #'   \item{aic_linear, aic_quad, aic_comp}{AIC values for the linear and quadratic regression, and inference, for the AIC test of linearity of the QQ plot}
+#'
+#' @examples
+#' ## Run 15 simulations with 12 studies per simulation, a real effect size
+#' ## of 0.10, and 27 samples per group; total of
+#' ## 15*12 = 180 studies and 15*12*27*2 = 9720 samples
+#' many_metas(15, 12, 0.10, 27)
+#'
+#' ## Run 15 simulations for each of the 2*2*2 = 8 combinations of these
+#' ## parameter settings: 10 or 20 studies per simulation; real effect
+#' ## size of 0.10 or 0.20; 27 or 52 samples per group
+#' many_metas(15, c(12, 20), c(.10, .20), c(27, 52))
+#'
+#' ## Run 15 simulations with 20 studies per simulation, 30 samples per group,
+#' ## and a mixed or heterogeneous real effect such that half of the
+#' ## population has an effect of 0.10 and half of the population has an
+#' ## effect of 0.20
+#' ## Note that this mixed condition requires passing `delta` as a list of
+#' ## lists rather than a flat vector
+#' many_metas(15, 20, list(list(.1, .2)), 30)
+#'
+#' @export
 many_metas = function(NN,
                       N, delta, n) {
     assertthat::assert_that(assertthat::are_equal(length(NN),
@@ -334,9 +356,10 @@ p_value = function(h, test_output, dataf) {
 #' @param dataf Data frame of simulation results, as returned by `many_metas()`
 #' @return Dataframe with columns
 #'   \item{h1, h2, test_output}{Expression for H1, H2, and test output, as strings}
-#'   \item{llr} Log (base 10) likelihood ratio L(H1; d) / L(H2; d)
+#'   \item{llr}{Log (base 10) likelihood ratio L(H1; d) / L(H2; d)}
 #'   \item{n_false_h1, n_false_h2}{Number of rows post-filtering where `test_output` is true, for H1 and H2}
 #'   \item{n_true_h1, n_true_h2}{Number of rows post-filtering where `test_output` is false, for H1 and H2}
+#' @export
 likelihood_ratio = function(h1, h2, test_output, dataf) {
     h1_df = purrr::cross(tibble::lst(h1, test_output)) %>%
         purrr::map_dfr(~p_value(!!.[['h1']], !!.[['test_output']], dataf))

@@ -3,10 +3,9 @@ Type: Paper
 Title: Does not matter
 Version: 0.0.0.9900
 Imports:
-    rmarkdown,
     devtools,
-    rlang,
     tidyverse,
     cowplot,
-    tictoc, 
-    plotly
+    plotly,
+    rlang,
+    tictoc

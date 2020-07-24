@@ -30,3 +30,23 @@ Top-level function for running the simulation
 \details{
 The condition parameters \code{N}, \code{delta}, and \code{n} can be vectors; the function will automatically construct all combinations.  \code{NN} must have length 1.
 }
+\examples{
+## Run 15 simulations with 12 studies per simulation, a real effect size
+## of 0.10, and 27 samples per group; total of
+## 15*12 = 180 studies and 15*12*27*2 = 9720 samples
+many_metas(15, 12, 0.10, 27)
+
+## Run 15 simulations for each of the 2*2*2 = 8 combinations of these
+## parameter settings: 10 or 20 studies per simulation; real effect
+## size of 0.10 or 0.20; 27 or 52 samples per group
+many_metas(15, c(12, 20), c(.10, .20), c(27, 52))
+
+## Run 15 simulations with 20 studies per simulation, 30 samples per group,
+## and a mixed or heterogeneous real effect such that half of the
+## population has an effect of 0.10 and half of the population has an
+## effect of 0.20
+## Note that this mixed condition requires passing `delta` as a list of
+## lists rather than a flat vector
+many_metas(15, 20, list(list(.1, .2)), 30)
+
+}

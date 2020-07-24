@@ -1,9 +1,9 @@
 ---
 title: "Young's p-value plot does not provide evidence against air pollution hazards"
 author: "Daniel J. Hicks"
-institution: "University of California, Merced"
+institute: "University of California, Merced"
 email: hicks.daniel.j@gmail.com
-abstract: *[goes here]*
+abstract: "*[goes here]*"
 bibliography: Young.bib
 ---
 
@@ -221,6 +221,10 @@ This simulation analysis finds that Young's p-value plot does not provide eviden
 - Young et al's specific claims
 
 - limitations
+	- fixed set of study parameters, which don't look like actual epi studies Young is criticizing
+	- limited range of meta-analysis parameters
+	- other ways of quantifying outputs, eg, other tests against the uniform distribution
+	- no representation of publication bias or p-hacking, so can't apply likelihood here
 
 - "End with a summary of the key findings and their implications for the study question/hypothesis, future research, and policy, as appropriate"
 

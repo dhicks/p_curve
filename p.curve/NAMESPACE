@@ -2,7 +2,10 @@
 
 export(draw_samples)
 export(draw_studies)
+export(likelihood_ratio)
+export(many_metas)
 export(p_value)
+export(qq_linear)
 export(qq_plot)
 export(qq_slope)
 export(schsp_curve)

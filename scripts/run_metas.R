@@ -1,29 +1,41 @@
-#+ Setup
+#' ---
+#' title: "Analysis for 'Young\\'s p-value plot does not provide evidence against air pollution hazards'"
+#' author: "Daniel J. Hicks, University of California, Merced"
+#' email: <hicks.daniel.j@gmail.com>
+#' output:
+#'   html_document:
+#'     toc: true
+#' ---
+#' 
+#' This document conducts the simulation described in the paper "Young's p-value plot does not provide evidence against air pollution hazards" by Daniel J. Hicks, and generates all plots and tables presented in that paper.  
+#' 
+#' The source code for this project is available at <https://github.com/dhicks/p_curve>.  The most recent Github version is automatically reproduced using Travis-CI, and the resulting `html` version of this file can be viewed at <https://dhicks.github.io/p_curve/>. 
+#' 
+#' After cloning the repository and installing the R dependencies listed below, the analysis, output files, and `html` version of this file can be recreated from the command line by calling `Rscript -e "rmarkdown::render('run_metas.R')"` within the `scripts` directory.  Alternavely, if `make` is installed, call `make script` from the command line within the top folder of the repository, or `make knit` from within the `scripts` folder.   
+#' 
+#' Note that reproducing the analysis creates a top-level `out` folder for plots and tables if this folder does not already exist, and quietly overwrites existing versions of the output files in this folder.  
+#' 
+#' The workhorse functions to conduct and analyze the simulation are all found in the `p.curve` folder, which is loaded as a local package using `devtools`.  Documentation for all of these functions can be constructed by calling `devtools::document(file.path('..', 'p.curve'))` from within the `scripts` folder, and then queried in the usual way, e.g., `?many_metas`. 
+#' 
+
+#' # Setup
+#+ setup
+library(devtools)
 library(tidyverse)
 theme_set(theme_bw())
-# library(broom)
 library(cowplot)
 library(plotly)
 library(rlang)
 
-# library(ggbeeswarm)
-# library(tidytext)
-
 library(tictoc)
 
 ## TODO: 
-## - header + intro ¶ for this doc
-## - readme and license for repo
-## - docs: ex of how to pass just homogeneous effects vs passing mixed effects
-## - reorganize and rename
-## - implement tests as tests
 ## - kable
-## - likelihood ratios
 
 ## Local package with simulation functions
-devtools::load_all(file.path('..', 'p.curve'))
-# devtools::document(file.path('..', 'p.curve'))
-# source('test_scratch.R')
+load_all(file.path('..', 'p.curve'))
+## Run the next line to recreate the documentation for this package
+# document(file.path('..', 'p.curve'))
 
 out_folder = file.path('..', 'out')
 if (!dir.exists(out_folder)) {
@@ -35,7 +47,8 @@ write_plot = function(name, ...) {
 }
 plot_defaults = list(height = 4, width = 6, scale = 1)
 
-#+ Run simulations
+#' # Run simulations
+#+ run simulations
 ## Run simulations ----
 ## 5 effect sizes x 500 meta-studies x 20 studies x 25 samples
 ## 60-90 sec
@@ -51,7 +64,8 @@ toc()
 combined_df
 
 
-#+ Model validation
+#' # Model validation
+#+ model validation
 ## Model validation ----
 ## Distribution of effects estimates
 ## This shows that, at the study level, the simulation gives an unbiased (ie, in expectation) estimate of the effect, except for the mixed case
@@ -99,7 +113,8 @@ do.call(write_plot, c('estimates_meta', plot_defaults))
 #     summarize(across(estimate2_mean, lst(mean)), NN = n())
 
 
-#+ Sample plots
+#' # Sample plots
+#+ sample plots
 ## Sample plots ----
 # sample_slice = seq.int(from = 13, by = 3, length.out = 10)
 set.seed(2020-07-23)
@@ -162,7 +177,8 @@ combined_df %>%
 do.call(write_plot, c('samples_simonsohn', samples_par))
 
 
-#+ Slopes
+#' # Slopes
+#+ slopes
 ## Slopes ----
 ## *[labels]*
 combined_df %>%
@@ -196,6 +212,7 @@ ggplot(combined_df, aes(young_slope, qq_slope)) +
     geom_point()
 
 
+#' # QQ linearity tests
 #+ QQ linearity tests
 ## QQ linearity tests ----
 # test_levels = c('AIC: linear' = 'linear',
@@ -305,7 +322,8 @@ combined_df %>%
 #     geom_density()
 
 
-#+ Severity analysis
+#' # Severity analysis
+#+ severity analysis
 ## Severity analysis ----
 ## The cleanest way to specify and pass around the H0 and test output values is as `rlang` expressions.  
 h_nought = exprs('delta = 0.2' = delta_fct == '0.2', 
@@ -357,8 +375,8 @@ p_df %>%
 
 
 
-
-#+ Likelihood analysis
+#' # Likelihood analysis
+#+ likelihood analysis
 ## Likelihood analysis ----
 h1 = exprs('delta = 0' = delta_fct == '0', 
            'delta is mixed' = delta_fct == 'mixed')
@@ -414,6 +432,7 @@ do.call(write_plot, c('evidence_likelihood', plot_defaults))
 #     select(h_nought_label, output_label, p, n_false, n_true)
 
 
-#+ Reproducibility
+#' Reproducibility
+#+ reproducibility
 ## Reproducibility ----
 sessionInfo()

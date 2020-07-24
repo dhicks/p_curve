@@ -18,7 +18,7 @@ likelihood_ratio(h1, h2, test_output, dataf)
 \value{
 Dataframe with columns
 \item{h1, h2, test_output}{Expression for H1, H2, and test output, as strings}
-\item{llr} Log (base 10) likelihood ratio L(H1; d) / L(H2; d)
+\item{llr}{Log (base 10) likelihood ratio L(H1; d) / L(H2; d)}
 \item{n_false_h1, n_false_h2}{Number of rows post-filtering where \code{test_output} is true, for H1 and H2}
 \item{n_true_h1, n_true_h2}{Number of rows post-filtering where \code{test_output} is false, for H1 and H2}
 }
