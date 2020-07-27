@@ -50,6 +50,9 @@ plot_defaults = list(height = 4, width = 6, scale = 1)
 #' # Run simulations
 #+ run simulations
 ## Run simulations ----
+## n = 60 gives us ~60% power to detect a moderate effect
+power.t.test(delta = c(.2, .4, .6), sd = 1, sig.level = 0.05, n = 60)
+
 ## 5 effect sizes x 500 meta-studies x 20 studies x 25 samples
 ## 60-90 sec
 set.seed(2020-06-25)
@@ -57,11 +60,12 @@ tic()
 NN = 500
 combined_df = many_metas(NN = NN, 
                          delta = list(0, .2, .4, .6, list(0, .6)), 
-                         N = 20, n = 25) %>% 
+                         N = 20, n = 60) %>% 
     mutate(delta_fct = as_factor(delta_chr))
 toc()
 
 combined_df
+
 
 
 #' # Model validation
@@ -181,25 +185,28 @@ do.call(write_plot, c('samples_simonsohn', samples_par))
 #' # Slopes
 #+ slopes
 ## Slopes ----
-## *[labels]*
 combined_df %>%
-    select(delta_fct, meta_idx, matches('slope')) %>%
-    pivot_longer(cols = matches('slope'),
+    rename(qq_slope = qq_slope_estimate) %>% 
+    select(delta_fct, meta_idx, matches('_slope$')) %>%
+    rename('QQ' = qq_slope, 
+           'Schweder and Spjøtvoll' = schsp_slope, 
+           'Young' = young_slope) %>% 
+    pivot_longer(cols = !c(delta_fct, meta_idx),
                  names_to = 'method', values_to = 'slope') %>%
     ggplot(aes(delta_fct, slope, color = delta_fct)) +
     # geom_beeswarm(alpha = .10) +
     geom_violin(draw_quantiles = .5, fill = NA) +
+    labs(x = 'real effect') +
     scale_color_brewer(palette = 'Set1', guide = FALSE) +
     facet_wrap(vars(method), scales = 'free')
 
 do.call(write_plot, c('slopes', plot_defaults))
 
 combined_df %>%
+    rename(qq_slope = qq_slope_estimate) %>% 
     group_by(delta_fct) %>%
-    summarize_at(vars(matches('slope')),
+    summarize_at(vars(matches('_slope$')),
                  lst(median, sd)) #%>% view()
-
-
 
 ## There's not an exact relationship between Young and Sch-Sp slopes,
 ## even when N (and so the max rank) is constant
@@ -209,8 +216,21 @@ ggplot(combined_df, aes(young_slope, schsp_slope)) +
 
 ## Whereas Young slope is a rescaling of QQ slope;
 ## the x-axis in the QQ plot is rank/max(rank), and rank is the x-axis in the Young plot
-ggplot(combined_df, aes(young_slope, qq_slope)) +
+combined_df %>% 
+    rename(qq_slope = qq_slope_estimate) %>% 
+    ggplot(aes(young_slope, qq_slope)) +
     geom_point()
+
+## Distribution of calls based on whether the slope is statistically significantly different from 1
+combined_df %>% 
+    count(delta_fct, qq_slope_comp) %>% 
+    ggplot(aes(delta_fct, n, fill = qq_slope_comp)) +
+    geom_col(position = 'fill') +
+    # facet_wrap(vars(test), nrow = 3) +
+    scale_fill_viridis_d(option = 'C') +
+    xlab('real effect') +
+    scale_y_continuous(labels = scales::percent_format(),
+                       name = 'share of inferences')
 
 
 #' # QQ linearity tests
@@ -336,14 +356,15 @@ h_nought = exprs('delta = 0.2' = delta_fct == '0.2',
                  'delta is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
                  'delta is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
 test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
-    'iii-QQ' = qq_slope > .9 & qq_slope < 1.1,
+    'iii-range' =  .9 < qq_slope_estimate & qq_slope_estimate < 1.1,
+    'iii-Z' = qq_slope_comp == 'slope = 1',
     'iv-AIC' = aic_comp == 'non-linear', 
     'iv-F' = f_comp == 'non-linear', 
     'iv-KS' = ks_comp == 'non-linear')
 
 ## These crosswalks let us attach short labels for hypotheses and outputs
 h_xwalk = tibble(h_label = names(h_nought), 
-                        h = map_chr(h_nought, as_label)) %>% 
+                 h = map_chr(h_nought, as_label)) %>% 
     mutate(h_label = fct_inorder(h_label))
 output_xwalk = tibble(output_label = names(test_output), 
                       test_output = map_chr(test_output, as_label)) %>% 
@@ -431,6 +452,44 @@ do.call(write_plot, c('evidence_likelihood', plot_defaults))
 ## *[kable]*
 # p_df %>% 
 #     select(h_nought_label, output_label, p, n_false, n_true)
+
+
+#' # Power
+#+ power
+## Power ----
+
+power.t.test(delta = .05, sd = 1, sig.level = .05, power = .2)
+power.t.test(delta = .05, sd = 1, sig.level = .05, power = .5)
+power.t.test(delta = .05, sd = 1, sig.level = .05, power = .8)
+
+tic()
+power_analysis = many_metas(NN = 500, N = 25,
+                            n = c(1002, 3075, 6281), 
+                            delta = .05)
+toc()
+
+
+## Young's p-value plots
+power_analysis %>% 
+    group_by(n) %>%
+    slice(1:10) %>%
+    ungroup() %>%
+    select(meta_idx, studies) %>% 
+    unnest(studies) %>% 
+    young_curve(color = as.factor(n)) +
+    facet_grid(rows = vars(n), 
+               cols = vars(meta_idx))
+
+## Note that the KS test tends to conclude the plots are non-linear, 
+## even for the severely underpowered case
+ggplot(power_analysis, aes(as.factor(n), 
+                           fill = ks_comp)) +
+    geom_bar(position = 'fill')
+
+## Consequently, the p-values against these hypotheses are quite high
+power_analysis %>% 
+    split(.$n) %>% 
+    map_dfr(~p_value(TRUE, ks_comp == 'non-linear', .), .id = 'n')
 
 
 #' Reproducibility

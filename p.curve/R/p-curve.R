@@ -107,14 +107,27 @@ qq_plot = function(studies) {
 
 #' Slope of a QQ-plot
 #'
-#' Calculates the slope of the QQ-plot against the uniform distribution.
+#' Calculates the slope of the QQ-plot against the uniform distribution using a linear regression.
 #' @param studies A dataframe of studies, as returned by `draw_studies()`. Minimally, a dataframe with columns `p.uniform` and `p.value`.
-#' @return The slope, a length-1 numeric
+#' @param alpha Threshold for statistical significance for the Z-test of difference from 1
+#' @return A one-row dataframe with the columns
+#'   \item{slope_estimate, slope_std.error}{Estimated slope and its standard error}
+#'   \item{slope_statistic}{Difference between `slope_estimate` and 1 in standard error units; statistic for a Z-test}
+#'   \item{slope_p.value}{P-value for the Z-test of difference from 1}
+#'   \item{slope_comp}{Call for whether the slope is stat. sig. different from 1}
 #' @export
-qq_slope = function(studies) {
+qq_slope = function(studies, alpha = 0.05) {
     model = lm(p.value ~ p.uniform, data = studies)
-    slope = model$coefficients[['p.uniform']]
-    return(slope)
+    tidied = broom::tidy(model, conf.int = FALSE, conf.level = alpha) %>%
+        dplyr::filter(term == 'p.uniform') %>%
+        dplyr::select(estimate, std.error) %>%
+        dplyr::mutate(statistic = (estimate - 1)/std.error,
+                      p.value = dnorm(statistic),
+                      comp = dplyr::if_else(p.value < alpha,
+                                            'slope ≠ 1', 'slope = 1')) %>%
+        dplyr::rename_all(~str_c('slope_', .))
+
+    return(tidied)
 }
 # qq_slope(studies)
 
@@ -283,9 +296,10 @@ many_metas = function(NN,
         dplyr::mutate(young_slope = purrr::map_dbl(studies,
                                                    young_slope),
                       schsp_slope = purrr::map_dbl(studies, schsp_slope),
-                      qq_slope = purrr::map_dbl(studies, qq_slope),
+                      qq_slope = purrr::map(studies, qq_slope),
                       qq_linear = purrr::map(studies, qq_linear)) %>%
-        tidyr::unnest(qq_linear)
+        tidyr::unnest(c(qq_slope, qq_linear)) %>%
+        dplyr::rename_with(~str_c('qq_', .), .cols = matches('slope_'))
 }
 
 
@@ -312,7 +326,7 @@ p_value = function(h, test_output, dataf) {
     counted_df = dataf %>%
         dplyr::filter(!!h) %>%
         dplyr::mutate(test_output := !!test_output) %>%
-        dplyr::count(test_output, wt = n) %>%
+        dplyr::count(test_output, wt = n()) %>%
         dplyr::mutate(share = n / sum(n))
 
     if (identical(nrow(counted_df), 1L)) {
@@ -321,9 +335,9 @@ p_value = function(h, test_output, dataf) {
             ## So if any test_output values are TRUE,
             ## then they're all TRUE
             p = counted_df %>%
-            transmute(n_false = 0,
-                      n_true = n,
-                      share_true = share)
+                transmute(n_false = 0,
+                          n_true = n,
+                          share_true = share)
         } else {
             ## Otherwise they're all FALSE
             p = counted_df %>%
