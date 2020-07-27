@@ -462,6 +462,7 @@ power.t.test(delta = .05, sd = 1, sig.level = .05, power = .2)
 power.t.test(delta = .05, sd = 1, sig.level = .05, power = .5)
 power.t.test(delta = .05, sd = 1, sig.level = .05, power = .8)
 
+set.seed(2020-07-27)
 tic()
 power_analysis = many_metas(NN = 500, N = 25,
                             n = c(1002, 3075, 6281), 
@@ -492,7 +493,7 @@ power_analysis %>%
     map_dfr(~p_value(TRUE, ks_comp == 'non-linear', .), .id = 'n')
 
 
-#' Reproducibility
+#' # Reproducibility
 #+ reproducibility
 ## Reproducibility ----
 sessionInfo()
