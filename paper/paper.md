@@ -123,14 +123,14 @@ Severity can also be evaluated informally when a p-value cannot be calculated.  
 
 The severity conception of evidence can be applied to Young and collaborator's skeptical hypotheses about air pollution hazards as follows.  The claims $H$ are the zero hypothesis $\delta = 0$ and mixture hypothesis $\delta = \{0, .6\}$.  The method or test $T$ is Young's p-value plot, analyzed visually or in terms of slopes and linearity; the outputs $t$ that I will consider are (i) the "hockey stick" pattern for the visual analysis; (ii) "gaps" in the visual analysis; (iii) slope of approximately 1 (on the QQ-plot), corresponding to the standard meaning of a "45-degree line," assessed based on whether the slope (as estimated using linear regression) falls into the range $1\pm0.1$ and a Z-test against the null hypothesis that the slope is exactly 1; and (iv) non-linearity inferences using AIC, the F-test, or the KS test.  To generate p-values (or informally assess severity for the visual analysis), we need to specify a "null hypothesis" for $\lnot H$.  I will use each of the following:  
 
-a. $\delta = 0.2$
-b. $\delta = 0.4$
-c. $\delta = 0.6$
-d. $a \vee b \vee c$ (that is, any one of the non-zero effects)
-e. $\delta = \{0, .6\}$ for $H: \delta = 0$ and vice-versa (that is, the other skeptical hypothesis)
-f. $d \vee e$ (the disjunction of any one of the non-zero effects and the other skeptical hypothesis)
+a. weak effect: $\delta = 0.2$
+b. moderate effect: $\delta = 0.4$
+c. strong-moderate effect: $\delta = 0.6$
+d. non-zero effect: $a \vee b \vee c$ (read $\vee$ as "or")
+e. mixed effect: $\delta = \{0, .6\}$ for $H: \delta = 0$ and vice-versa (that is, the other skeptical hypothesis)
+f. any other effect: $d \vee e$ (any of the non-zero effects or the other skeptical hypothesis)
 
-[@Tbl:outputs; @tbl:rivals] summarize the outputs and rival hypotheses examined in the current study.  
+[@Tbl:outputs] summarize the outputs examined in the current study.  
 
 |     | output            | determined using      | taken as evidence for |
 |----:|:------------------|:----------------------|:----------------------|
@@ -143,10 +143,6 @@ f. $d \vee e$ (the disjunction of any one of the non-zero effects and the other 
 |     |                   | KS test of uniformity ||
 
 Table: Outputs of Young's p-value plot examined using the simulation.  "Outputs" are features of plots that Young and collaborators take as evidence for critical assessments of air pollution epidemiological studies.  The "determined using" column indicates how these outputs are identified as present/absent in the current study.  {#tbl:outputs}
-
-*[rivals tbl]*
-
-
 
 In each case, insofar as the p-value is large $p > .05$, this implies that Young's p-value plot does not provide evidence to support the zero or mixture hypotheses.  
 
@@ -243,7 +239,7 @@ Outside of these specific situations, Young's p-value plot either does not provi
 
 The simulation results do indicate that Young's p-value plot can provide evidence for the mixed hypothesis when the Kolmogorov-Smirnov test is statistically significant against the alternative hypothesis of weak effects and when all stronger effects have been ruled out.  In the meta-analyses criticized by Young and collaborators, the estimated short-term effects of air pollution are small on a relative risk scale.  @NawrotPublicHealthImportance2011 estimated the effect for air pollution (increase of 10 $\mu g/m^3$ PM_{10}) on non-fatal myocardial infarction at 1.02 (95% CI 1.01–1.02); the point estimates for six pollutants reported by @MustaficMainAirPollutants2012 (increase of 10 $\mu g/m^3$ for all except carbon monoxide) were all in the range 1.003-1.048; and @LiuAmbientParticulateAir2019 estimated effects for PM_{10} (increase of 10 $\mu g/m^3$) on all-cause mortality of 1.044 (95% CI 1.039-1.050).  <!--A precise conversion from risk ratios to Cohen's $d$ (equivalent to $\delta$ used in the simulations) was beyond the scope of this paper; however, using the rule of thumb that the risk ratio is approximately equal to the log odds when the outcome is rare (here, non-fatal myocardial infarction in the general public) *[https://sma.org/southern-medical-journal/article/odds-ratios-and-risk-ratios-whats-the-difference-and-why-does-it-matter/]* and the conversion factor $\sqrt{3}/\pi$ between the log odds and Cohen's $d$, a risk ratio of 1.05 is roughly equivalent to $d=0.03$, which in turn is roughly an order of magnitude smaller than the weak effect condition examined in the current study.-->  So it might be reasonable to consider weak effects to be the only alternative to a mixture under consideration.  However, @MustaficMainAirPollutants2012 already estimated heterogeneity, using the conventional $I^2$ statistic, and reported substantial heterogeneity with all six estimates in the range 51-93%.  So heterogeneity is not necessarily a major criticism of @MustaficMainAirPollutants2012.  
 
-In addition, the shape of Young's p-value plot depends both the power and sample size.  The primary simulation parameters used here *[@tbl:??]* mean that the studies have 20%, 60%, and 90% power to detect the real effects of $\delta = .2$, $\delta = .4$, and $\delta = .8$ respectively.  Supplemental analysis examined study designs with 20%, 50%, and 80% power to detect a very small effect size $\delta = 0.05$ (see the "Power" section of the automatically-reproduced analysis document).  Against the 50% and 80% power conditions, the KS-test had p-values of approximately 1; even against the 20% power condition its p-value was 0.32.  Thus, when applied to meta-analyses of large-n epidemiological studies of very small effects — even when those studies are severely underpowered — the KS-test approach may still have a p-value sufficiently large that the weak severity principle implies that it provides no evidence for the mixed-process hypothesis.  I conclude that, even if Young and collaborators had used formal methods in their critiques of air pollution epidemiology, statistically significant KS-test results would not be sufficient to show that the weak severity principle does not apply, and so even this would not have been evidence for a mixture hypothesis.  
+In addition, the shape of Young's p-value plot depends both the power and sample size.  The primary simulation parameters used here mean that the studies have 20%, 60%, and 90% power to detect the real effects of $\delta = .2$, $\delta = .4$, and $\delta = .8$ respectively.  Supplemental analysis examined study designs with 20%, 50%, and 80% power to detect a very small effect size $\delta = 0.05$ (see the "Power" section of the automatically-reproduced analysis document).  Against the 50% and 80% power conditions, the KS-test had p-values of approximately 1; even against the 20% power condition its p-value was 0.32.  Thus, when applied to meta-analyses of large-n epidemiological studies of very small effects — even when those studies are severely underpowered — the KS-test approach may still have a p-value sufficiently large that the weak severity principle implies that it provides no evidence for the mixed-process hypothesis.  I conclude that, even if Young and collaborators had used formal methods in their critiques of air pollution epidemiology, statistically significant KS-test results would not be sufficient to show that the weak severity principle does not apply, and so even this would not have been evidence for a mixture hypothesis.  
 
 ## Limitations ##
  
