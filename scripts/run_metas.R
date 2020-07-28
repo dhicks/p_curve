@@ -422,7 +422,7 @@ ggplot(p_df,
               aes(y = .05), 
               alpha = .5) +
     facetlabs(x = 'test output') +
-    _wrap(vars(h_nought_label))
+    wrap(vars(h_nought_label))
 
 do.call(write_plot, c('evidence_severity', plot_defaults))
 
