@@ -30,9 +30,6 @@ library(knitr)
 
 library(tictoc)
 
-## TODO: 
-## - kable
-
 ## Local package with simulation functions
 load_all(file.path('..', 'p.curve'))
 ## Run the next line to recreate the documentation for this package
@@ -384,14 +381,14 @@ combined_df %>%
 #+ severity analysis
 ## Severity analysis ----
 ## The cleanest way to specify and pass around the H0 and test output values is as `rlang` expressions.  
-h_nought = exprs('delta = 0.2' = delta_fct == '0.2', 
-                 'delta = 0.4' = delta_fct == '0.4', 
-                 'delta = 0.6' = delta_fct == '0.6', 
-                 'delta = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
-                 'delta is mixed' = delta_fct == 'mixed', 
-                 'delta = 0' = delta_fct == '0', 
-                 'delta is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
-                 'delta is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
+_nought = exprs('0.2' = delta_fct == '0.2', 
+                 'δ = 0.4' = delta_fct == '0.4', 
+                 'δ = 0.6' = delta_fct == '0.6', 
+                 'δ = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
+                 'δ is mixed' = delta_fct == 'mixed', 
+                 'δ = 0' = delta_fct == '0', 
+                 'δ is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
+                 'δ is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
 test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
     'iii-range' =  .9 < qq_slope_estimate & qq_slope_estimate < 1.1,
     'iii-Z' = qq_slope_comp == 'slope = 1',
@@ -424,13 +421,14 @@ ggplot(p_df,
     geom_area(data = tibble(output_label = 0:length(test_output) + 0.5),
               aes(y = .05), 
               alpha = .5) +
-    facet_wrap(vars(h_nought_label))
+    facetlabs(x = 'test output') +
+    _wrap(vars(h_nought_label))
 
 do.call(write_plot, c('evidence_severity', plot_defaults))
 
 p_df %>% 
     mutate(h_nought_label = str_replace(h_nought_label, 
-                                        'delta', '$\\\\delta$')) %>% 
+                                        'δ', '$\\\\delta$')) %>% 
     select(`$H_0$` = h_nought_label, output = output_label, 
            p, false = n_false, true = n_true) %>% 
     arrange(`$H_0$`, output) %>% 
@@ -446,17 +444,17 @@ p_df %>%
 #' # Likelihood analysis
 #+ likelihood analysis
 ## Likelihood analysis ----
-h1 = exprs('delta = 0' = delta_fct == '0', 
-           'delta is mixed' = delta_fct == 'mixed')
+h1 = exprs('δ = 0' = delta_fct == '0', 
+           'δ is mixed' = delta_fct == 'mixed')
 
-h2 = exprs('delta = 0.2' = delta_fct == '0.2', 
-           'delta = 0.4' = delta_fct == '0.4', 
-           'delta = 0.6' = delta_fct == '0.6', 
-           'delta = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
-           'delta is mixed' = delta_fct == 'mixed', 
-           'delta = 0' = delta_fct == '0', 
-           'delta is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
-           'delta is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
+h2 = exprs('δ = 0.2' = delta_fct == '0.2', 
+           'δ = 0.4' = delta_fct == '0.4', 
+           'δ = 0.6' = delta_fct == '0.6', 
+           'δ = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
+           'δ is mixed' = delta_fct == 'mixed', 
+           'δ = 0' = delta_fct == '0', 
+           'δ is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
+           'δ is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
 
 ## test_output is the same as for the severity analysis
 
@@ -501,7 +499,7 @@ do.call(write_plot, c('evidence_likelihood', plot_defaults))
 
 llr_df %>% 
     mutate(across(c(h1_label, h2_label), 
-                  ~ str_replace(., 'delta', '$\\\\delta$'))) %>% 
+                  ~ str_replace(., 'δ', '$\\\\delta$'))) %>% 
     select(`$H_1$` = h1_label, `$H_2$` = h2_label, 
            output = output_label, llr, 
            `$L(H_1)$` = l_h1, `$L(H_2)$` = l_h2) %>% 
