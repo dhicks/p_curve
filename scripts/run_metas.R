@@ -21,11 +21,12 @@
 #' # Setup
 #+ setup
 library(devtools)
+library(rlang)
 library(tidyverse)
 theme_set(theme_bw())
 library(cowplot)
 library(plotly)
-library(rlang)
+library(knitr)
 
 library(tictoc)
 
@@ -54,7 +55,7 @@ plot_defaults = list(height = 4, width = 6, scale = 1)
 power.t.test(delta = c(.2, .4, .6), sd = 1, sig.level = 0.05, n = 60)
 
 ## 5 effect sizes x 500 meta-studies x 20 studies x 25 samples
-## 60-90 sec
+## 2-3 min
 set.seed(2020-06-25)
 tic()
 NN = 500
@@ -85,7 +86,6 @@ combined_df %>%
 
 do.call(write_plot, c('estimates_study', plot_defaults))
 
-# *[kable]*
 combined_df %>%
     select(delta_fct, meta_idx, studies) %>%
     unnest(studies) %>%
@@ -206,7 +206,24 @@ combined_df %>%
     rename(qq_slope = qq_slope_estimate) %>% 
     group_by(delta_fct) %>%
     summarize_at(vars(matches('_slope$')),
-                 lst(median, sd)) #%>% view()
+                 lst(median, sd)) %>% 
+    pivot_longer(-delta_fct, 
+                 names_to = c('plot', 'stat'), 
+                 names_sep = '_slope_',
+                 values_to = 'value') %>% 
+    pivot_wider(names_from = stat, 
+                values_from = value) %>% 
+    mutate(plot = case_when(plot == 'young' ~ 'Young', 
+                            plot == 'schsp' ~ 'Schweder and Spjøtvoll', 
+                            plot == 'qq' ~ 'QQ',
+                            TRUE ~ NA_character_)) %>% 
+    select(plot, delta = delta_fct, everything()) %>% 
+    arrange(plot, delta) %>% 
+    kable(format = 'latex', booktabs = TRUE,
+          digits = 2,
+          caption = 'Slopes of QQ-plots, Schweder and Spjøtvoll\'s p-value plot, and Young\'s p-value plot, by condition (effect size $\\delta$).', 
+          label = 'slopes') %>% 
+    write_lines(file.path(out_folder, 'slopes.tex'))
 
 ## There's not an exact relationship between Young and Sch-Sp slopes,
 ## even when N (and so the max rank) is constant
@@ -259,6 +276,26 @@ combined_df %>%
                        name = 'share of inferences')
 
 do.call(write_plot, c('linearity', plot_defaults))
+
+combined_df %>%
+    select(delta_fct, meta_idx, f_comp, aic_comp, ks_comp) %>%
+    pivot_longer(c(f_comp, aic_comp, ks_comp),
+                 names_to = 'test') %>%
+    count(delta_fct, test, value) %>%
+    pivot_wider(names_from = value, values_from = n, 
+                values_fill = list(n = 0)) %>% 
+    mutate(share = `non-linear` / (linear + `non-linear`)) %>% 
+    mutate(test = fct_recode(test, 
+                             'AIC' = 'aic_comp', 
+                             'F-test' = 'f_comp', 
+                             'KS test' = 'ks_comp')) %>% 
+    rename(`$\\delta$` = delta_fct) %>% 
+    kable(format = 'latex', booktabs = TRUE, escape = FALSE,
+          linesep = '',
+          digits = 2, 
+          caption = 'Distributions of outcomes for the linearity tests across conditions.  Columns ``linear" and ``non-linear" indicate counts of simulation runs in which tests indicate the plot was linear or non-linear, respectively.  ``Share" indicates the fraction of simulation runs in which the test indicated non-linearity.', 
+          label = 'linearity') %>% 
+    write_lines(file.path(out_folder, 'linearity.tex'))
 
 combined_df %>%
     select(delta_fct, meta_idx, f_comp, aic_comp, ks_comp) %>%
@@ -391,9 +428,18 @@ ggplot(p_df,
 
 do.call(write_plot, c('evidence_severity', plot_defaults))
 
-## *[kable]*
 p_df %>% 
-    select(h_nought_label, output_label, p, n_false, n_true)
+    mutate(h_nought_label = str_replace(h_nought_label, 
+                                        'delta', '$\\\\delta$')) %>% 
+    select(`$H_0$` = h_nought_label, output = output_label, 
+           p, false = n_false, true = n_true) %>% 
+    arrange(`$H_0$`, output) %>% 
+    kable(format = 'latex', booktabs = TRUE, longtable = TRUE, 
+          digits = 2, 
+          escape = FALSE,
+          caption = 'Severity analysis results. $H_0$ indicates the null or rival hypothesis playing the role of $\\lnot H$. ``False" and ``true" indicate the number of simulation runs in which the test output is false and true, respectively, and p is calculated as the fraction of true runs.', 
+          label = 'severity') %>% 
+    write_lines(file.path(out_folder, 'severity.tex'))
 
 
 
@@ -441,6 +487,10 @@ ggplot(llr_df,
                 inherit.aes = FALSE,
                 aes(x = x, ymin = -1, ymax = 1),
                 alpha = .1) +
+    geom_ribbon(data = tibble(x = 0:length(test_output) + 0.5),
+                inherit.aes = FALSE,
+                aes(x = x, ymin = -2, ymax = 2),
+                alpha = .1) +
     facet_wrap(vars(h1_label)) +
     scale_color_viridis_d(option = 'C') +
     labs(color = 'H2', x = 'test output', y = 'log likelihood ratio')
@@ -449,9 +499,19 @@ ggplotly()
 
 do.call(write_plot, c('evidence_likelihood', plot_defaults))
 
-## *[kable]*
-# p_df %>% 
-#     select(h_nought_label, output_label, p, n_false, n_true)
+llr_df %>% 
+    mutate(across(c(h1_label, h2_label), 
+                  ~ str_replace(., 'delta', '$\\\\delta$'))) %>% 
+    select(`$H_1$` = h1_label, `$H_2$` = h2_label, 
+           output = output_label, llr, 
+           `$L(H_1)$` = l_h1, `$L(H_2)$` = l_h2) %>% 
+    arrange(`$H_1$`, `$H_2$`, output) %>% 
+    kable(format = 'latex', booktabs = TRUE, longtable = TRUE, 
+          digits = 2, 
+          escape = FALSE,
+          caption = 'Likelihood analysis results. ``llr" is the log likehood ratio.  Values $> 0.5$ indicate support for $H_1$.', 
+          label = 'likelihood') %>% 
+    write_lines(file.path(out_folder, 'likelihood.tex'))
 
 
 #' # Power

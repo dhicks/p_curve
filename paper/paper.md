@@ -7,9 +7,9 @@ abstract: "*[goes here]*"
 bibliography: Young.bib
 ---
 
-*[new numbers]*
-
 <https://ehp.niehs.nih.gov/authors/research-articles>
+
+*[endfloat]*
 
 # Introduction #
 
@@ -190,21 +190,25 @@ Young and collaborators take visual "gaps" in the plot to be evidence of p-hacki
 
 ## Computationally reproducible analyses ##
 
-Two outputs of the analysis of Young's p-value plot can be quantified and reproduced computationally:  (iii) a slope of approximately 1 (corresponding to the "45-degree line" as it is typically understood) and (iv) non-linearity.  As discussed in the methods, I use the QQ-plot corresponding to Young's p-value plot, assessing a slope of 1 in two ways and non-linearity three ways.  The distributions of slope calls across each condition using the Z-test method are shown in *[fig]*, and the distribution of linearity calls for all three methods are shown in @fig:linearity.  
+Two outputs of the analysis of Young's p-value plot can be quantified and reproduced computationally:  (iii) a slope of approximately 1 (corresponding to the "45-degree line" as it is typically understood) and (iv) non-linearity.  As discussed in the methods, I use the QQ-plot corresponding to Young's p-value plot, assessing a slope of 1 in two ways and non-linearity three ways.  The distributions of slope calls across each condition using the Z-test method are shown in *[fig]*, and the distribution of linearity calls for all three methods are shown in @fig:linearity and table \ref{tab:linearity}. 
 
 ![Distributions of outcomes for the linearity tests across conditions.  Each panel corresponds to one method of testing linearity:  AIC comparison of linear vs. quadratic regression, F-test of quadratic vs. linear regression, and a Kolmogorov-Smirnov test against the uniform distribution.  Yellow regions indicate the share of cases (simulation runs) in which the test concludes Young's p-value plot is non-linear; blue regions indicate the share of cases in which the test concludes the plot is linear.](../out/linearity.png){#fig:linearity}
 
+\input{../out/linearity.tex}
+
 Young and collaborators present compatibility with a "45-degree line" as evidence for the zero effect hypothesis *[cites]* and non-linearity as evidence for the mixed-effect hypothesis *[cites]*.  
+
+
 
 ### Severity analysis
 
 *[note difference between "null hypothesis" and "zero hypothesis" above somewhere]*
 
-@Fig:evidence_severity shows the results of the severity analysis as p-values.  By the weak severity criterion, when the results of the severity analysis are $> .05$, the test output does not provide evidence against the null hypothesis and supporting the target hypothesis.  
+@Fig:evidence_severity and table \ref{tab:severity} show the results of the severity analysis as p-values.  By the weak severity criterion, when the results of the severity analysis are $> .05$, the test output does not provide evidence against the null hypothesis and supporting the target hypothesis.  
 
 ![Results of the severity analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.  Severity analysis results are reported as p-values:  small values (conventionally $< .05$) indicate a severe test of the null hypothesis.  Panels correspond to null hypotheses, and y-axis values correspond to the severity assessment (as a p-value) for the output with respect to the given null hypothesis.  The gray region indicates conventionally small values.  Only a few of these outputs provides evidence to support the hypothesis claimed by Young and collaborators:  a slope of approximately 1 provides evidence against a null hypothesis of a strong-medium effect (upper-right panel), and the Kolmogorov-Smirnov evaluation of nonlinearity provides evidence against a null hypothesis that the effect is small (for either target hypothesis) or zero (for the mixed target hypothesis).](../out/evidence_severity.png){#fig:evidence_severity}
 
-*[table]*
+\input{../out/severity.tex}
 
 The zero effect hypothesis is supposedly supported by a slope of approximately 1 on the QQ-plot.  The range method (whether the slope is within the range $1\pm0.1$, output iii-range) is severe against the null hypothesis of a moderate or moderate-strong effect ($\delta = 0.4$ and $\delta = 0.6$), and the Z-test method (output iii-Z) is only severe against moderate-strong effects ($\delta = 0.6$).  That is, the "45 degree line" test can distinguish zero effects from moderate and stronger effects.  But it cannot distinguish zero effects from weak effects ($\delta = 0.2$), mixed effects, or any of the combined conditions examined in this paper.  
 
@@ -214,18 +218,17 @@ The mixed-effect hypothesis is supposedly supported by non-linearity *[cites]*. 
 
 ### Likelihood analysis
 
-@Fig:evidence_likelihood shows the results of the likelihood analysis.  Log likelihood ratios are reported, so results above $0.5$ support $H_1$ and results below $-0.5$ support $H_2$.  So, by the weak severity criterion, when the results of the likelihood analysis are $< 0.5$, the test output does not provide evidence supporting the target hypothesis of zero or mixed effect.  *Using the likelihood conception of evidence, a slope of one does not provide evidence to support the zero effect hypothesis and non-linearity does not provide evidence to support the mixed-effect hypothesis.*
+@Fig:evidence_likelihood and table \ref{tab:likelihood} show the results of the likelihood analysis.  Log likelihood ratios are reported, so results above $0.5$ support $H_1$ and results below $-0.5$ support $H_2$.  So, by the weak severity criterion, when the results of the likelihood analysis are $< 0.5$, the test output does not provide evidence supporting the target hypothesis of zero or mixed effect.  
 
 ![Results of the likelihood analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.  Each point gives the log likelihood ratio for a target vs. rival hypothesis, given an output.  Panels correspond to target hypothesis $H_1$, either a mixed effect $\delta = \{0, 0.6\}$ or a null effect $\delta = 0$; point color corresponds to rival hypothesis $H_2$.  Position on the x-axis indicates the output; points have been jittered horizontally to reduce overlap. Position on the y-axis indicates the strength of the evidence that the output provides to the hypotheses:  values greater than 0.5 support $H_1$ over $H_2$ and values less than -0.5 support $H_2$ over $H_1$.  (Points at the plot margins have infinite value due to division by zero.)  The dark shaded region indicates no support for either hypothesis; the light shaded region indicates "substantial" support for one hypothesis over the other; and the unshaded region indicates "strong" support.  With three exceptions, all points are in the region of no support or less than 0, indicating that they do not support the zero or mixed hypotheses.  An interactive version of this plot is included in the automatic reproduction of the analysis for this paper.](../out/evidence_likelihood.png){#fig:evidence_likelihood}
 
-*[table]*
+\input{../out/likelihood.tex}
  
 The zero effect hypothesis (right panel) is supposedly supported by a slope of approximately 1.  Both methods provide substantial or better support against moderate and moderate-strong effects ($\delta = 0.4$ and $\delta = 0.6$); the range test just barely provides substantial support against the disjunction $\delta = 0.2, 0.4, 0.6$ (i.e., $\delta$ is exactly one of these, not a mixture).  Neither method provides support for the zero hypothesis against the rival of a weak effect.  Notably, when the Kolmogorov-Smirnov test is statistically significant — indicating non-linearity — this provides strong or decisive evidence *against* the zero-effect hypothesis.  
 
 The mixed effect hypothesis (left panel) is supposedly supported by non-linearity (output iv).  AIC and F-test judgements of non-linearity do not provide any evidence for or against the mixed effect hypothesis, as all points are in the "not worth mentioning" range.  The results of the Kolmogorov-Smirnov test are more interesting.  Non-linearity as judged by this test provides decisive support for the mixed effects hypothesis against zero effects, and substantial support against the hypothesis of a weak effect.  
 
 
-*[summary table]*
 
 # Discussion #
 
