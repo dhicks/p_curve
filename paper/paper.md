@@ -5,6 +5,10 @@ institute: "University of California, Merced"
 email: hicks.daniel.j@gmail.com
 abstract: "*[goes here]*"
 bibliography: Young.bib
+
+header-includes:
+  - \usepackage[nolists]{endfloat}
+  - \DeclareDelayedFloatFlavour*{longtable}{table}
 ---
 
 <https://ehp.niehs.nih.gov/authors/research-articles>
