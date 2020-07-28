@@ -381,7 +381,7 @@ combined_df %>%
 #+ severity analysis
 ## Severity analysis ----
 ## The cleanest way to specify and pass around the H0 and test output values is as `rlang` expressions.  
-nought = exprs('0.2' = delta_fct == '0.2', 
+h_nought = exprs('0.2' = delta_fct == '0.2', 
                  'δ = 0.4' = delta_fct == '0.4', 
                  'δ = 0.6' = delta_fct == '0.6', 
                  'δ = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
@@ -416,13 +416,13 @@ p_df = cross(lst(h_nought, test_output)) %>%
            h_nought, test_output, n_false, n_true)
 
 ggplot(p_df, 
-       aes(output_label, p)) +
+           aes(output_label, p)) +
     geom_point() +
     geom_area(data = tibble(output_label = 0:length(test_output) + 0.5),
               aes(y = .05), 
               alpha = .5) +
-    facetlabs(x = 'test output') +
-    wrap(vars(h_nought_label))
+    labs(x = 'test output') +
+    facet_wrap(vars(h_nought_label))
 
 do.call(write_plot, c('evidence_severity', plot_defaults))
 
