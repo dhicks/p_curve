@@ -517,6 +517,7 @@ llr_df %>%
 #' # Power
 #+ power
 ## Power ----
+#' The supplemental analysis in this section shows how power influences the shape of Young's p-value plot and the outcomes of the KS tests for nonlinearity.  We examine three study designs, with 20%, 50%, and 80% power to detect a very small effect $\delta = .05$.  These are similar to the powers of the designs in the primary analysis (roughly 20%, 60%, and 90%).  
 
 power.t.test(delta = .05, sd = 1, sig.level = .05, power = .2)
 power.t.test(delta = .05, sd = 1, sig.level = .05, power = .5)
@@ -541,13 +542,12 @@ power_analysis %>%
     facet_grid(rows = vars(n), 
                cols = vars(meta_idx))
 
-## Note that the KS test tends to conclude the plots are non-linear, 
-## even for the severely underpowered case
+#' Note that the KS test tends to conclude the plots are non-linear, even for the severely underpowered case
 ggplot(power_analysis, aes(as.factor(n), 
                            fill = ks_comp)) +
     geom_bar(position = 'fill')
 
-## Consequently, the p-values against these hypotheses are quite high
+#' Consequently, when they are used as null hypotheses, the likelihoods for these hypotheses are quite high.  The KS test doesn't provide evidence for the mixed hypothesis here, even wrt the severely underpowered design, and even though KS *did* provide evidence wrt much larger effects ($\delta = 0.2$) with similar power.  The evidentiary value of the KS test seems to depend on some interaction of effect size and power.  
 power_analysis %>% 
     split(.$n) %>% 
     map_dfr(~p_value(TRUE, ks_comp == 'non-linear', .), .id = 'n')
