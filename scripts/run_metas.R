@@ -381,7 +381,7 @@ combined_df %>%
 #+ severity analysis
 ## Severity analysis ----
 ## The cleanest way to specify and pass around the H0 and test output values is as `rlang` expressions.  
-_nought = exprs('0.2' = delta_fct == '0.2', 
+nought = exprs('0.2' = delta_fct == '0.2', 
                  'δ = 0.4' = delta_fct == '0.4', 
                  'δ = 0.6' = delta_fct == '0.6', 
                  'δ = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
