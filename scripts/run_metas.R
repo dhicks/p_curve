@@ -237,7 +237,7 @@ combined_df %>%
 
 ## Distribution of calls based on whether the slope is statistically significantly different from 1
 combined_df %>% 
-    count(delta_fct, qq_slope_comp) %>% 
+    count(delta_fct, qq_slope_comp, wt = n()) %>% 
     ggplot(aes(delta_fct, n, fill = qq_slope_comp)) +
     geom_col(position = 'fill') +
     # facet_wrap(vars(test), nrow = 3) +
@@ -245,6 +245,24 @@ combined_df %>%
     xlab('real effect') +
     scale_y_continuous(labels = scales::percent_format(),
                        name = 'share of inferences')
+
+ 
+combined_df %>% 
+    select(delta_fct, qq_slope_comp, ks_comp) %>% 
+    pivot_longer(matches('_comp'), 
+                 names_to = 'test', values_to = 'outcome') %>% 
+    count(delta_fct, test, outcome) %>% 
+    mutate(test = fct_recode(test, 
+                             'Z-test' = 'qq_slope_comp', 
+                             'FS-test' = 'ks_comp'),
+        outcome = fct_relevel(outcome, 
+                                 'uniform', 'non-uniform', 
+                                 'slope = 1', 'slope ≠ 1')) %>% 
+    ggplot(aes(delta_fct, n, fill = outcome)) +
+    geom_col(position = 'fill') +
+    scale_fill_brewer(palette = 'Set1') +
+    facet_wrap(vars(test), nrow = 2)
+    
 
 
 #' # QQ linearity tests
@@ -256,14 +274,13 @@ combined_df %>%
 #                 'F-test: sig.' = 'significant')
 
 combined_df %>%
-    select(delta_fct, meta_idx, f_comp, aic_comp, ks_comp) %>%
-    pivot_longer(c(f_comp, aic_comp, ks_comp),
+    select(delta_fct, meta_idx, f_comp, aic_comp) %>%
+    pivot_longer(c(f_comp, aic_comp),
                  names_to = 'test') %>%
     count(delta_fct, test, value) %>%
     mutate(test = fct_recode(test, 
                              'AIC' = 'aic_comp', 
-                             'F-test' = 'f_comp', 
-                             'KS test' = 'ks_comp')) %>%
+                             'F-test' = 'f_comp')) %>%
     ggplot(aes(delta_fct, n, fill = value)) +
     geom_col(position = 'fill') +
     facet_wrap(vars(test), nrow = 3) +
@@ -392,9 +409,9 @@ h_nought = exprs('0.2' = delta_fct == '0.2',
 test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
     'iii-range' =  .9 < qq_slope_estimate & qq_slope_estimate < 1.1,
     'iii-Z' = qq_slope_comp == 'slope = 1',
+    'iii-KS' = ks_comp == 'non-linear',
     'iv-AIC' = aic_comp == 'non-linear', 
-    'iv-F' = f_comp == 'non-linear', 
-    'iv-KS' = ks_comp == 'non-linear')
+    'iv-F' = f_comp == 'non-linear')
 
 ## These crosswalks let us attach short labels for hypotheses and outputs
 h_xwalk = tibble(h_label = names(h_nought), 

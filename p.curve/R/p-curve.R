@@ -107,17 +107,27 @@ qq_plot = function(studies) {
 
 #' Slope of a QQ-plot
 #'
-#' Calculates the slope of the QQ-plot against the uniform distribution using a linear regression.
+#' Calculates the slope of the QQ-plot against the uniform distribution using a linear regression and Kolmogorov-Smirnov test.
 #' @param studies A dataframe of studies, as returned by `draw_studies()`. Minimally, a dataframe with columns `p.uniform` and `p.value`.
-#' @param alpha Threshold for statistical significance for the Z-test of difference from 1
+#' @param alpha Threshold for statistical significance for the Z-test and KS-test
 #' @return A one-row dataframe with the columns
 #'   \item{slope_estimate, slope_std.error}{Estimated slope and its standard error}
 #'   \item{slope_statistic}{Difference between `slope_estimate` and 1 in standard error units; statistic for a Z-test}
 #'   \item{slope_p.value}{P-value for the Z-test of difference from 1}
 #'   \item{slope_comp}{Call for whether the slope is stat. sig. different from 1}
+#'   \item{ks_stat}{Observed value of the KS statistic}
+#'   \item{ks_p}{p-value of the KS statistic}
+#'   \item{ks_comp}{Inference from the KS stat; one of `non-uniform` or `uniform`}
 #' @export
 qq_slope = function(studies, alpha = 0.05) {
     model = lm(p.value ~ p.uniform, data = studies)
+
+    ks_test = ks.test(studies$p.value, studies$p.uniform)
+    ks_stat = ks_test$statistic
+    ks_p = ks_test$p.value
+    ks_comp = dplyr::if_else(ks_p < alpha, 'non-uniform', 'uniform')
+    ks_df = tibble::tibble(ks_stat, ks_p, ks_comp)
+
     tidied = broom::tidy(model, conf.int = FALSE, conf.level = alpha) %>%
         dplyr::filter(term == 'p.uniform') %>%
         dplyr::select(estimate, std.error) %>%
@@ -125,7 +135,8 @@ qq_slope = function(studies, alpha = 0.05) {
                       p.value = dnorm(statistic),
                       comp = dplyr::if_else(p.value < alpha,
                                             'slope ≠ 1', 'slope = 1')) %>%
-        dplyr::rename_all(~str_c('slope_', .))
+        dplyr::rename_all(~str_c('slope_', .)) %>%
+        dplyr::bind_cols(ks_df)
 
     return(tidied)
 }
@@ -145,9 +156,6 @@ qq_slope = function(studies, alpha = 0.05) {
 #'   \item{aic_linear}{AIC statistic of the linear regression}
 #'   \item{aic_quad}{AIC statistic of the quadratic regression}
 #'   \item{aic_comp}{Inference from comparing AICs; one of `non-linear` or `linear`}
-#'   \item{ks_stat}{Observed value of the KS statistic}
-#'   \item{ks_p}{p-value of the KS statistic}
-#'   \item{ks_comp}{Inference from the KS stat; one of `non-linear` or `linear`}
 #' @export
 qq_linear = function(studies, alpha = .05) {
     model_linear = lm(p.value ~ p.uniform, data = studies)
@@ -165,15 +173,8 @@ qq_linear = function(studies, alpha = .05) {
                               'non-linear',
                               'linear')
 
-    ks_test = ks.test(studies$p.value, studies$p.uniform)
-    ks_stat = ks_test$statistic
-    ks_p = ks_test$p.value
-    ks_comp = dplyr::if_else(ks_p < alpha, 'non-linear', 'linear')
-
-
     return(tibble::tibble(f_stat, alpha, f_p, f_comp,
-                          aic_linear, aic_quad, aic_comp,
-                          ks_stat, ks_p, ks_comp))
+                          aic_linear, aic_quad, aic_comp))
 }
 
 
