@@ -246,7 +246,7 @@ combined_df %>%
     scale_y_continuous(labels = scales::percent_format(),
                        name = 'share of inferences')
 
- 
+
 combined_df %>% 
     select(delta_fct, qq_slope_comp, ks_comp) %>% 
     pivot_longer(matches('_comp'), 
@@ -255,14 +255,14 @@ combined_df %>%
     mutate(test = fct_recode(test, 
                              'Z-test' = 'qq_slope_comp', 
                              'FS-test' = 'ks_comp'),
-        outcome = fct_relevel(outcome, 
+           outcome = fct_relevel(outcome, 
                                  'uniform', 'non-uniform', 
                                  'slope = 1', 'slope ≠ 1')) %>% 
     ggplot(aes(delta_fct, n, fill = outcome)) +
     geom_col(position = 'fill') +
     scale_fill_brewer(palette = 'Set1') +
     facet_wrap(vars(test), nrow = 2)
-    
+
 
 
 #' # QQ linearity tests
@@ -409,7 +409,7 @@ h_nought = exprs('0.2' = delta_fct == '0.2',
 test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
     'iii-range' =  .9 < qq_slope_estimate & qq_slope_estimate < 1.1,
     'iii-Z' = qq_slope_comp == 'slope = 1',
-    'iii-KS' = ks_comp == 'non-linear',
+    'iii-KS' = ks_comp == 'uniform',
     'iv-AIC' = aic_comp == 'non-linear', 
     'iv-F' = f_comp == 'non-linear')
 
@@ -433,7 +433,7 @@ p_df = cross(lst(h_nought, test_output)) %>%
            h_nought, test_output, n_false, n_true)
 
 ggplot(p_df, 
-           aes(output_label, p)) +
+       aes(output_label, p)) +
     geom_point() +
     geom_area(data = tibble(output_label = 0:length(test_output) + 0.5),
               aes(y = .05), 
@@ -484,29 +484,46 @@ llr_df = likelihood_ratio(h1, h2, test_output, combined_df) %>%
     left_join(h_xwalk, by = c('h2' = 'h')) %>% 
     rename(h2_label = h_label) %>% 
     left_join(output_xwalk, by = 'test_output') %>% 
+    filter((h1_label == 'δ is mixed' & str_detect(output_label, 'iv'))|
+               (h1_label == 'δ = 0' & str_detect(output_label, 'iii'))) %>% 
+    mutate(h1_label = fct_relevel(h1_label, 
+                                  'δ = 0', 'δ is mixed')) %>% 
     select(h1_label, h2_label, output_label, llr, 
            h1, h2, test_output, everything())
 
 
 ggplot(llr_df, 
        aes(output_label, llr, color = h2_label)) +
+    geom_hline(yintercept = 0, linetype = 'dashed') +
+    geom_rect(inherit.aes = FALSE,
+              xmin = -Inf, xmax = Inf,
+              ymin = 1, ymax = .5,
+              alpha = .005) +
+    geom_rect(inherit.aes = FALSE,
+              xmin = -Inf, xmax = Inf,
+              ymin = -1, ymax = -.5,
+              alpha = .005) +
+    geom_rect(inherit.aes = FALSE,
+              xmin = -Inf, xmax = Inf,
+              ymin = 1, ymax = 2,
+              alpha = .01) +
+    geom_rect(inherit.aes = FALSE,
+              xmin = -Inf, xmax = Inf,
+              ymin = -1, ymax = -2,
+              alpha = .01) +
+    geom_rect(inherit.aes = FALSE,
+              xmin = -Inf, xmax = Inf,
+              ymin = 2, ymax = Inf,
+              alpha = .05) +
+    geom_rect(inherit.aes = FALSE,
+              xmin = -Inf, xmax = Inf,
+              ymin = -Inf, ymax = -2,
+              alpha = .05) +
     geom_point(size = 2, 
                position = position_jitter(width = .25, height = 0,
                                           seed = 2020-07-23)) +
-    geom_hline(yintercept = 0, linetype = 'dashed') +
-    geom_ribbon(data = tibble(x = 0:length(test_output) + 0.5),
-                inherit.aes = FALSE,
-                aes(x = x, ymin = -.5, ymax = .5),
-                alpha = .1) +
-    geom_ribbon(data = tibble(x = 0:length(test_output) + 0.5),
-                inherit.aes = FALSE,
-                aes(x = x, ymin = -1, ymax = 1),
-                alpha = .1) +
-    geom_ribbon(data = tibble(x = 0:length(test_output) + 0.5),
-                inherit.aes = FALSE,
-                aes(x = x, ymin = -2, ymax = 2),
-                alpha = .1) +
-    facet_wrap(vars(h1_label)) +
+    facet_wrap(vars(h1_label), scales = 'free_x') +
+    ylim(-2, 2) +
     scale_color_viridis_d(option = 'C') +
     labs(color = 'H2', x = 'test output', y = 'log likelihood ratio')
 
@@ -557,15 +574,15 @@ power_analysis %>%
     facet_grid(rows = vars(n), 
                cols = vars(meta_idx))
 
-#' Note that the KS test tends to conclude the plots are non-linear, even for the severely underpowered case
+#' For the severely underpowered design, the KS test concludes that it is uniform more than 25% of the time.  It almost always concludes that the other two designs are non-uniform.  
 ggplot(power_analysis, aes(as.factor(n), 
                            fill = ks_comp)) +
     geom_bar(position = 'fill')
 
-#' Consequently, when they are used as null hypotheses, the likelihoods for these hypotheses are quite high.  The KS test doesn't provide evidence for the mixed hypothesis here, even wrt the severely underpowered design, and even though KS *did* provide evidence wrt much larger effects ($\delta = 0.2$) with similar power.  The evidentiary value of the KS test seems to depend on some interaction of effect size and power.  
+#' Consequently, when they are used as null hypotheses, the likelihoods for these hypotheses are quite high.  The KS test doesn't provide evidence for the zero hypothesis here.  
 power_analysis %>% 
     split(.$n) %>% 
-    map_dfr(~p_value(TRUE, ks_comp == 'non-linear', .), .id = 'n')
+    map_dfr(~p_value(TRUE, ks_comp == 'non-uniform', .), .id = 'n')
 
 
 #' # Reproducibility
