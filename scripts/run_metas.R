@@ -579,10 +579,10 @@ ggplot(power_analysis, aes(as.factor(n),
                            fill = ks_comp)) +
     geom_bar(position = 'fill')
 
-#' Consequently, when they are used as null hypotheses, the likelihoods for these hypotheses are quite high.  The KS test doesn't provide evidence for the zero hypothesis here.  
+#' Consequently, the KS-test can provide evidence for the zero hypothesis against the underpowered (50%) and adequately powered (80%) design.  But not against the severely underpowered design.  So the ability of the KS-test to provide evidence for the zero hypothesis depends on both real effect size and power.  
 power_analysis %>% 
     split(.$n) %>% 
-    map_dfr(~p_value(TRUE, ks_comp == 'non-uniform', .), .id = 'n')
+    map_dfr(~p_value(TRUE, ks_comp == 'uniform', .), .id = 'n')
 
 
 #' # Reproducibility
