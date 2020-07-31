@@ -251,8 +251,4 @@ Finally, the simulation does not include any representation of publication bias 
 
 # Acknowledgments #
 
-No particular funding was allocated for this project.  
-
-# Data Sharing #
-
-All code to conduct the simulation and analyze the results is available at <https://github.com/dhicks/p_curve>.  The simulation and analysis are automatically reproduced, and the resulting report is available at <https://dhicks.github.io/p_curve/>. 
+No particular funding was allocated for this project.  All code to conduct the simulation and analyze the results is available at <https://github.com/dhicks/p_curve>.  The simulation and analysis are automatically reproduced, and the resulting report is available at <https://dhicks.github.io/p_curve/>. 
