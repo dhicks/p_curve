@@ -33,7 +33,7 @@ $(PAPER)/paper.zip: $(PAPER)/paper.pdf \
                     $(PAPER)/paper.tex \
                     $(wildcard $(PAPER)/fig_*.png) \
                     $(PAPER)/supplement.pdf \
-                    Young.bib
+                    $(PAPER)/Young.bib
 	zip $@ $^
 
 
