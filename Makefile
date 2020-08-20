@@ -30,7 +30,8 @@ $(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md $(PAPER)/Young.bib \
 zip: $(PAPER)/paper.zip
 $(PAPER)/paper.zip: $(PAPER)/paper.pdf \
                     $(PAPER)/paper.tex \
-                    $(wildcard $(PAPER)/fig_*.png)
+                    $(wildcard $(PAPER)/fig_*.png) \
+                    $(PAPER)/supplement.pdf
 	zip $@ $^
 
 
