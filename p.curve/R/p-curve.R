@@ -327,7 +327,7 @@ p_value = function(h, test_output, dataf) {
     counted_df = dataf %>%
         dplyr::filter(!!h) %>%
         dplyr::mutate(test_output := !!test_output) %>%
-        dplyr::count(test_output, wt = n()) %>%
+        dplyr::count(test_output) %>%
         dplyr::mutate(share = n / sum(n))
 
     if (identical(nrow(counted_df), 1L)) {
