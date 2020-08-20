@@ -21,7 +21,8 @@ $(PAPER)/fig_%.png: $(OUT)/fig_%.png
 
 
 paper: $(PAPER)/paper.pdf
-$(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md $(PAPER)/Young.bib \
+$(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md \
+                    $(PAPER)/Young.bib \
                     $(wildcard $(PAPER)/fig_*.png)
 	# cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
 	cd $(PAPER); Rscript -e "rmarkdown::render('paper.md')"
@@ -31,7 +32,8 @@ zip: $(PAPER)/paper.zip
 $(PAPER)/paper.zip: $(PAPER)/paper.pdf \
                     $(PAPER)/paper.tex \
                     $(wildcard $(PAPER)/fig_*.png) \
-                    $(PAPER)/supplement.pdf
+                    $(PAPER)/supplement.pdf \
+                    Young.bib
 	zip $@ $^
 
 
