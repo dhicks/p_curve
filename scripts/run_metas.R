@@ -5,6 +5,7 @@
 #' output:
 #'   html_document:
 #'     toc: true
+#'     toc_float: true
 #' ---
 #' 
 #' This document conducts the simulation described in the paper "Young's p-value plot does not provide evidence against air pollution hazards" by Daniel J. Hicks, and generates all plots and tables presented in that paper.  
@@ -55,7 +56,7 @@ power.t.test(delta = c(.2, .4, .6), sd = 1, sig.level = 0.05, n = 60)
 ## 2-3 min
 set.seed(2020-06-25)
 tic()
-NN = 500
+NN = 500  ## How many simulations to run? 
 combined_df = many_metas(NN = NN, 
                          delta = list(0, .2, .4, .6, list(0, .6)), 
                          N = 20, n = 60) %>% 
