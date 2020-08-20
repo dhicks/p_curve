@@ -12,7 +12,8 @@ paper: paper.pdf
 paper.pdf: header.yaml paper.md Young.bib \
            $(wildcard $(OUT)/*.png) \
            $(wildcard $(OUT)/*.tex)
-	pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
+	# pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
+	Rscript -e "rmarkdown::render('paper.md')"
 
 docx: paper.docx
 paper.docx: header.yaml paper.md Young.bib \

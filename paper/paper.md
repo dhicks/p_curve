@@ -1,29 +1,36 @@
 ---
 title: "Young's p-value plot does not provide evidence against air pollution hazards"
-author: "Daniel J. Hicks"
-institute: "University of California, Merced"
-email: hicks.daniel.j@gmail.com
-
-header-includes:
-  - \usepackage[nolists]{endfloat}
-  - \DeclareDelayedFloatFlavour*{longtable}{table}
-  - \usepackage{lineno}
-
+preprint: false
+author: 
+  - name: "Daniel J. Hicks"
+    affiliation: 1
+    # corresponding: true
+    email: hicks.daniel.j@gmail.com
+affiliation:
+  - code: 1
+    address: "University of California, Merced, 5200 N Lake Road, Merced, CA, USA, 95343"
+abstract: >
+  S. Stanley Young and collaborators have criticized epidemiological studies and meta-analyses of air pollution hazards using a graphical method they call a p-value plot, claiming to find zero effects, heterogeneity, and p-hacking.  This method has not been validated in a peer-reviewed publication.
+  The aim of this study was to investigate the statistical and evidentiary properties of Young's p-value plot method.
+  A simulation approach was chosen to create studies and meta-analyses with known real effects $\delta$ and automatically analyze them using Young's p-value plot.  Two quantifiable conceptions of evidence were selected from the philosophy of science literature to assess the evidentiary value of Young's p-value plot. The simulation and analysis is publicly available and automatically reproduced.
+  500 simulation runs were conducted across each of 5 real effect conditions, ranging from zero effects $\delta = 0$ to moderate-strong effects $\delta = 0.6$ and a heterogeneous condition.  Young's p-value plot did not provide evidence for heterogeneity or p-hacking with respect to any condition.  Young's p-value plot can provide evidence of zero effects relative to a rival hypothesis of moderate-strong effects, and depending on the method, conception of evidence, and primary study design can provide evidence of zero effects relative to a rival hypothesis that includes weaker effects.
+  Young and collaborators most often use the p-value plot method to claim to find heterogeneity and p-hacking in the air pollution epidemiological literature.  Young's p-value plot does not provide evidence to support these criticisms.
 bibliography: Young.bib
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+output:
+  rticles::peerj_article:
+    pandoc_args:
+      - --filter=pandoc-crossref
+# bookdown::pdf_book:
+#   base_format: rticles::peerj_article
+#   pandoc_args:
+#     - --filter=pandoc-crossref
 ---
 
+\renewcommand{\P}{\ensuremath{\mathbb{P}}}
 \newcommand{\SchSp}{Schweder and Spjøtvoll}
-\linenumbers
-
-<!--<https://ehp.niehs.nih.gov/authors/research-articles>-->
-
-# Abstract #
-
-  - *Background*: S. Stanley Young and collaborators have criticized epidemiological studies and meta-analyses of air pollution hazards using a graphical method they call a p-value plot, claiming to find zero effects, heterogeneity, and p-hacking.  This method has not been validated in a peer-reviewed publication.
-  - *Objectives*: The aim of this study was to investigate the statistical and evidentiary properties of Young's p-value plot method.
-  - *Methods*: A simulation approach was chosen to create studies and meta-analyses with known real effects $\delta$ and automatically analyze them using Young's p-value plot.  Two quantifiable conceptions of evidence were selected from the philosophy of science literature to assess the evidentiary value of Young's p-value plot. The simulation and analysis is publicly available and automatically reproduced.
-  - *Results*: 500 simulation runs were conducted across each of 5 real effect conditions, ranging from zero effects $\delta = 0$ to moderate-strong effects $\delta = 0.6$ and a heterogeneous condition.  Young's p-value plot did not provide evidence for heterogeneity or p-hacking with respect to any condition.  Young's p-value plot can provide evidence of zero effects relative to a rival hypothesis of moderate-strong effects, and depending on the method, conception of evidence, and primary study design can provide evidence of zero effects relative to a rival hypothesis that includes weaker effects.
-  - *Discussion*: Young and collaborators most often use the p-value plot method to claim to find heterogeneity and p-hacking in the air pollution epidemiological literature.  Young's p-value plot does not provide evidence to support these criticisms.
 
 # Introduction #
 
@@ -51,8 +58,6 @@ With one exception, every peer-reviewed publication describing the method has be
 ## Young's p-value plot ##
 
 Young and collaborators have not provided a formal definition of their p-value plot method, and at least one key term in the methods appears to be used in a non-standard way.  They have attempted to justify their method by associating it with two other graphical methods, but these methods are not equivalent to each other or Young's p-value plot.  
-
-\renewcommand{\P}{\ensuremath{\mathbb{P}}}
 
 All three graphical methods take as input a set of $N$ p-values $\P = \{p_1, p_2, \ldots, p_N\}$, nominally produced by applying a given statistical hypothesis test to $N$ replications of a given study design, each replication drawing samples of size $n$ from a given population.  This corresponds to the simplest case of meta-analysis.  Thus the p-values in $\P$ are nominally samples from a single underlying distribution $p_i \sim P$.  Note that, if the real effect is zero $\delta = 0$, then $P$ is the uniform distribution on $[0,1]$.  
 
@@ -191,7 +196,7 @@ Figures and tables included in the automatically reproduced analysis validate th
 
 [@Fig:samples_young] shows 10 examples of Young's p-value plot across the five conditions.  See the supplemental material for examples of Schweder and Spjøtvoll's and Simonsohn et al.'s plots.  
 
-![Examples of Young's p-value plot, drawn at random from the simulation results.  Rows and colors correspond to conditions or real effects ($\delta$), from zero (0) to moderate-strong (0.6) and a mixed condition $\delta = \{0.0, 0.6\}$.  Columns correspond to indices for the simulation runs that produced these results, and are not meaningful.  (In particular, there is no relationship between simulation run $j$ in condition $a$ and simulation run $j$ in condition $b$.)  Each point corresponds to a single p-value in the meta-analysis (simulation run); the x-axis is the ascending rank of the p-value in the set \P, and the y-axis is the p-value itself.](../out/samples_young.png){#fig:samples_young}
+![Examples of Young's p-value plot, drawn at random from the simulation results.  Rows and colors correspond to conditions or real effects ($\delta$), from zero (0) to moderate-strong (0.6) and a mixed condition $\delta = \{0.0, 0.6\}$.  Columns correspond to indices for the simulation runs that produced these results, and are not meaningful.  (In particular, there is no relationship between simulation run $j$ in condition $a$ and simulation run $j$ in condition $b$.)  Each point corresponds to a single p-value in the meta-analysis (simulation run); the x-axis is the ascending rank of the p-value in the set \P, and the y-axis is the p-value itself.](../out/samples_young.png){ #fig:samples_young width=6in height=3.75in }
 
 As preliminary observations, note that there are both substantial qualitative differences within effect sizes (within rows) as well as substantial qualitative similarity across consecutive effect sizes (comparing adjacent rows).  Across all conditions, plots tend to have both statistically significant and insignificant p-values.  Larger effect sizes have more statistically significant results, resulting in a series of small p-values that gradually bend up.  Even small and zero effects can look nonlinear (\# 97 for $\delta = 0$; \# 90 for $\delta = 0.2$).  The mixed condition plots (bottom row) are not obviously distinct from the small $\delta = 0.2$ and moderate effects $\delta = 0.4$ plots (second and third rows).  
 
@@ -212,7 +217,7 @@ Two outputs of the analysis of Young's p-value plot can be quantified and reprod
 
 @Fig:evidence_severity show the results of the severity analysis as p-values; see the supplemental materials for a table version of these results.  By the weak severity criterion, when the results of the severity analysis are $> .05$ (outside of the gray region), the test output does not provide evidence in support of the target hypothesis.  
 
-![Results of the severity analysis for outputs (iii) slope of 1 and (iv) non-linearity.  Severity analysis results are reported as p-values:  small values (conventionally $< .05$) indicate a severe test with respect to the null hypothesis.  Panels correspond to null hypotheses, and y-axis values correspond to the severity assessment (as a p-value) for the output with respect to the given null hypothesis.  The gray region indicates $p < 0.05$, which in turn indicate severe tests.](../out/evidence_severity.png){#fig:evidence_severity}
+![Results of the severity analysis for outputs (iii) slope of 1 and (iv) non-linearity.  Severity analysis results are reported as p-values:  small values (conventionally $< .05$) indicate a severe test with respect to the null hypothesis.  Panels correspond to null hypotheses, and y-axis values correspond to the severity assessment (as a p-value) for the output with respect to the given null hypothesis.  The gray region indicates $p < 0.05$, which in turn indicate severe tests.](../out/evidence_severity.png){#fig:evidence_severity width=6in height=4in}
 
 The zero effect hypothesis is supposedly supported by a slope of approximately 1 on the QQ-plot.  The range method (whether the slope is within the range $1\pm0.1$, output iii-range) and the KS-test (output iii-KS) are severe against the null hypotheses of moderate and moderate-strong effect ($\delta = 0.4$ and $\delta = 0.6$); the Z-test method (output iii-Z) is only severe against moderate-strong effects ($\delta = 0.6$).  That is, the "45-degree line" test is capable of severely distinguishing zero effects from moderate and stronger effects.  But *the "45-degree line" cannot severely distinguish zero effects from weak effects ($\delta = 0.2$), mixed effects, or any condition that includes these two*. 
 
@@ -224,7 +229,7 @@ The mixed-effect hypothesis, or heterogeneity, is supposedly supported by non-li
 
 @Fig:evidence_likelihood show the results of the likelihood analysis; see the supplemental materials for a table version of these results.  Log likelihood ratios are reported, so results above $0.5$ support $H_1$ and results below $-0.5$ support $H_2$.  So, by the weak severity criterion, when the results of the likelihood analysis are $< 0.5$, the test output does not provide evidence supporting the target hypothesis of zero or mixed effect.  
 
-![Results of the likelihood analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.  Each point gives the log likelihood ratio for a target vs. rival hypothesis, given an output.  Panels correspond to target hypotheses $H_1$, either a a zero effect $\delta = 0$ or a mixed effect $\delta = \{0, 0.6\}$; point color corresponds to rival hypothesis $H_2$.  Position on the x-axis indicates the output; points have been jittered horizontally to reduce overlap. Position on the y-axis indicates the strength of the evidence that the output provides to the hypotheses:  values greater than 0.5 support $H_1$ over $H_2$.  (Points at the plot margins have infinite value due to division by zero.)  Shaded regions indicate support for either hypothesis, in order from lightest to darkest:  none, "substantial," "strong," "decisive."  An interactive version of this plot is included in the automatic reproduction of the analysis for this paper.](../out/evidence_likelihood.png){#fig:evidence_likelihood}
+![Results of the likelihood analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.  Each point gives the log likelihood ratio for a target vs. rival hypothesis, given an output.  Panels correspond to target hypotheses $H_1$, either a a zero effect $\delta = 0$ or a mixed effect $\delta = \{0, 0.6\}$; point color corresponds to rival hypothesis $H_2$.  Position on the x-axis indicates the output; points have been jittered horizontally to reduce overlap. Position on the y-axis indicates the strength of the evidence that the output provides to the hypotheses:  values greater than 0.5 support $H_1$ over $H_2$.  (Points at the plot margins have infinite value due to division by zero.)  Shaded regions indicate support for either hypothesis, in order from lightest to darkest:  none, "substantial," "strong," "decisive."  An interactive version of this plot is included in the automatic reproduction of the analysis for this paper.](../out/evidence_likelihood.png){#fig:evidence_likelihood  width=6in height=4in }
  
 The zero effect hypothesis (left panel) is supposedly supported by a slope of approximately 1.  All three methods provide decisive support for zero effect against moderate-strong effects, and substantive or better support against moderate effects.  The range test just barely provides substantive support against the disjunction of non-zero effects ($\delta = 0.2, 0.4, 0.6$), and the KS-test also provides substantive support against mixed effects and non-zero effects (either mixed or one of the non-zero effects). 
 
@@ -257,3 +262,7 @@ Finally, the simulation does not include any representation of publication bias 
 # Acknowledgments #
 
 No particular funding was allocated for this project.  All code to conduct the simulation and analyze the results is available at <https://github.com/dhicks/p_curve>.  The simulation and analysis are automatically reproduced, and the resulting report is available at <https://dhicks.github.io/p_curve/>. 
+
+
+# References #
+
