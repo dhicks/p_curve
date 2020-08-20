@@ -8,10 +8,12 @@ supplement.pdf: header.yaml supplement.md Young.bib \
            $(wildcard $(OUT)/*.tex)
 	pandoc header.yaml supplement.md -o supplement.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
 
+figs: $(wildcard $(OUT)/fig_*.png)
+	cp $^ .
+
 paper: paper.pdf
 paper.pdf: header.yaml paper.md Young.bib \
-           $(wildcard $(OUT)/*.png) \
-           $(wildcard $(OUT)/*.tex)
+           figs
 	# pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
 	Rscript -e "rmarkdown::render('paper.md')"
 

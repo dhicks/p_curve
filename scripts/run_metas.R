@@ -43,7 +43,7 @@ if (!dir.exists(out_folder)) {
 write_plot = function(name, ...) {
     ggsave(file.path(out_folder, str_c(name, '.png')), ...)
 }
-plot_defaults = list(height = 4, width = 6, scale = 1)
+plot_defaults = list(height = 4, width = 6, scale = 1.5)
 
 #' # Run simulations
 #+ run simulations
@@ -138,7 +138,7 @@ combined_df %>%
          y = 'p') +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
 
-do.call(write_plot, c('samples_young', samples_par))
+do.call(write_plot, c('fig_1_samples_young', samples_par))
 
 ## Sch-Sp
 combined_df %>%
@@ -441,7 +441,7 @@ ggplot(p_df,
     labs(x = 'test output') +
     facet_wrap(vars(h_nought_label))
 
-do.call(write_plot, c('evidence_severity', plot_defaults))
+do.call(write_plot, c('fig_2_evidence_severity', plot_defaults))
 
 p_df %>% 
     mutate(h_nought_label = str_replace(h_nought_label, 
@@ -529,7 +529,7 @@ ggplot(llr_df,
 
 ggplotly()
 
-do.call(write_plot, c('evidence_likelihood', plot_defaults))
+do.call(write_plot, c('fig_3_evidence_likelihood', plot_defaults))
 
 llr_df %>% 
     mutate(across(c(h1_label, h2_label), 
