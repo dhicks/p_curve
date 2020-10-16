@@ -1,14 +1,6 @@
 ---
 title: "Young's p-value plot does not provide evidence against air pollution hazards"
-preprint: false
-author: 
-  - name: "Daniel J. Hicks"
-    affiliation: 1
-    corresponding: true
-    email: hicks.daniel.j@gmail.com
-affiliation:
-  - code: 1
-    address: "University of California, Merced, 5200 N Lake Road, Merced, CA, USA, 95343"
+author: "Daniel J. Hicks"
 abstract: >
   S. Stanley Young and collaborators have criticized epidemiological studies and meta-analyses of air pollution hazards using a graphical method they call a p-value plot, claiming to find zero effects, heterogeneity, and p-hacking.  This method has not been validated in a peer-reviewed publication. The aim of this study was to investigate the statistical and evidentiary properties of Young's p-value plot method. A simulation approach was chosen to create studies and meta-analyses with known real effects $\delta$ and automatically analyze them using Young's p-value plot.  Two quantifiable conceptions of evidence were selected from the philosophy of science literature to assess the evidentiary value of Young's p-value plot. The simulation and analysis is publicly available and automatically reproduced. 500 simulation runs were conducted across each of 5 real effect conditions, ranging from zero effects $\delta = 0$ to moderate-strong effects $\delta = 0.6$ and a heterogeneous condition.  Young's p-value plot did not provide evidence for heterogeneity or p-hacking with respect to any condition.  Young's p-value plot can provide evidence of zero effects relative to a rival hypothesis of moderate-strong effects.   Depending on the specific method, conception of evidence, and primary study design, Young's p-value plot can also provide evidence of zero effects relative to a rival hypothesis that includes weaker effects. Young and collaborators most often use the p-value plot method to claim heterogeneity and p-hacking in the air pollution epidemiological literature.  Young's p-value plot does not provide evidence to support these criticisms.
 bibliography: Young.bib
