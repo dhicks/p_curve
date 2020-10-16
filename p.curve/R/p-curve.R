@@ -129,38 +129,65 @@ qq_plot = function(studies) {
 
 #' Slope of a QQ-plot
 #'
-#' Calculates the slope of the QQ-plot against the uniform distribution using a linear regression and Kolmogorov-Smirnov test.
+#' Calculates the slope of the QQ-plot against the uniform distribution using a Kolmogorov-Smirnov test, Z-test against the null that the slope is exactly 1, and TOST against the null that the slope is substantially different from 1.
 #' @param studies A dataframe of studies, as returned by `draw_studies()`. Minimally, a dataframe with columns `p.uniform` and `p.value`.
-#' @param alpha Threshold for statistical significance for the Z-test and KS-test
+#' @param alpha Threshold for statistical significance for the tests; default 0.05
+#' @param delta Radius for the equivalence bounds for TOST: slope is substantially different from 1 if it is outside of the interval `[1-delta, 1+delta]`. Default is 0.1.
 #' @return A one-row dataframe with the columns
 #'   \item{slope_estimate, slope_std.error}{Estimated slope and its standard error}
-#'   \item{slope_statistic}{Difference between `slope_estimate` and 1 in standard error units; statistic for a Z-test}
-#'   \item{slope_p.value}{P-value for the Z-test of difference from 1}
-#'   \item{slope_comp}{Call for whether the slope is stat. sig. different from 1}
-#'   \item{ks_stat}{Observed value of the KS statistic}
-#'   \item{ks_p}{p-value of the KS statistic}
-#'   \item{ks_comp}{Inference from the KS stat; one of `non-uniform` or `uniform`}
+#'   \item{slope_z.statistic, slope_z.p.value}{Difference between `slope_estimate` and 1 in standard error units; statistic for a Z-test; its p-value}
+#'   \item{slope_z.comp}{Z-test call for whether the slope is stat. sig. different from 1}
+#'   \item{slope_tost.t1, slope_tost.p1, slope_tost.t2, slope_tost.p2}{T-statistics and p-values for one-sample TOST}
+#'   \item{slope_tost.p.value}{Combined p-value for one-sample TOST}
+#'   \item{slope_tost.comp}{TOST call for whether the slope is equivalent to 1}
+#'   \item{slope_ks.stat, slope_ks.p}{Statistic and p-value of the KS test}
+#'   \item{slope_ks.comp}{Inference from the KS stat; one of `non-uniform` or `uniform`}
 #' @export
-qq_slope = function(studies, alpha = 0.05) {
-    model = lm(p.value ~ p.uniform, data = studies)
+qq_slope = function(studies, alpha = 0.05, delta = .1) {
+    model = lm(p.value ~ p.uniform, data = studies, y = TRUE)
 
     ks_test = ks.test(studies$p.value, studies$p.uniform)
     ks_stat = ks_test$statistic
     ks_p = ks_test$p.value
     ks_comp = dplyr::if_else(ks_p < alpha, 'non-uniform', 'uniform')
-    ks_df = tibble::tibble(ks_stat, ks_p, ks_comp)
+    ks_df = tibble::tibble(ks.stat = ks_stat, ks.p = ks_p, ks.comp = ks_comp)
 
-    tidied = broom::tidy(model, conf.int = FALSE, conf.level = alpha) %>%
+    model_df = broom::tidy(model, conf.int = FALSE, conf.level = alpha) %>%
         dplyr::filter(term == 'p.uniform') %>%
-        dplyr::select(estimate, std.error) %>%
-        dplyr::mutate(statistic = (estimate - 1)/std.error,
-                      p.value = dnorm(statistic),
-                      comp = dplyr::if_else(p.value < alpha,
-                                            'slope ≠ 1', 'slope = 1')) %>%
-        dplyr::rename_all(~str_c('slope_', .)) %>%
-        dplyr::bind_cols(ks_df)
+        dplyr::select(estimate, std.error)
 
-    return(tidied)
+    ## Z-test against null = 1
+    z_df = model_df %>%
+        dplyr::mutate(z.statistic = (estimate - 1)/std.error,
+                      z.p.value = 2 * pnorm(-abs(z.statistic)),
+                      z.comp = dplyr::if_else(z.p.value < alpha,
+                                              'slope ≠ 1', 'slope = 1'))
+
+    ## One-sample TOST
+    tost_df = model_df %>%
+        dplyr::mutate(tost = list(TOSTER::TOSTone(estimate,
+                                                  mu = 1,
+                                                  sd = std.error * sqrt(length(model$y)),
+                                                  n = length(model$y),
+                                                  low_eqbound_d = -delta / (std.error * sqrt(length(model$y))),
+                                                  high_eqbound_d = delta / (std.error * sqrt(length(model$y))),
+                                                  alpha = .05,
+                                                  plot = FALSE,
+                                                  verbose = FALSE)),
+                      tost = purrr::map(tost, tibble::as_tibble)) %>%
+        tidyr::unnest(tost) %>%
+        dplyr::select(estimate, std.error,
+                      tost.t1 = TOST_t1, tost.p1 = TOST_p1,
+                      tost.t2 = TOST_t2, tost.p2 = TOST_p2) %>%
+        dplyr::mutate(tost.p.value = max(tost.p1, tost.p2),
+                      tost.comp = dplyr::if_else(tost.p.value < alpha,
+                                                 'slope = 1', 'slope ≠ 1'))
+
+    combined_df = dplyr::full_join(z_df, tost_df) %>%
+        dplyr::bind_cols(ks_df) %>%
+        dplyr::rename_all(~stringr::str_c('slope_', .))
+
+    return(combined_df)
 }
 # qq_slope(studies)
 
