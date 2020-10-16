@@ -24,9 +24,11 @@ paper: $(PAPER)/paper.pdf
 $(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md \
                     $(PAPER)/Young.bib \
                     $(wildcard $(PAPER)/fig_*.png)
-	# cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
-	cd $(PAPER); Rscript -e "rmarkdown::render('paper.md')"
+	cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
+	# cd $(PAPER); Rscript -e "rmarkdown::render('paper.md')"
 
+tex: 
+	cd $(PAPER); pandoc header.yaml paper.md -o paper.tex  --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
 
 zip: $(PAPER)/paper.zip
 $(PAPER)/paper.zip: $(PAPER)/paper.pdf \

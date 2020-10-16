@@ -15,10 +15,6 @@ bibliography: Young.bib
 header-includes:
   - \usepackage{booktabs}
   - \usepackage{longtable}
-output:
-  rticles::peerj_article:
-    pandoc_args:
-      - --filter=pandoc-crossref
 tblPrefix:
   - "table"
   - "tables"
@@ -76,7 +72,7 @@ Note that the p-curve is equivalent to a histogram on the interval \([0, 0.5]\) 
 
 ### Young's p-value plot ###
 
-For Young's p-value plot, let \(rank_{asc}(p_i)\) be the (1-indexed) *ascending rank* of \(p_i \in \P\), i.e., \(rank_{asc}(p_i)\) is the number of p-values \(p_j \in \P\) less than or equal to \(p_i\).  The smallest p-value has ascending rank 1, and the largest p-value has ascending rank \(N\).  Without loss of generality, if \P is already in ascending order \(p_1 < p_2 < \cdots < p_N\), then \(rank_{asc}(p_i) = i\).  And Young's p-value plot is the graph \((i, p_i)\).  
+For Young's p-value plot, let \(\rank_{\asc}(p_i)\) be the (1-indexed) *ascending rank* of \(p_i \in \P\), i.e., \(rank_{asc}(p_i)\) is the number of p-values \(p_j \in \P\) less than or equal to \(p_i\).  The smallest p-value has ascending rank 1, and the largest p-value has ascending rank \(N\).  Without loss of generality, if \P is already in ascending order \(p_1 < p_2 < \cdots < p_N\), then \(rank_{asc}(p_i) = i\).  And Young's p-value plot is the graph \((i, p_i)\). 
 
 Note that Young's p-value plot is a rescaled QQ-plot of \(\P\) against the uniform distribution, with the theoretical quantiles \(q_i = \frac{i}{N} = \frac{rank_{asc}(p_i)}{N}\).  In addition, \(rank_{desc}(p_i) = N - rank_{asc}(p_i) + 1\), and so given the number of studies \(N\) Young's p-value does have a 1-1 mathematical relationship to Schweder and Spjøtvoll's p-value plot.  However, because the axes are switched, a regression line fit to Schweder and Spjøtvoll's p-value plot will not necessarily correspond to a regression line fit to Young's p-value plot.  Thus there is not a 1-1 relationship between the slopes of the two plots.  
 
