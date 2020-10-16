@@ -141,6 +141,15 @@ combined_df %>%
 
 do.call(write_plot, c('fig_1_samples_young', samples_par))
 
+young_composite(combined_df, alpha = .05, 
+                color = delta_fct) + 
+    facet_wrap(vars(delta_fct), scales = 'free_x') +
+    labs(x = 'rank (ascending)',
+         y = 'p') +
+    scale_color_brewer(palette = 'Set1', guide = FALSE)
+
+do.call(write_plot, c('young_composite', samples_par))
+
 ## Sch-Sp
 combined_df %>%
     group_by(delta) %>%
@@ -585,6 +594,34 @@ power_analysis %>%
     split(.$n) %>% 
     map_dfr(~p_value(TRUE, ks_comp == 'uniform', .), .id = 'n')
 
+
+#' # Varying N #
+#+ vary_N
+## Varying N ----
+#' The supplemental analysis in this section shows how varying the number of studies $N$ influences the shape of Young's p-value plot.  We use an underpowered study design with 60% power to detect a moderate effect $\delta = 0.4$. We use meta-analyses with 10, 50, and 100 studies. 
+
+power.t.test(delta = .4, sd = 1, sig.level = .05, power = .6)
+
+set.seed(2020-10-16)
+tic()
+vary_N_analysis = many_metas(NN = 100, 
+                             N = c(10, 50, 100),
+                             n = 62,
+                             delta = 0.4)
+toc()
+
+#' Increasing $N$ simply effectively increases the meta-analysis' sampling from the underlying distribution of p-values for the study t-tests.  The result is that, as $N$ increases, the p-value curve gets filled in.  Among other things, this tends to decrease the size of the "gaps" in the blade of the "hockey stick." 
+vary_N_analysis %>% 
+    group_by(N) %>%
+    slice(1:10) %>%
+    ungroup() %>%
+    select(meta_idx, studies, N) %>% 
+    unnest(studies) %>% 
+    young_curve(color = as.factor(N)) +
+    # facet_grid(rows = vars(N), cols = vars(meta_idx), 
+    #            scales = 'free_x')
+    facet_wrap(vars(N, meta_idx), nrow = 3, 
+               scales = 'free_x')
 
 #' # Reproducibility
 #+ reproducibility

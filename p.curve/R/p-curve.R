@@ -77,6 +77,28 @@ young_curve = function(studies,
     return(plot)
 }
 
+#' A "composite" version of Young's p-value plot
+#'
+#' This version of Young's p-value plot allows us to visualize the plot across all runs of a simulation. Each simulation run is represented by a line in the plot rather than a sequence of points.
+#' @param sims A dataframe of runs of the simulation, as returned by `many_metas`.
+#' @param alpha Transparency for lines; defaults to .5
+#' @param ... Other aesthetics, passed to `aes()`
+#' @return A `ggplot2` plot
+young_composite = function(sims,
+                           alpha = .5,
+                           ...) {
+    plotting_df = sims %>%
+        dplyr::select(-delta, -n) %>%
+        tidyr::unnest(studies)
+    plot = ggplot2::ggplot(plotting_df,
+                           ggplot2::aes(rank, p.value,
+                                        group = meta_idx,
+                                        ...)) +
+        ggplot2::geom_line(alpha = alpha)
+
+    return(plot)
+}
+
 #' Slope of Young's p-curve
 #'
 #' Calculates the slope of Young's p-curve using a linear regression.
