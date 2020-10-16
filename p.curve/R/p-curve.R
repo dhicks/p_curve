@@ -183,7 +183,8 @@ qq_slope = function(studies, alpha = 0.05, delta = .1) {
                       tost.comp = dplyr::if_else(tost.p.value < alpha,
                                                  'slope = 1', 'slope ≠ 1'))
 
-    combined_df = dplyr::full_join(z_df, tost_df) %>%
+    combined_df = dplyr::full_join(z_df, tost_df,
+                                   by = c('estimate', 'std.error')) %>%
         dplyr::bind_cols(ks_df) %>%
         dplyr::rename_all(~stringr::str_c('slope_', .))
 
@@ -349,9 +350,9 @@ many_metas = function(NN,
                       qq_slope = purrr::map(studies, qq_slope),
                       qq_linear = purrr::map(studies, qq_linear)) %>%
         tidyr::unnest(c(qq_slope, qq_linear)) %>%
-        dplyr::rename_with(~str_c('qq_', .), .cols = matches('slope_'))
+        dplyr::rename_with(~stringr::str_c('qq_', .), .cols = matches('slope_'))
 }
-
+# many_metas(5, 10, .2, 25)
 
 # Assess evidence ----
 #' Calculate p-value
