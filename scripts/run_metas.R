@@ -143,12 +143,13 @@ combined_df %>%
 
 do.call(write_plot, c('fig_1_samples_young', samples_par))
 
-young_composite(combined_df, alpha = .05, 
-                color = delta_fct) + 
-    facet_wrap(vars(delta_fct), scales = 'free_x') +
+young_composite(combined_df, alpha = .025, 
+                color = delta_fct) +
+    facet_wrap(vars(delta_fct)) +
     labs(x = 'rank (ascending)',
          y = 'p') +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
+    # guides(color = guide_legend(override.aes = list(alpha = 1)))
 
 do.call(write_plot, c('young_composite', samples_par))
 

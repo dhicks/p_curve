@@ -49,7 +49,7 @@ draw_studies = function(N, delta, n, seed = NULL) {
         dplyr::mutate(rank = rank(p.value),
                       p.uniform = rank / (max(rank) + 1))
 }
-
+# studies = draw_studies(5, .2, 15)
 
 
 ## Young's p-value plot ----
@@ -90,10 +90,11 @@ young_composite = function(sims,
                            ...) {
     plotting_df = sims %>%
         dplyr::select(-delta, -n) %>%
+        dplyr::mutate(internal_idx = dplyr::row_number()) %>%
         tidyr::unnest(studies)
     plot = ggplot2::ggplot(plotting_df,
                            ggplot2::aes(rank, p.value,
-                                        group = meta_idx,
+                                        group = internal_idx,
                                         ...)) +
         ggplot2::geom_line(alpha = alpha)
 
@@ -388,7 +389,7 @@ many_metas = function(NN,
         dplyr::rename_with(~stringr::str_replace(., 'slope_', 'qq_'),
                            .cols = matches('slope_'))
 }
-# many_metas(5, 10, .2, 25)
+# metas = many_metas(5, 10, .2, 25)
 
 # Assess evidence ----
 #' Calculate p-value
