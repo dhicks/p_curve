@@ -6,9 +6,12 @@ library(magrittr)
 #' @param delta Real difference in means
 #' @param n Sample size for each group
 #' @param sigma Standard deviation, same for both groups
-#' @details If `delta` has length > 1, means will be recycled, silently creating subsamples within the second group.  This simulates a case where the intervention group is heterogeneous, with even samples from two latent populations.
+#' @details If `delta` has length > 1, then a single value of `delta` will be drawn uniformly at random.  This simulates a case where there is heterogeneity in effects across (latent) subpopulations, and each study is run on one of these subpopulations.
 #' @export
 draw_samples = function(delta, n, sigma = 1) {
+    if (length(delta) > 1) {
+        delta = sample(delta, 1)
+    }
     group1 = rnorm(n, mean = 0, sd = sigma)
     group2 = rnorm(n, mean = delta, sd = sigma)
     return(list(group1, group2))
