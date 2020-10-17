@@ -20,9 +20,6 @@ A one-row \code{tibble::tibble} with the following columns:
 \item{aic_linear}{AIC statistic of the linear regression}
 \item{aic_quad}{AIC statistic of the quadratic regression}
 \item{aic_comp}{Inference from comparing AICs; one of \code{non-linear} or \code{linear}}
-\item{ks_stat}{Observed value of the KS statistic}
-\item{ks_p}{p-value of the KS statistic}
-\item{ks_comp}{Inference from the KS stat; one of \code{non-linear} or \code{linear}}
 }
 \description{
 Checks the linearity of a QQ-plot (against a uniform distribution) by comparing linear and quadratic regressions of \code{p.value} against \code{p.uniform} and using a Kolmogorov-Smirnov test of uniformity.
