@@ -636,18 +636,36 @@ power_analysis %>%
     split(.$n) %>% 
     map_dfr(~p_value(TRUE, qq_ks.comp == 'uniform', .), .id = 'n')
 
+#' As power increases, both the t-test and TOST are increasingly likely to conclude that the slope is different from 1.  
+power_analysis %>% 
+    select(meta_idx, n, qq_t.comp, qq_tost.comp) %>% 
+    pivot_longer(cols = c(qq_t.comp, qq_tost.comp), 
+                 names_to = 'test', 
+                 values_to = 'call') %>% 
+    ggplot(aes(as.factor(n), fill = call)) +
+    geom_bar(position = 'fill') +
+    facet_wrap(vars(test))
+
+#' As with the KS test, the t-test and TOST test can provide evidence for the zero hypothesis when power is greater, but not when power is low. 
+power_analysis %>% 
+    split(.$n) %>% 
+    map_dfr(~p_value(TRUE, qq_t.comp == 'slope = 1', .), .id = 'n')
+power_analysis %>% 
+    split(.$n) %>% 
+    map_dfr(~p_value(TRUE, qq_tost.comp == 'slope = 1', .), .id = 'n')
+
 
 #' # Varying N #
 #+ vary_N
 ## Varying N ----
-#' The supplemental analysis in this section shows how varying the number of studies $N$ influences the shape of Young's p-value plot.  We use an underpowered study design with 60% power to detect a moderate effect $\delta = 0.4$. We use meta-analyses with 10, 50, and 100 studies. 
+#' The supplemental analysis in this section shows how varying the number of studies $N$ influences the shape of Young's p-value plot.  We use an underpowered study design with 60% power to detect a moderate effect $\delta = 0.4$. We use meta-analyses with 10, 50, 100, and 150 studies. 
 
 power.t.test(delta = .4, sd = 1, sig.level = .05, power = .6)
 
 set.seed(2020-10-16)
 tic()
 vary_N_analysis = many_metas(NN = 100, 
-                             N = c(10, 50, 100),
+                             N = c(10, 50, 100, 150),
                              n = 62,
                              delta = 0.4)
 toc()
@@ -671,6 +689,7 @@ ggplot(vary_N_analysis, aes(as.factor(N), gap)) +
 
 ggplot(vary_N_analysis, aes(as.factor(N), fill = gappy)) +
     geom_bar(position = 'fill')
+
 
 #' # Reproducibility
 #+ reproducibility
