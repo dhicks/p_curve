@@ -537,7 +537,7 @@ llr_df = likelihood_ratio(h1, h2, test_output, combined_df) %>%
 
 
 ggplot(llr_df, 
-       aes(output_label, llr, color = h2_label)) +
+       aes(output_label, llr, fill = h2_label)) +
     geom_hline(yintercept = 0, linetype = 'dashed') +
     geom_rect(inherit.aes = FALSE,
               xmin = -Inf, xmax = Inf,
@@ -564,11 +564,12 @@ ggplot(llr_df,
               ymin = -Inf, ymax = -2,
               alpha = .05) +
     geom_point(size = 2, 
+               shape = 21,
                position = position_jitter(width = .25, height = 0,
                                           seed = 2020-07-23)) +
     facet_wrap(vars(h1_label), scales = 'free_x') +
     ylim(-2, 2) +
-    scale_color_viridis_d(option = 'C') +
+    scale_fill_viridis_d(option = 'C', name = 'H2') +
     labs(color = 'H2', x = 'test output', y = 'log likelihood ratio')
 
 ggplotly()
