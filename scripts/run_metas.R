@@ -54,14 +54,16 @@ power.t.test(delta = c(.2, .4, .6), sd = 1, sig.level = 0.05, n = 60)
 
 ## 5 effect sizes x 500 meta-studies x 20 studies x 25 samples
 ## 2-3 min
-set.seed(2020-06-25)
-tic()
-NN = 500  ## How many simulations to run? 
-combined_df = many_metas(NN = NN, 
-                         delta = list(0, .2, .4, .6, list(0, .6)), 
-                         N = 20, n = 60) %>% 
-    mutate(delta_fct = as_factor(delta_chr))
-toc()
+{
+    set.seed(2020-10-17)
+    tic()
+    NN = 500  ## How many simulations to run? 
+    combined_df = many_metas(NN = NN, 
+                             delta = list(0, .2, .4, .6, list(0, .6)), 
+                             N = 20, n = 60) %>% 
+        mutate(delta_fct = as_factor(delta_chr))
+    toc()
+}
 
 combined_df
 
@@ -121,7 +123,7 @@ do.call(write_plot, c('estimates_meta', plot_defaults))
 ## Sample plots ----
 # sample_slice = seq.int(from = 13, by = 3, length.out = 10)
 set.seed(2020-07-23)
-sample_slice = sample(1:NN, 10)
+sample_slice = sample(1:NN, 5)
 samples_par = list(height = 3.75, width = 6, scale = 2)
 
 ## Young
@@ -189,11 +191,32 @@ combined_df %>%
 do.call(write_plot, c('samples_simonsohn', samples_par))
 
 
+#' # Gaps
+#+ gaps
+## Gaps ----
+combined_df %>% 
+    select(delta_fct, meta_idx, gap, gappy) %>% 
+    ggplot(aes(delta_fct, gap, color = delta_fct)) +
+    geom_violin(draw_quantiles = .5, fill = NA) +
+    geom_hline(yintercept = .125, alpha = .5) +
+    labs(x = 'real effect', y = 'size of largest gap') +
+    scale_color_brewer(palette = 'Set1', guide = FALSE)
+
+combined_df %>% 
+    select(delta_fct, meta_idx, gap, gappy) %>% 
+    ggplot(aes(delta_fct, fill = gappy)) +
+    geom_bar(position = position_fill(reverse = TRUE)) +
+    scale_fill_viridis_d(option = 'A') +
+    scale_y_continuous(name = 'share', 
+                       labels = scales::percent_format()) +
+    labs(x = 'real effect', y = 'share')
+
+
 #' # Slopes
 #+ slopes
 ## Slopes ----
 combined_df %>%
-    rename(qq_slope = qq_slope_estimate) %>% 
+    rename(qq_slope = qq_estimate) %>% 
     select(delta_fct, meta_idx, matches('_slope$')) %>%
     rename('QQ' = qq_slope, 
            'Schweder and Spjøtvoll' = schsp_slope, 
@@ -210,7 +233,7 @@ combined_df %>%
 do.call(write_plot, c('slopes', plot_defaults))
 
 combined_df %>%
-    rename(qq_slope = qq_slope_estimate) %>% 
+    rename(qq_slope = qq_estimate) %>% 
     group_by(delta_fct) %>%
     summarize_at(vars(matches('_slope$')),
                  lst(median, sd)) %>% 
@@ -241,38 +264,31 @@ ggplot(combined_df, aes(young_slope, schsp_slope)) +
 ## Whereas Young slope is a rescaling of QQ slope;
 ## the x-axis in the QQ plot is rank/max(rank), and rank is the x-axis in the Young plot
 combined_df %>% 
-    rename(qq_slope = qq_slope_estimate) %>% 
+    rename(qq_slope = qq_estimate) %>% 
     ggplot(aes(young_slope, qq_slope)) +
     geom_point()
 
-## Distribution of calls based on whether the slope is statistically significantly different from 1
+## Distribution of calls for the slope
 combined_df %>% 
-    count(delta_fct, qq_slope_comp, wt = n()) %>% 
-    ggplot(aes(delta_fct, n, fill = qq_slope_comp)) +
+    count(delta_fct, qq_t.comp, qq_tost.comp) %>% 
+    pivot_longer(cols = c(qq_t.comp, qq_tost.comp), 
+                 names_to = 'test', 
+                 values_to = 'call') %>% 
+    ggplot(aes(delta_fct, n, fill = fct_rev(call))) +
     geom_col(position = 'fill') +
-    # facet_wrap(vars(test), nrow = 3) +
-    scale_fill_viridis_d(option = 'C') +
+    facet_wrap(vars(test)) +
+    scale_fill_viridis_d(option = 'C', name = 'Inference') +
     xlab('real effect') +
     scale_y_continuous(labels = scales::percent_format(),
                        name = 'share of inferences')
 
-
-combined_df %>% 
-    select(delta_fct, qq_slope_comp, ks_comp) %>% 
-    pivot_longer(matches('_comp'), 
-                 names_to = 'test', values_to = 'outcome') %>% 
-    count(delta_fct, test, outcome) %>% 
-    mutate(test = fct_recode(test, 
-                             'Z-test' = 'qq_slope_comp', 
-                             'FS-test' = 'ks_comp'),
-           outcome = fct_relevel(outcome, 
-                                 'uniform', 'non-uniform', 
-                                 'slope = 1', 'slope ≠ 1')) %>% 
-    ggplot(aes(delta_fct, n, fill = outcome)) +
-    geom_col(position = 'fill') +
-    scale_fill_brewer(palette = 'Set1') +
-    facet_wrap(vars(test), nrow = 2)
-
+## KS uniformity test
+ggplot(combined_df, aes(delta_fct, fill = qq_ks.comp)) +
+    geom_bar(position = 'fill') +
+    scale_fill_viridis_d(option = 'C', name = 'KS inference') +
+    xlab('real effect') +
+    scale_y_continuous(labels = scales::percent_format(),
+                       name = 'share of inferences')
 
 
 #' # QQ linearity tests
@@ -291,10 +307,10 @@ combined_df %>%
     mutate(test = fct_recode(test, 
                              'AIC' = 'aic_comp', 
                              'F-test' = 'f_comp')) %>%
-    ggplot(aes(delta_fct, n, fill = value)) +
+    ggplot(aes(delta_fct, n, fill = fct_rev(value))) +
     geom_col(position = 'fill') +
     facet_wrap(vars(test), nrow = 3) +
-    scale_fill_viridis_d(option = 'C') +
+    scale_fill_viridis_d(option = 'C', name = 'Inference') +
     xlab('real effect') +
     scale_y_continuous(labels = scales::percent_format(),
                        name = 'share of inferences')
@@ -302,13 +318,12 @@ combined_df %>%
 do.call(write_plot, c('linearity', plot_defaults))
 
 combined_df %>%
-    select(delta_fct, meta_idx, f_comp, aic_comp, ks_comp) %>%
-    pivot_longer(c(f_comp, aic_comp, ks_comp),
+    select(delta_fct, meta_idx, f_comp, aic_comp) %>%
+    pivot_longer(c(f_comp, aic_comp),
                  names_to = 'test') %>%
     count(delta_fct, test, value) %>%
-    pivot_wider(names_from = value, values_from = n, 
-                values_fill = list(n = 0)) %>% 
-    mutate(share = `non-linear` / (linear + `non-linear`)) %>% 
+    group_by(delta_fct, test) %>% 
+    mutate(share = n/sum(n)) %>% 
     mutate(test = fct_recode(test, 
                              'AIC' = 'aic_comp', 
                              'F-test' = 'f_comp', 
@@ -321,19 +336,35 @@ combined_df %>%
           label = 'linearity') %>% 
     write_lines(file.path(out_folder, 'linearity.tex'))
 
+#' # Combined accuracy table
+#+ combined accuracy
+## Combined accuracy table ----
 combined_df %>%
-    select(delta_fct, meta_idx, f_comp, aic_comp, ks_comp) %>%
-    pivot_longer(c(f_comp, aic_comp, ks_comp),
+    select(delta_fct, meta_idx, 
+           gappy, 
+           qq_t.comp, qq_tost.comp, qq_ks.comp,
+           f_comp, aic_comp) %>%
+    pivot_longer(c(gappy, 
+                   qq_t.comp, qq_tost.comp, qq_ks.comp,
+                   f_comp, aic_comp),
                  names_to = 'test') %>%
-    mutate(exp_value = case_when(delta_fct == 0 ~ 'linear',
-                                 delta_fct != 0 ~ 'non-linear',
+    mutate(exp_value = case_when(test %in% c('gappy') ~ 'not gappy',
+                                 delta_fct == 0 & test %in% c('qq_t.comp', 'qq_tost.comp') ~ 'slope = 1',
+                                 delta_fct == 0 & test %in% c('qq_ks.comp') ~ 'uniform',
+                                 delta_fct == 0 & test %in% c('f_comp', 'aic_comp') ~ 'linear',
+                                 delta_fct != 0 & test %in% c('qq_t.comp', 'qq_tost.comp') ~ 'slope ≠ 1',
+                                 delta_fct != 0 & test %in% c('qq_ks.comp')~ 'non-uniform',
+                                 delta_fct != 0 & test %in% c('f_comp', 'aic_comp') ~ 'non-linear',
                                  TRUE ~ NA_character_),
            correct_call = value == exp_value) %>%
     group_by(delta_fct, test) %>%
     summarize(accuracy = sum(correct_call) / n()) %>%
     ungroup() %>%
     pivot_wider(names_from = test, values_from = accuracy) %>%
-    rename(AIC = aic_comp, `F-test` = f_comp, `KS test` = ks_comp)
+    select(`real effect` = delta_fct, 
+           Gap = gappy, 
+           `T-test` = qq_t.comp, `TOST` = qq_tost.comp, `KS test` = qq_ks.comp, 
+           AIC = aic_comp, `F-test` = f_comp)
 
 
 # ## Do the QQ tests work better w/ null effects with larger samples? 
@@ -416,10 +447,12 @@ h_nought = exprs('0.2' = delta_fct == '0.2',
                  'δ = 0' = delta_fct == '0', 
                  'δ is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
                  'δ is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
-test_output = exprs(#'iii-Young' = young_slope > .9 & young_slope < 1.1, 
-    'iii-range' =  .9 < qq_slope_estimate & qq_slope_estimate < 1.1,
-    'iii-Z' = qq_slope_comp == 'slope = 1',
-    'iii-KS' = ks_comp == 'uniform',
+test_output = exprs(
+    'ii-gap' = gappy == 'gappy',
+    'iii-range' =  .9 < qq_estimate & qq_estimate < 1.1,
+    'iii-T' = qq_t.comp == 'slope = 1',
+    'iii-TOST' = qq_tost.comp == 'slope = 1',
+    'iii-KS' = qq_ks.comp == 'uniform',
     'iv-AIC' = aic_comp == 'non-linear', 
     'iv-F' = f_comp == 'non-linear')
 
@@ -541,6 +574,12 @@ ggplotly()
 
 do.call(write_plot, c('fig_3_evidence_likelihood', plot_defaults))
 
+## Test outcomes and H2 where the evidence is infinite
+llr_df %>% 
+    filter(is.infinite(llr)) %>% 
+    select(h1_label, output_label, h2_label) %>% 
+    arrange(h1_label, output_label, h2_label)
+
 llr_df %>% 
     mutate(across(c(h1_label, h2_label), 
                   ~ str_replace(., 'δ', '$\\\\delta$'))) %>% 
@@ -576,7 +615,7 @@ toc()
 ## Young's p-value plots
 power_analysis %>% 
     group_by(n) %>%
-    slice(1:10) %>%
+    slice(1:5) %>%
     ungroup() %>%
     select(meta_idx, studies) %>% 
     unnest(studies) %>% 
@@ -584,15 +623,18 @@ power_analysis %>%
     facet_grid(rows = vars(n), 
                cols = vars(meta_idx))
 
-#' For the severely underpowered design, the KS test concludes that it is uniform more than 25% of the time.  It almost always concludes that the other two designs are non-uniform.  
+young_composite(power_analysis, alpha = .025) +
+    facet_wrap(vars(n))
+
+#' For the severely underpowered design, the KS test concludes that it is uniform nearly 75% of the time.  It almost always concludes that the other two designs are non-uniform.  
 ggplot(power_analysis, aes(as.factor(n), 
-                           fill = ks_comp)) +
+                           fill = qq_ks.comp)) +
     geom_bar(position = 'fill')
 
 #' Consequently, the KS-test can provide evidence for the zero hypothesis against the underpowered (50%) and adequately powered (80%) design.  But not against the severely underpowered design.  So the ability of the KS-test to provide evidence for the zero hypothesis depends on both real effect size and power.  
 power_analysis %>% 
     split(.$n) %>% 
-    map_dfr(~p_value(TRUE, ks_comp == 'uniform', .), .id = 'n')
+    map_dfr(~p_value(TRUE, qq_ks.comp == 'uniform', .), .id = 'n')
 
 
 #' # Varying N #
@@ -622,6 +664,13 @@ vary_N_analysis %>%
     #            scales = 'free_x')
     facet_wrap(vars(N, meta_idx), nrow = 3, 
                scales = 'free_x')
+
+ggplot(vary_N_analysis, aes(as.factor(N), gap)) +
+    geom_violin(draw_quantiles = .5) +
+    geom_hline(yintercept = .125, alpha = .5)
+
+ggplot(vary_N_analysis, aes(as.factor(N), fill = gappy)) +
+    geom_bar(position = 'fill')
 
 #' # Reproducibility
 #+ reproducibility

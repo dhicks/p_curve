@@ -163,7 +163,7 @@ qq_slope = function(studies, alpha = 0.05, delta = .1) {
     ## t-test against null = 1
     t_df = model_df %>%
         dplyr::mutate(t.statistic = (estimate - 1)/std.error,
-                      t.p.value = 2 * pt(-abs(z.statistic),
+                      t.p.value = 2 * pt(-abs(t.statistic),
                                          df = n - 1 - 1),
                       t.comp = dplyr::if_else(t.p.value < alpha,
                                               'slope ≠ 1', 'slope = 1'))
