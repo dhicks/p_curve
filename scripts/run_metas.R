@@ -149,7 +149,7 @@ young_composite(combined_df, alpha = .025,
     labs(x = 'rank (ascending)',
          y = 'p') +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
-    # guides(color = guide_legend(override.aes = list(alpha = 1)))
+# guides(color = guide_legend(override.aes = list(alpha = 1)))
 
 do.call(write_plot, c('young_composite', samples_par))
 
@@ -366,74 +366,6 @@ combined_df %>%
            Gap = gappy, 
            `T-test` = qq_t.comp, `TOST` = qq_tost.comp, `KS test` = qq_ks.comp, 
            AIC = aic_comp, `F-test` = f_comp)
-
-
-# ## Do the QQ tests work better w/ null effects with larger samples? 
-# ## No
-# set.seed(2020-06-19*2)
-# null_hi_power = many_metas(NN = 500, N = 20, delta = 0, 
-#                            n = c(25, 250, 2500))
-# 
-# null_hi_power %>% 
-#     select(delta, n, meta_idx, f_comp, aic_comp) %>% 
-#     pivot_longer(c(f_comp, aic_comp), 
-#                  names_to = 'test') %>% 
-#     mutate(exp_value = case_when(delta == 0 & test == 'f_comp' ~ 'non-significant', 
-#                                  delta != 0 & test == 'f_comp' ~ 'significant',
-#                                  delta == 0 & test == 'aic_comp' ~ 'linear', 
-#                                  delta != 0 & test == 'aic_comp' ~ 'quadratic',
-#                                  TRUE ~ NA_character_), 
-#            correct_call = value == exp_value) %>% 
-#     group_by(delta, n, test) %>% 
-#     summarize(accuracy = sum(correct_call) / n()) %>% 
-#     ungroup() %>% 
-#     arrange(delta, test, n)
-# 
-# ## Okay, so how about lots of studies? 
-# ## Again, no. Accuracy apepars to go *down* with lots of studies
-# set.seed(2020-06-19*3)
-# null_many_reps = many_metas(NN = 200, N = c(20, 80, 140, 200), delta = 0, 
-#                             n = 25)
-# null_many_reps %>% 
-#     select(delta, N, meta_idx, f_comp, aic_comp) %>% 
-#     pivot_longer(c(f_comp, aic_comp), 
-#                  names_to = 'test') %>% 
-#     mutate(exp_value = case_when(delta == 0 & test == 'f_comp' ~ 'non-significant', 
-#                                  delta != 0 & test == 'f_comp' ~ 'significant',
-#                                  delta == 0 & test == 'aic_comp' ~ 'linear', 
-#                                  delta != 0 & test == 'aic_comp' ~ 'quadratic',
-#                                  TRUE ~ NA_character_), 
-#            correct_call = value == exp_value) %>% 
-#     group_by(delta, N, test) %>% 
-#     summarize(accuracy = sum(correct_call) / n()) %>% 
-#     ungroup() %>% 
-#     arrange(delta, test, N)
-# 
-# ## Why would accuracy go down with more studies? 
-# null_many_reps %>% 
-#     group_by(N) %>% 
-#     slice(1) %>% 
-#     ungroup() %>% 
-#     select(N, qq_slope, f_stat, f_p, f_comp, 
-#            aic_linear, aic_quad)
-# 
-# null_many_reps %>% 
-#     filter(meta_idx == 1) %>% 
-#     select(-delta, -n) %>% 
-#     unnest(studies) %>% 
-#     qq_plot() +
-#     facet_wrap(vars(N)) +
-#     geom_smooth(method = 'lm', color = 'red') +
-#     geom_smooth(method = 'lm', 
-#                 formula = y ~ poly(x, 2, raw = TRUE), 
-#                 color = 'blue')
-# 
-# null_many_reps %>% 
-#     filter(meta_idx == 1) %>% 
-#     select(-delta, -n) %>% 
-#     unnest(studies) %>% 
-#     ggplot(aes(p.value, color = N, group = N)) +
-#     geom_density()
 
 
 #' # Severity analysis
@@ -660,38 +592,41 @@ power_analysis %>%
 #' # Varying N #
 #+ vary_N
 ## Varying N ----
-#' The supplemental analysis in this section shows how varying the number of studies $N$ influences the shape of Young's p-value plot.  We use an underpowered study design with 60% power to detect a moderate effect $\delta = 0.4$. We use meta-analyses with 10, 50, 100, and 150 studies. 
+#' The supplemental analysis in this section shows how varying the number of studies $N$ influences the type II error rate of the t- and TOST test for a slope of 1. That is, we examine the probability of a slope *different* from 1 when the real effect is zero.  In the main analysis, TOST had an especially bad type II error rate — nearly 80% — with N = 20 studies.  We use the same study design as the main analysis, with delta = 0 and n = 60. 
 
-power.t.test(delta = .4, sd = 1, sig.level = .05, power = .6)
+{
+    set.seed(2020-10-19)
+    tic()
+    vary_n_df = many_metas(NN = 500, 
+                           N = seq(20, 100, by = 20),
+                           delta = 0, n = 60) %>% 
+        mutate(delta_fct = as_factor(delta_chr))
+    toc()
+}
 
-set.seed(2020-10-16)
-tic()
-vary_N_analysis = many_metas(NN = 100, 
-                             N = c(10, 50, 100, 150),
-                             n = 62,
-                             delta = 0.4)
-toc()
+#' Here a the type II error rate is the probability of a test indicating that the slope is *not* 1, given delta = 0. As $N$ increases, the power of each test increases.  For the t-test, this means that the test is better able to detect small deviations away from 1; and so its type II rate increases with $N$.  For TOST, it is better able to bound the estimate for the slope within the equivalence interval $[0.9, 1.1]$ — the confidence interval around the slope estimate gets smaller, and so more likely to be fully contained within the equivalence interval — and so the test is more likely to conclude that the slope is approximately 1.  So its type II error rate decreases. 
+vary_n_df %>% 
+    select(meta_idx, N, qq_t.comp, qq_tost.comp) %>% 
+    pivot_longer(cols = matches('comp'), 
+                 names_to = 'test', 
+                 values_to = 'call') %>% 
+    ggplot(aes(N, fill = call)) +
+    geom_bar(position = 'fill') +
+    facet_wrap(vars(test))
 
-#' Increasing $N$ simply effectively increases the meta-analysis' sampling from the underlying distribution of p-values for the study t-tests.  The result is that, as $N$ increases, the p-value curve gets filled in.  Among other things, this tends to decrease the size of the "gaps" in the blade of the "hockey stick." 
-vary_N_analysis %>% 
-    group_by(N) %>%
-    slice(1:10) %>%
-    ungroup() %>%
-    select(meta_idx, studies, N) %>% 
-    unnest(studies) %>% 
-    young_curve(color = as.factor(N)) +
-    # facet_grid(rows = vars(N), cols = vars(meta_idx), 
-    #            scales = 'free_x')
-    facet_wrap(vars(N, meta_idx), nrow = 3, 
-               scales = 'free_x')
-
-ggplot(vary_N_analysis, aes(as.factor(N), gap)) +
-    geom_violin(draw_quantiles = .5) +
-    geom_hline(yintercept = .125, alpha = .5)
-
-ggplot(vary_N_analysis, aes(as.factor(N), fill = gappy)) +
-    geom_bar(position = 'fill')
-
+vary_n_df %>% 
+    select(meta_idx, N, delta, qq_t.comp, qq_tost.comp) %>% 
+    pivot_longer(cols = matches('comp'), 
+                 names_to = 'test', 
+                 values_to = 'call') %>% 
+    ## This is really hacky, but necessary because (a) `p_value()` would need some work to handle grouped dataframes properly, and (b) `group_map()` and relatives completely throw away the group information. 
+    split(interaction(.$N, .$test)) %>% 
+    map_dfr(~p_value(delta == 0, call == 'slope ≠ 1', .), 
+            .id = 'N.test') %>% 
+    separate(N.test, into = c('N', 'test'), 
+             sep = '\\.', extra = 'merge',
+             convert = TRUE) %>% 
+    select(N, test, type2_rate = p)
 
 #' # Reproducibility
 #+ reproducibility

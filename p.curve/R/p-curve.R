@@ -408,7 +408,7 @@ many_metas = function(NN,
 #'   \item{n_true}{Number of rows post-filtering where `test_output` is false}
 #'   \item{p}{Share of rows `n_true/(n_false + n_true)`}
 #' @export
-p_value = function(h, test_output, dataf) {
+p_value = function(h, test_output, dataf, ...) {
     h = rlang::enquo(h)
     test_output = rlang::enquo(test_output)
 
