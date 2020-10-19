@@ -12,6 +12,8 @@ tblPrefix:
   - "tables"
 ---
 
+*[bw-friendly plots]*
+
 \renewcommand{\P}{\ensuremath{\mathbb{P}}}
 \newcommand{\SchSp}{Schweder and Spjøtvoll}
 
@@ -98,7 +100,7 @@ A *condition* of the simulation fixes the values of these parameters.  Condition
 
 Table: **Base parameter values used in the current simulation study.**  The real effect size of $\{0, .6\}$ indicates the "mixed" or heterogeneous condition, in which half the population have no response and half the population have a strong response. {#tbl:params}
 
-The simulation can also simulate a "mixed" or heterogeneous condition, in which subsets of the population have different responses to the intervention or exposure.  The current study uses a $\{0, .6\}$ mixture, meaning that one subpopulation has a zero effect or no response to the intervention and the other has a medium-strong response of .6.  These two quite different values were chosen to create a mixture that is less likely to look like a homogeneous case; a condition with a $\{.3, .4}$ mixture would be difficult to distinguish from a homogeneous .35 condition.  
+The simulation can also simulate a "mixed" or heterogeneous condition, in which subsets of the population have different responses to the intervention or exposure.  The current study uses a $\{0, .6\}$ mixture, meaning that one subpopulation has a zero effect or no response to the intervention and the other has a medium-strong response of .6.  These two quite different values were chosen to create a mixture that is less likely to look like a homogeneous case; a condition with a $\{.3, .4\}$ mixture would be difficult to distinguish from a homogeneous .35 condition.  
 
 When given this kind of mixture, in the simulation, an individual study draws its sample from one of the subpopulations, selected uniformly at random.  So, in expectation, half of the studies will find a zero effect and half the medium-strong effect.  Of course, in any given set of studies, there will be variation in the ratios of the two subpopulations.  
 
