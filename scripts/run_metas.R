@@ -325,10 +325,10 @@ combined_df %>%
     count(delta_fct, test, value) %>%
     group_by(delta_fct, test) %>% 
     mutate(share = n/sum(n)) %>% 
+    ungroup() %>% 
     mutate(test = fct_recode(test, 
                              'AIC' = 'aic_comp', 
-                             'F-test' = 'f_comp', 
-                             'KS test' = 'ks_comp')) %>% 
+                             'F-test' = 'f_comp')) %>% 
     rename(`$\\delta$` = delta_fct) %>% 
     kable(format = 'latex', booktabs = TRUE, escape = FALSE,
           linesep = '',
