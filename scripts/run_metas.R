@@ -372,7 +372,7 @@ combined_df %>%
 #+ severity analysis
 ## Severity analysis ----
 ## The cleanest way to specify and pass around the H0 and test output values is as `rlang` expressions.  
-h_nought = exprs('0.2' = delta_fct == '0.2', 
+h_nought = exprs('δ = 0.2' = delta_fct == '0.2', 
                  'δ = 0.4' = delta_fct == '0.4', 
                  'δ = 0.6' = delta_fct == '0.6', 
                  'δ = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
@@ -474,39 +474,41 @@ ggplot(llr_df,
     geom_rect(inherit.aes = FALSE,
               xmin = -Inf, xmax = Inf,
               ymin = 1, ymax = .5,
-              alpha = .005) +
+              alpha = .05) +
     geom_rect(inherit.aes = FALSE,
               xmin = -Inf, xmax = Inf,
               ymin = -1, ymax = -.5,
-              alpha = .005) +
+              alpha = .05) +
     geom_rect(inherit.aes = FALSE,
               xmin = -Inf, xmax = Inf,
               ymin = 1, ymax = 2,
-              alpha = .01) +
+              alpha = .1) +
     geom_rect(inherit.aes = FALSE,
               xmin = -Inf, xmax = Inf,
               ymin = -1, ymax = -2,
-              alpha = .01) +
+              alpha = .1) +
     geom_rect(inherit.aes = FALSE,
               xmin = -Inf, xmax = Inf,
               ymin = 2, ymax = Inf,
-              alpha = .05) +
+              alpha = .5) +
     geom_rect(inherit.aes = FALSE,
               xmin = -Inf, xmax = Inf,
               ymin = -Inf, ymax = -2,
-              alpha = .05) +
-    geom_point(size = 2, 
-               shape = 21,
-               position = position_jitter(width = .25, height = 0,
-                                          seed = 2020-07-23)) +
-    facet_wrap(vars(h1_label), scales = 'free_x') +
+              alpha = .5) +
+    geom_segment(aes(yend = 0, xend = output_label, 
+                     color = after_scale(fill)), 
+                 size = 1) +
+    geom_point(size = 2, shape = 21) +
+    facet_wrap(vars(h1_label, h2_label), scales = 'free', 
+               nrow = 2, ncol = 7) +
     ylim(-2, 2) +
-    scale_fill_viridis_d(option = 'C', name = 'H2') +
+    scale_fill_viridis_d(option = 'C', name = 'H2', guide = FALSE) +
     labs(color = 'H2', x = 'test output', y = 'log likelihood ratio')
 
 ggplotly()
 
-do.call(write_plot, c('fig_3_evidence_likelihood', plot_defaults))
+do.call(write_plot, c('fig_3_evidence_likelihood', 
+                      list(height = 3, width = 6, scale = 2)))
 
 ## Test outcomes and H2 where the evidence is infinite
 llr_df %>% 
