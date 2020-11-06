@@ -151,7 +151,7 @@ young_composite(combined_df, alpha = .025,
     scale_color_brewer(palette = 'Set1', guide = FALSE)
 # guides(color = guide_legend(override.aes = list(alpha = 1)))
 
-do.call(write_plot, c('young_composite', samples_par))
+do.call(write_plot, c('fig_2_young_composite', samples_par))
 
 ## Sch-Sp
 combined_df %>%
@@ -417,7 +417,7 @@ ggplot(p_df,
     labs(x = 'test output') +
     facet_wrap(vars(h_nought_label))
 
-do.call(write_plot, c('fig_2_evidence_severity', plot_defaults))
+do.call(write_plot, c('fig_3_evidence_severity', plot_defaults))
 
 p_df %>% 
     mutate(h_nought_label = str_replace(h_nought_label, 
@@ -507,7 +507,7 @@ ggplot(llr_df,
 
 ggplotly()
 
-do.call(write_plot, c('fig_3_evidence_likelihood', 
+do.call(write_plot, c('fig_4_evidence_likelihood', 
                       list(height = 3, width = 6, scale = 2)))
 
 ## Test outcomes and H2 where the evidence is infinite
