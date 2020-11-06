@@ -339,6 +339,9 @@ flatten_to_chr = function(alist) {
 #' @param N Number of studies to conduct in each simulation run (vector)
 #' @param delta Real effect size (vector)
 #' @param n Sample size per group for each simulated study (vector)
+#' @param alpha Threshold for statistical significance, used in various null hypothesis tests
+#' @param tost_delta Radius for the equivalence bounds for TOST test of slope: slope is substantially different from 1 if it is outside of the interval `[1-delta, 1+delta]`.
+#' @param gap_threshold Threshold for a "gap" in a p-value plot to count as "gappy"
 #' @details The condition parameters `N`, `delta`, and `n` can be vectors; the function will automatically construct all combinations.  `NN` must have length 1.
 #' @return A dataframe containing one row per simulation run and the following columns:
 #'   \item{meta_idx}{Index of the simulation run within the condition}
@@ -369,7 +372,10 @@ flatten_to_chr = function(alist) {
 #'
 #' @export
 many_metas = function(NN,
-                      N, delta, n) {
+                      N, delta, n,
+                      alpha = .05,
+                      tost_delta = .1,
+                      gap_threshold = .125) {
     assertthat::assert_that(assertthat::are_equal(length(NN),
                                                   1L),
                             msg = 'NN must be length 1')
@@ -385,9 +391,12 @@ many_metas = function(NN,
         dplyr::mutate(young_slope = purrr::map_dbl(studies,
                                                    young_slope),
                       schsp_slope = purrr::map_dbl(studies, schsp_slope),
-                      qq_slope = purrr::map(studies, qq_slope),
-                      qq_linear = purrr::map(studies, qq_linear),
-                      gap = purrr::map(studies, p_gap_inference)) %>%
+                      qq_slope = purrr::map(studies, qq_slope,
+                                            alpha, tost_delta),
+                      qq_linear = purrr::map(studies, qq_linear,
+                                             alpha),
+                      gap = purrr::map(studies, p_gap_inference,
+                                       gap_threshold)) %>%
         tidyr::unnest(c(qq_slope, qq_linear, gap)) %>%
         dplyr::rename_with(~stringr::str_replace(., 'slope_', 'qq_'),
                            .cols = matches('slope_'))
