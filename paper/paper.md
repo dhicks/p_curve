@@ -13,6 +13,15 @@ tblPrefix:
 ---
 
 *[bw-friendly plots]*
+*[possible journals: 
+- Accountability in Research
+	- title: statistical misrepresentation and manufactured doubt
+		- misleading citations
+		- inadequate documentation of methods
+		- lack of validation of methods
+- Biological Theory
+- Environmental Justice?
+- Risk Analysis]*
 
 \renewcommand{\P}{\ensuremath{\mathbb{P}}}
 \newcommand{\SchSp}{Schweder and Spjøtvoll}
@@ -193,9 +202,11 @@ Figures and tables included in the automatically reproduced analysis validate th
 
 ## Visual analyses ##
 
-[@Fig:samples_young] shows 10 examples of Young's p-value plot across the five conditions.  See the supplemental material for examples of Schweder and Spjøtvoll's and Simonsohn et al.'s plots.  
+[@Fig:samples_young] shows 10 examples of Young's p-value plot across the five conditions, and [@fig:composite_young] shows Young's p-value plot across all runs of the simulation.  See the supplemental material for examples of Schweder and Spjøtvoll's and Simonsohn et al.'s plots.  
 
-![**Examples of Young's p-value plot.**  Drawn at random from the simulation results.  Rows and colors correspond to conditions or real effects ($\delta$), from zero (0) to moderate-strong (0.6) and a mixed condition $\delta = \{0.0, 0.6\}$.  Columns correspond to indices for the simulation runs that produced these results, and are not meaningful.  (In particular, there is no relationship between simulation run $j$ in condition $a$ and simulation run $j$ in condition $b$.)  Each point corresponds to a single p-value in the meta-analysis (simulation run); the x-axis is the ascending rank of the p-value in the set \P, and the y-axis is the p-value itself.](fig_1_samples_young.png){ #fig:samples_young width=6in height=3.75in }
+![**Examples of Young's p-value plot.**  Drawn at random from the simulation results.  Rows and colors correspond to conditions or real effects ($\delta$), from zero (0) to moderate-strong (0.6) and a mixed condition $\delta = \{0.0, 0.6\}$.  Columns correspond to indices for the simulation runs that produced these results, and are not meaningful.  (In particular, there is no relationship between simulation run $j$ in condition $a$ and simulation run $j$ in condition $b$.)  Each point corresponds to a single p-value in the meta-analysis (simulation run); the x-axis is the ascending rank of the p-value in the set \P, and the y-axis is the p-value itself.](fig_1_samples_young.png){ #fig:samples_young width=6in height=4in }
+
+![**Composite of Young's p-value plot.**  Each curve is Young's p-value plot for a single run of the simulation; all simulation runs are shown here.  Panels correspond to conditions or real effects ($\delta$), from zero (0) to moderate-strong (0.6) and a mixed condition $\delta = \{0.0, 0.6\}$.](fig_2_young_composite.png){ #fig:composite_young width=6in height=4in }
 
 As preliminary observations, note that there are both substantial qualitative differences within effect sizes (within rows) as well as substantial qualitative similarity across consecutive effect sizes (comparing adjacent rows).  Across all conditions, plots tend to have both statistically significant and insignificant p-values.  Larger effect sizes have more statistically significant results, resulting in a series of small p-values that gradually bend up.  Even small and zero effects can look nonlinear (\# 97 for $\delta = 0$; \# 90 for $\delta = 0.2$).  The mixed condition plots (bottom row) are not obviously distinct from the small $\delta = 0.2$ and moderate effects $\delta = 0.4$ plots (second and third rows).  
 
@@ -216,7 +227,7 @@ Three outputs of the analysis of Young's p-value plot can be quantified and repr
 
 @Fig:evidence_severity show the results of the severity analysis as p-values; see the supplemental materials for a table version of these results.  By the weak severity criterion, when the results of the severity analysis are $> .05$ (outside of the gray region), the test output does not provide evidence in support of the target hypothesis.  
 
-![**Results of the severity analysis for outputs (iii) slope of 1 and (iv) non-linearity.**  Severity analysis results are reported as p-values:  small values (conventionally $< .05$) indicate a severe test with respect to the null hypothesis.  Panels correspond to null hypotheses, and y-axis values correspond to the severity assessment (as a p-value) for the output with respect to the given null hypothesis.  The gray region indicates $p < 0.05$, which in turn indicate severe tests.](fig_2_evidence_severity.png){#fig:evidence_severity width=6in height=4in}
+![**Results of the severity analysis for outputs (iii) slope of 1 and (iv) non-linearity.**  Severity analysis results are reported as p-values:  small values (conventionally $< .05$) indicate a severe test with respect to the null hypothesis.  Panels correspond to null hypotheses, and y-axis values correspond to the severity assessment (as a p-value) for the output with respect to the given null hypothesis.  The gray region indicates $p < 0.05$, which in turn indicate severe tests.](fig_3_evidence_severity.png){#fig:evidence_severity width=6in height=4in}
 
 Unspecified problems of p-hacking, publication bias, or other questionable researcher practices are supposedly supported by gaps in the plot.  The p-value for the presence of these gaps (output ii-gap) is greater than .25 for every null hypothesis, indicating that gaps are quite common.  In several conditions the majority of p-value plots are "gappy."  Thus *gaps in the plot do not provide evidence of p-hacking, publication bias, or other questionable researcher practices.*  
 
@@ -232,7 +243,7 @@ The mixed-effect hypothesis, or heterogeneity, is supposedly supported by non-li
 
 @Fig:evidence_likelihood show the results of the likelihood analysis; see the supplemental materials for a table version of these results.  Log likelihood ratios are reported, so results above $0.5$ support $H_1$ and results below $-0.5$ support $H_2$.  So, by the weak severity criterion, when the results of the likelihood analysis are $< 0.5$, the test output does not provide evidence supporting the target hypothesis of zero or mixed effect.  
 
-![**Results of the likelihood analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.**  Each point gives the log likelihood ratio for a target vs. rival hypothesis, given an output.  Panels correspond to target hypotheses $H_1$, either a a zero effect $\delta = 0$ or a mixed effect $\delta = \{0, 0.6\}$; point color corresponds to rival hypothesis $H_2$.  Position on the x-axis indicates the output; points have been jittered horizontally to reduce overlap. Position on the y-axis indicates the strength of the evidence that the output provides to the hypotheses:  values greater than 0.5 support $H_1$ over $H_2$.  (Points at the plot margins have infinite value due to division by zero.)  Shaded regions indicate support for either hypothesis, in order from lightest to darkest:  none, "substantial," "strong," "decisive."  An interactive version of this plot is included in the automatic reproduction of the analysis for this paper.](fig_3_evidence_likelihood.png){#fig:evidence_likelihood  width=6in height=4in }
+![**Results of the likelihood analysis for outputs (iii) slope of approximately 1 and (iv) non-linearity.**  Each point gives the log likelihood ratio for a target vs. rival hypothesis, given an output.  Each panel represents one combination of a target hypothesis $H_1$ — either a zero effect $\delta = 0$ or a mixed effect — and a rival hypothesis $H_2$.  Target hypotheses are organized in rows; rival hypotheses are organized in columns.  Point color corresponds to rival hypothesis $H_2$.  Position on the x-axis indicates the output. Position on the y-axis indicates the strength of the evidence that the output provides to the hypotheses:  values greater than 0.5 support $H_1$ over $H_2$.  (Points at the plot margins have infinite value due to division by zero.)  Shaded regions indicate the degree of support for one hypothesis against the other, in order from lightest to darkest:  none, "substantial," "strong," "decisive."  An interactive version of this plot is included in the automatic reproduction of the analysis for this paper.](fig_4_evidence_likelihood.png){#fig:evidence_likelihood  width=6in height=4in }
 
 For "gaps" in the plot, calculating the likelihood ratio would require simulation conditions that included p-hacking and other questionable research practices.  Because the simulation does not currently support these kinds of conditions, likelihood analysis cannot be used for this output.  
  

@@ -143,7 +143,7 @@ combined_df %>%
 
 do.call(write_plot, c('fig_1_samples_young', samples_par))
 
-young_composite(combined_df, alpha = .025, 
+young_composite(combined_df, alpha = .05, 
                 color = delta_fct) +
     facet_wrap(vars(delta_fct)) +
     labs(x = 'rank (ascending)',
@@ -408,16 +408,26 @@ p_df = cross(lst(h_nought, test_output)) %>%
     select(h_nought_label, output_label, p, 
            h_nought, test_output, n_false, n_true)
 
-ggplot(p_df, 
-       aes(output_label, p)) +
-    geom_point() +
-    geom_area(data = tibble(output_label = 0:length(test_output) + 0.5),
-              aes(y = .05), 
-              alpha = .5) +
+severity_plot = ggplot(p_df, 
+       aes(output_label, p, fill = h_nought_label)) +
+    # geom_point(aes(color = h_nought_label)) +
+    geom_segment(aes(yend = 0, xend = output_label, 
+                     color = after_scale(fill)), 
+                 size = 1) +
+    geom_point(size = 2, shape = 21) +
+    # geom_area(data = tibble(output_label = 0:length(test_output) + 0.5),
+    #           inherit.aes = FALSE,
+    #           aes(x = output_label, y = .05), 
+    #           alpha = .5) +
+    geom_hline(linetype = 'dashed', yintercept = .05) +
     labs(x = 'test output') +
+    scale_fill_viridis_d(option = 'C', guide = FALSE) +
     facet_wrap(vars(h_nought_label))
+severity_plot
+severity_plot + scale_y_log10()
 
-do.call(write_plot, c('fig_3_evidence_severity', plot_defaults))
+do.call(write_plot, splice('fig_3_evidence_severity', 
+                           plot = severity_plot, plot_defaults))
 
 p_df %>% 
     mutate(h_nought_label = str_replace(h_nought_label, 
