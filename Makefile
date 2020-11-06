@@ -19,6 +19,10 @@ $(PAPER)/supplement.pdf: $(PAPER)/header.yaml $(PAPER)/supplement.md $(PAPER)/Yo
 $(PAPER)/fig_%.png: $(OUT)/fig_%.png
 	cp -a $^ $(PAPER)
 
+## Grayscale figures
+bw: $(wildcard $(PAPER)/fig_*_bw.png)
+$(PAPER)/fig_%_bw.png: $(PAPER)/fig_%.png
+	convert $^ -set colorspace gray -quiet $@ 
 
 paper: $(PAPER)/paper.pdf
 $(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md \

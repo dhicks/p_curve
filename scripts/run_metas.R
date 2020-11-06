@@ -146,10 +146,12 @@ do.call(write_plot, c('fig_1_samples_young', samples_par))
 young_composite(combined_df, alpha = .05, 
                 color = delta_fct) +
     facet_wrap(vars(delta_fct)) +
+    # geom_smooth(aes(group = delta_fct)) +
     labs(x = 'rank (ascending)',
          y = 'p') +
     scale_color_brewer(palette = 'Set1', guide = FALSE)
 # guides(color = guide_legend(override.aes = list(alpha = 1)))
+
 
 do.call(write_plot, c('fig_2_young_composite', samples_par))
 
@@ -511,9 +513,11 @@ ggplot(llr_df,
     geom_point(size = 2, shape = 21) +
     facet_wrap(vars(h1_label, h2_label), scales = 'free', 
                nrow = 2, ncol = 7) +
-    ylim(-2, 2) +
+    coord_cartesian(ylim = c(-1, 3.5)) +
     scale_fill_viridis_d(option = 'C', name = 'H2', guide = FALSE) +
-    labs(color = 'H2', x = 'test output', y = 'log likelihood ratio')
+    labs(color = 'H2', x = 'test output', 
+         y = 'log likelihood ratio') +
+    theme(axis.text.x = element_text(size = 8))
 
 ggplotly()
 
