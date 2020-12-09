@@ -20,7 +20,6 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@master
       # Install pandoc using setup-pandoc
       # NB After updating Makefile, switch to pandoc 2.11
       - uses: r-lib/actions/setup-pandoc@v1
@@ -29,7 +28,12 @@ jobs:
       - run: echo "# Test" | pandoc -t html
   
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@master
       - uses: actions/checkout@v2
+
+      # Install dependencies from DESCRIPTION
+      - run: Rscript -e "install.packages('remotes')"
+      - run: Rscript -e "remotes::install_deps(dependencies = TRUE)"
 
       # Reproduce the analysis
       - name: make script
