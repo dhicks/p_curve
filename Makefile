@@ -12,7 +12,7 @@ supplement: $(PAPER)/supplement.pdf
 $(PAPER)/supplement.pdf: $(PAPER)/header.yaml $(PAPER)/supplement.md $(PAPER)/Young.bib \
            $(wildcard $(OUT)/*.png) \
            $(wildcard $(OUT)/*.tex)
-	cd $(PAPER); pandoc header.yaml supplement.md -o supplement.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml supplement.md -o supplement.pdf --citeproc --pdf-engine=lualatex --wrap=preserve
 
 
 ## Figures
@@ -28,11 +28,11 @@ paper: $(PAPER)/paper.pdf
 $(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md \
                     $(PAPER)/Young.bib \
                     $(wildcard $(PAPER)/fig_*.png)
-	cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	# cd $(PAPER); Rscript -e "rmarkdown::render('paper.md')"
 
 tex: 
-	cd $(PAPER); pandoc header.yaml paper.md -o paper.tex  --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml paper.md -o paper.tex  --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 
 zip: $(PAPER)/paper.zip
 $(PAPER)/paper.zip: $(PAPER)/paper.pdf \
@@ -47,7 +47,7 @@ docx: $(PAPER)/paper.docx
 $(PAPER)/paper.docx: $(PAPER)/header.yaml $(PAPER)/paper.md $(PAPER)/Young.bib \
            $(wildcard $(OUT)/*.png) \
            $(wildcard $(OUT)/*.tex)
-	cd $(PAPER); pandoc header.yaml paper.md -o paper.docx --filter=pandoc-crossref --filter=pandoc-citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml paper.md -o paper.docx --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	
 wc: 
 	pdftotext $(PAPER)/paper.pdf - | wc -w
