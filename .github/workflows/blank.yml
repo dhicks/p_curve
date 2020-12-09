@@ -61,7 +61,7 @@ jobs:
       
       # Push the reproduced analysis back up to gh-pages
       - name: Push reproduced analysis
-      - run: |
+        run: |
           mv scripts/run_metas.html index.html
           git config --global user.name "Dan Hicks"
           git config --global user.email "hicks.daniel.j@gmail.com"
