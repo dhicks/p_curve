@@ -10,7 +10,7 @@
 #' 
 #' This document conducts the simulation described in the paper "Young's p-value plot does not provide evidence against air pollution hazards" by Daniel J. Hicks, and generates all plots and tables presented in that paper.  
 #' 
-#' The source code for this project is available at <https://github.com/dhicks/p_curve>.  The most recent Github version is automatically reproduced using Travis-CI, and the resulting `html` version of this file can be viewed at <https://dhicks.github.io/p_curve/>. 
+#' The source code for this project is available at <https://github.com/dhicks/p_curve>.  The most recent version is automatically reproduced using GitHub Actions, and the resulting `html` version of this file can be viewed at <https://dhicks.github.io/p_curve/>. 
 #' 
 #' After cloning the repository and installing the R dependencies listed below, the analysis, output files, and `html` version of this file can be recreated from the command line by calling `Rscript -e "rmarkdown::render('run_metas.R')"` within the `scripts` directory.  Alternavely, if `make` is installed, call `make script` from the command line within the top folder of the repository, or `make knit` from within the `scripts` folder.   
 #' 
