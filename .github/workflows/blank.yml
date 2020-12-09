@@ -13,9 +13,9 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  where:
-    runs-on: ubuntu-latest
-    steps:
+  #where:
+    #runs-on: ubuntu-latest
+    #steps:
       #- run: Rscript -e "Sys.getenv('R_LIBS_USER')"
       #- run: which curl
       #- run: echo $PATH
