@@ -21,13 +21,16 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@master
+      # Install pandoc using setup-pandoc
+      # NB After updating Makefile, switch to pandoc 2.11
       - uses: r-lib/actions/setup-pandoc@v1
         with:
-          pandoc-version: '2.11' # The pandoc version to download (if necessary) and use.
+          pandoc-version: '2.10' # The pandoc version to download (if necessary) and use.
       - run: echo "# Test" | pandoc -t html
   
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      #- uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      #- name: make
-      #  run: make paper
+      # Reproduce the analysis
+      - name: make script
+        run: make script
