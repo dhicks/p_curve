@@ -57,4 +57,15 @@ jobs:
 
       # Reproduce the analysis
       - name: make script
-        run: echo "make script"
+        run: make script
+      
+      # Push the reproduced analysis back up to gh-pages
+      - name: Push reproduced analysis
+      - run: |
+          mv scripts/run_metas.html index.html
+          git config --global user.name "Dan Hicks"
+          git config --global user.email "hicks.daniel.j@gmail.com"
+          git checkout -b gh-pages
+          git add index.html
+          git commit -m "Reproduced analysis"
+          git push
