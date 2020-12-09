@@ -17,8 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       #- run: Rscript -e "Sys.getenv('R_LIBS_USER')"
-      - run: which curl
-      - run: echo $PATH
+      - name: curl
+        run: which curl
+        run: echo $PATH
         run: ls /usr/local/lib/pkgconfig/
 
   build:
