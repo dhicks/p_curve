@@ -40,10 +40,10 @@ jobs:
 
       # Install dependencies from DESCRIPTION
       - name: Install dependencies
-        run: Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
-        run: Rscript -e "install.packages('remotes')"
-        run: Rscript -e "remotes::install_deps(dependencies = TRUE)"
+      #  run: Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
+      #  run: Rscript -e "install.packages('remotes')"
+      #  run: Rscript -e "remotes::install_deps(dependencies = TRUE)"
 
       # Reproduce the analysis
       - name: make script
-        run: make script
+      #  run: make script
