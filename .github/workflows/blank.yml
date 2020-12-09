@@ -33,12 +33,11 @@ jobs:
         uses: r-lib/actions/setup-pandoc@v1
         with:
           pandoc-version: '2.10' # The pandoc version to download (if necessary) and use.
-        run: echo "# Test" | pandoc -t html
+      #- run: echo "# Test" | pandoc -t html
   
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout repo
-        uses: actions/checkout@master
-        uses: actions/checkout@v2
+      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
 
       # Install dependencies from DESCRIPTION
       - name: Install dependencies
