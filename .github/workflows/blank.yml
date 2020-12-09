@@ -16,7 +16,10 @@ jobs:
   where:
     runs-on: ubuntu-latest
     steps:
-      - run: Rscript -e "Sys.getenv('R_LIBS_USER')"
+      #- run: Rscript -e "Sys.getenv('R_LIBS_USER')"
+      - run: which curl
+      - run: echo $PATH
+        run: ls /usr/local/lib/pkgconfig/
 
   build:
     # The type of runner that the job will run on
@@ -36,9 +39,10 @@ jobs:
       - uses: actions/checkout@v2
 
       # Install dependencies from DESCRIPTION
-      - run: Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
-      - run: Rscript -e "install.packages('remotes')"
-      - run: Rscript -e "remotes::install_deps(dependencies = TRUE)"
+      - name: Install dependencies
+        run: Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
+        run: Rscript -e "install.packages('remotes')"
+        run: Rscript -e "remotes::install_deps(dependencies = TRUE)"
 
       # Reproduce the analysis
       - name: make script
