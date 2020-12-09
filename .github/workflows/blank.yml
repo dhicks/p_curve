@@ -31,8 +31,8 @@ jobs:
       # NB After updating Makefile, switch to pandoc 2.11
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@v1
-          with:
-            pandoc-version: '2.10' # The pandoc version to download (if necessary) and use.
+        with:
+          pandoc-version: '2.10' # The pandoc version to download (if necessary) and use.
         run: echo "# Test" | pandoc -t html
   
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
