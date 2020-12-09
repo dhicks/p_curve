@@ -48,5 +48,5 @@ jobs:
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
 
       # Reproduce the analysis
-      #- name: make script
-      #  run: make script
+      - name: make script
+        run: make script
