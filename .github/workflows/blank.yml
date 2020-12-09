@@ -36,8 +36,16 @@ jobs:
       #- run: echo "# Test" | pandoc -t html
   
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@master
       - uses: actions/checkout@v2
+
+      # Cache dependencies
+      - name: Cache R packages
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-packages
+        with:
+          path: /home/runner/R/x86_64-pc-linux-gnu-library/4.0
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('DESCRIPTION') }}
 
       # Install dependencies from DESCRIPTION
       - name: Install dependencies
@@ -49,4 +57,4 @@ jobs:
 
       # Reproduce the analysis
       - name: make script
-        run: make script
+        run: echo "make script"
