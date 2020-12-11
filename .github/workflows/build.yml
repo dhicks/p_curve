@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Automatically reproduce analysis
+name: build
 
 # Controls when the action will run. 
 on:
@@ -50,7 +50,8 @@ jobs:
       # Install dependencies from DESCRIPTION
       - name: Install dependencies
         run: |
-          sudo apt-get install libcurl4-openssl-dev
+          sudo apt-get update
+          sudo apt-get install libcurl4-openssl
           Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
           Rscript -e "install.packages('remotes')"
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
