@@ -51,7 +51,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libcurl4-openssl
+          sudo apt-get install libcurl4-openssl-dev
           Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
           Rscript -e "install.packages('remotes')"
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
