@@ -1,6 +1,6 @@
 ---
 title: "Young's p-value plot does not provide evidence against air pollution hazards"
-author: "Daniel J. Hicks"
+#author: "Daniel J. Hicks"
 abstract: >
   S. Stanley Young and collaborators have criticized epidemiological studies and meta-analyses of air pollution hazards using a graphical method they call a p-value plot, claiming to find zero effects, heterogeneity, and p-hacking.  However, the p-value method has not been validated in a peer-reviewed publication. The aim of this study was to investigate the statistical and evidentiary properties of this method. A simulation approach was chosen to create studies and meta-analyses with known real effects $\delta$ and automatically analyze them using the p-value plot method. Two quantifiable conceptions of evidence were selected from the philosophy of science literature to assess the evidentiary value of the plot. The simulation and analysis is publicly available and automatically reproduced. 500 simulation runs were conducted across each of 5 real effect conditions, ranging from zero effects $\delta = 0$ to moderate-strong effects $\delta = 0.6$ and a heterogeneous condition. Young's p-value plot did not provide evidence for heterogeneity or p-hacking with respect to any condition. Depending on the exact rival hypothesis and analytical strategy, Young's p-value plot can provide evidence of zero effects. Young and collaborators most often use the p-value plot method to claim heterogeneity and p-hacking in the air pollution epidemiological literature. Young's p-value plot does not provide evidence to support these criticisms.
 bibliography: Young.bib
@@ -11,17 +11,6 @@ tblPrefix:
   - "table"
   - "tables"
 ---
-
-*[bw-friendly plots]*
-*[possible journals: 
-- Accountability in Research
-	- title: statistical misrepresentation and manufactured doubt
-		- misleading citations
-		- inadequate documentation of methods
-		- lack of validation of methods
-- Biological Theory
-- Environmental Justice?
-- Risk Analysis]*
 
 \renewcommand{\P}{\ensuremath{\mathbb{P}}}
 \newcommand{\SchSp}{Schweder and Spjøtvoll}
@@ -42,7 +31,7 @@ Based on the results of this simulation analysis, I find that the p-value plot m
 
 # Reconstructing Young's Methods #
 
-Young and collaborators have made three kinds of arguments criticizing air pollution epidemiology.  The most common argument first observes that analysts of complex data sets must make a number of decisions about which hypotheses to investigate and how to construct models; Young and collaborators then relate the large number of possible combinations of decisions to the traditional frequentist problem of correcting for multiple comparisons [@YoungCerealinducedGenderSelection2009; @YoungDemingDataObservational2011; @YoungReModelingAssociation2013; @PeaceReliabilityNutritionalMetaanalysis2017; @YoungAirQualityEnvironmental2017; @YoungAirQualityAcute2017; @YouPM2OzoneIndicators2018; @YoungAirPollutionMortality2018; @YoungReliabilityEnvironmentalEpidemiology2019; @YoungEvaluationMetaanalysisAir2019; @YoungReExtendedMortality2020].  For a critical assessment of this argument, see @HicksWhenVirtuesAre.  A second argument deploys a statistical method that Young and collaborators call "local control," which first clusters geographic units and then evaluates hazards separately within each cluster [@ObenchainAdvancingStatisticalThinking2013; @YoungBiasResponseHeterogeneity2015; @ObenchainLocalControlStrategy2017; @ObenchainLowlevelRadonExposure2019].  The local control method is not examined here.  
+Young and collaborators have made three kinds of arguments criticizing air pollution epidemiology.  The most common argument first observes that analysts of complex data sets must make a number of decisions about which hypotheses to investigate and how to construct models; Young and collaborators then relate the large number of possible combinations of decisions to the traditional frequentist problem of correcting for multiple comparisons [@YoungCerealinducedGenderSelection2009; @YoungDemingDataObservational2011; @YoungReModelingAssociation2013; @PeaceReliabilityNutritionalMetaanalysis2017; @YoungAirQualityEnvironmental2017; @YoungAirQualityAcute2017; @YouPM2OzoneIndicators2018; @YoungAirPollutionMortality2018; @YoungReliabilityEnvironmentalEpidemiology2019; @YoungEvaluationMetaanalysisAir2019; @YoungReExtendedMortality2020].  For a critical assessment of this argument, see [redacted]<!--@HicksWhenVirtuesAre-->.  A second argument deploys a statistical method that Young and collaborators call "local control," which first clusters geographic units and then evaluates hazards separately within each cluster [@ObenchainAdvancingStatisticalThinking2013; @YoungBiasResponseHeterogeneity2015; @ObenchainLocalControlStrategy2017; @ObenchainLowlevelRadonExposure2019].  The local control method is not examined here.  
 
 This paper focuses on the third argument made by Young and collaborators, which examines a collection of p-values, usually extracted from the primary studies in a meta-analysis or similar aggregate of studies [@YoungReliabilityEnvironmentalEpidemiology2019; @YoungAmbientAirPollution2019; @YoungCombinedBackgroundInformation2019; @YoungEvaluationMetaanalysisAir2019; @YoungReExtendedMortality2020; @YoungPM2AllcauseMortality2020] but sometimes produced by testing multiple distinct hypotheses on a single complex dataset [@YoungCerealinducedGenderSelection2009; @YoungAssessingGeographicHeterogeneity2013; @YouPM2OzoneIndicators2018]. The p-values are visualized using what Young and collaborators call a "p-value plot," and features of the plot are interpreted as indicating that there is no underlying effect [@YoungCerealinducedGenderSelection2009; @YouPM2OzoneIndicators2018; @YoungCombinedBackgroundInformation2019; @YoungReExtendedMortality2020; @YoungPM2AllcauseMortality2020], a heterogeneous mixture of zero and nonzero effects [@YoungReliabilityEnvironmentalEpidemiology2019; @YoungAmbientAirPollution2019; @YoungCombinedBackgroundInformation2019; @YoungEvaluationMetaanalysisAir2019], or that the authors of the primary studies have engaged in p-hacking [@YoungEvaluationMetaanalysisAir2019]. 
 
@@ -193,7 +182,8 @@ To apply the likelihood conception of evidence to Young and collaborators' skept
 
 ## Reproducibility ##
 
-The simulation, analysis, and outputs (figures and tables) are publicly available and automatically reproduced.  Code is available at <https://github.com/dhicks/p_curve> and the automatically reproduced analysis can be viewed at <https://dhicks.github.io/p_curve/>.  
+The simulation, analysis, and outputs (figures and tables) are publicly available and automatically reproduced.  Code is available at [redacted] and the automatically reproduced analysis can be viewed at [redacted].  
+<!--<https://github.com/dhicks/p_curve> <https://dhicks.github.io/p_curve/>-->
 
 The simulation and analysis are both written in R version 4.0.0 [@RCoreTeamLanguageEnvironmentStatistical2018] and make extensive use of the `tidyverse` suite of packages for R version 1.3.0 [@WickhamTidyverseEasilyInstall2019].  The TOSTER package version 0.3.4 [@LakensTOSTERTwoOneSided2018] was used to conduct the TOST analysis.  Because the software on the virtual machine used to automatically reproduce the analysis is updated each time the analysis is re-run, software versions reported online may be different from those reported here. 
 
