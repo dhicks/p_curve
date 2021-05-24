@@ -2,7 +2,7 @@ PAPER := paper
 OUT := out
 SCRIPT := scripts
 
-all: script supplement paper zip
+all: script supplement paper zip diff
 
 script:
 	$(MAKE) -C $(SCRIPT)
@@ -30,6 +30,11 @@ $(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md \
                     $(wildcard $(PAPER)/fig_*.png)
 	cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	# cd $(PAPER); Rscript -e "rmarkdown::render('paper.md')"
+	
+diff: diff.pdf
+diff.pdf: paper_20210208.md paper.md
+	pandiff paper_20210208.md paper.md -s -o diff.pdf
+
 
 tex: $(PAPER)/paper.tex
 $(PAPER)/paper.tex: paper
