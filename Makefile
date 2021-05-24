@@ -31,9 +31,9 @@ $(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md \
 	cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	# cd $(PAPER); Rscript -e "rmarkdown::render('paper.md')"
 	
-diff: diff.pdf
-diff.pdf: paper_20210208.md paper.md
-	pandiff paper_20210208.md paper.md -s -o diff.pdf
+diff: $(PAPER)/diff.pdf
+$(PAPER)/diff.pdf: $(PAPER)/paper_20201211.md $(PAPER)/paper.md
+	pandiff $(PAPER)/paper_20201211.md $(PAPER)/paper.md -s -o $@ --pdf-engine=lualatex
 
 
 tex: $(PAPER)/paper.tex
