@@ -1,4 +1,4 @@
-![Automatically reproduce analysis](https://github.com/dhicks/p_curve/workflows/Automatically%20reproduce%20analysis/badge.svg?event=push)
+[![build](https://github.com/dhicks/p_curve/actions/workflows/build.yml/badge.svg)](https://github.com/dhicks/p_curve/actions/workflows/build.yml)
 
 # Analysis for "Young's p-value plot does not provide evidence against air pollution hazards"
 ## Daniel J. Hicks
