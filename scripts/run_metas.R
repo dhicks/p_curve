@@ -30,6 +30,7 @@ library(plotly)
 library(knitr)
 
 library(tictoc)
+library(assertthat)
 
 ## Local package with simulation functions
 load_all(file.path('..', 'p.curve'))
@@ -47,25 +48,38 @@ write_plot = function(name, ...) {
 plot_defaults = list(height = 4, width = 6, scale = 1.5)
 
 #' # Run simulations
-#+ run simulations
+#+ run simulations, cache = TRUE
 ## Run simulations ----
-## n = 60 gives us ~60% power to detect a moderate effect
-power.t.test(delta = c(.2, .4, .6), sd = 1, sig.level = 0.05, n = 60)
+## Define non-zero, non-mixed effects
+effects = c('very small' = .01, 
+            'small' = .2, 
+            'moderate' = .5, 
+            'large' = .8, 
+            'very large' = 1.2)
 
-## 5 effect sizes x 500 meta-studies x 20 studies x 25 samples
+## n = 64 gives us 80% power to detect a moderate effect
+power.t.test(delta = .8, sd = 1, sig.level = 0.05, power = .80)
+study_n = 26
+power.t.test(delta = effects, sd = 1, sig.level = 0.05, n = study_n)
+
+## 7 effect sizes x 500 meta-studies x 20 studies x 64 samples
 ## 2-3 min
 {
     set.seed(2020-10-17)
     tic()
     NN = 500  ## How many simulations to run? 
     combined_df = many_metas(NN = NN, 
-                             delta = list(0, .2, .4, .6, list(0, .6)), 
-                             N = 20, n = 60) %>% 
+                             delta = c('zero' = 0, 
+                                       effects, 
+                                       list('mixed' = list(0, .8))), 
+                             N = 20, n = study_n) %>% 
         mutate(delta_fct = as_factor(delta_chr))
     toc()
 }
 
 combined_df
+assert_that(are_equal(nrow(combined_df), 
+                      7*500))
 
 
 
@@ -264,12 +278,22 @@ ggplot(combined_df, aes(young_slope, schsp_slope)) +
     geom_point() +
     scale_y_log10()
 
+ggplot2::last_plot() + scale_x_log10()
+
 ## Whereas Young slope is a rescaling of QQ slope;
 ## the x-axis in the QQ plot is rank/max(rank), and rank is the x-axis in the Young plot
 combined_df %>% 
     rename(qq_slope = qq_estimate) %>% 
     ggplot(aes(young_slope, qq_slope)) +
     geom_point()
+
+## Illustrating noisy relationship between QQ slope and SchSp slope around "45 degree line"
+combined_df %>% 
+    filter(qq_estimate > .9, qq_estimate < 1.1) %>% 
+    ggplot(aes(qq_estimate, schsp_slope)) +
+    geom_point() +
+    scale_y_log10() +
+    scale_x_log10()
 
 ## Distribution of calls for the slope
 combined_df %>% 
@@ -374,14 +398,16 @@ combined_df %>%
 #+ severity analysis
 ## Severity analysis ----
 ## The cleanest way to specify and pass around the H0 and test output values is as `rlang` expressions.  
-h_nought = exprs('δ = 0.2' = delta_fct == '0.2', 
-                 'δ = 0.4' = delta_fct == '0.4', 
-                 'δ = 0.6' = delta_fct == '0.6', 
-                 'δ = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
+h_nought = exprs('δ = 0.01' = delta_fct == '0.01', 
+                 'δ = 0.2' = delta_fct == '0.2', 
+                 'δ = 0.5' = delta_fct == '0.5', 
+                 'δ = 0.8' = delta_fct == '0.8',
+                 'δ = 1.2' = delta_fct == '1.2', 
+                 'δ > 0' = delta_fct %in% !!effects, 
                  'δ is mixed' = delta_fct == 'mixed', 
                  'δ = 0' = delta_fct == '0', 
-                 'δ is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
-                 'δ is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
+                 'δ is non-zero' = delta_fct %in% c(!!effects, 'mixed'), 
+                 'δ is not mixed' = delta_fct %in% c(!!effects, '0'))
 test_output = exprs(
     'ii-gap' = gappy == 'gappy',
     'iii-range' =  .9 < qq_estimate & qq_estimate < 1.1,
@@ -393,17 +419,22 @@ test_output = exprs(
 
 ## These crosswalks let us attach short labels for hypotheses and outputs
 h_xwalk = tibble(h_label = names(h_nought), 
-                 h = map_chr(h_nought, as_label)) %>% 
+                 h = map_chr(h_nought, quo_as_text)) %>% 
     mutate(h_label = fct_inorder(h_label))
 output_xwalk = tibble(output_label = names(test_output), 
-                      test_output = map_chr(test_output, as_label)) %>% 
+                      test_output = map_chr(test_output, quo_as_text)) %>% 
     mutate(output_label = fct_inorder(output_label))
 
 ## We first build a list containing each combination of hypothesis and output,
 ## then calculate the p-value for each combination. 
 ## The remaining steps just attach short labels and arrange the columns in a readable way
+# debugonce(p_value)
+# p_value(!!h_nought[['δ > 0']], gappy == 'gappy', combined_df)
+
+
 p_df = cross(lst(h_nought, test_output)) %>% 
-    map_dfr(~p_value(!!.[['h_nought']], !!.[['test_output']], combined_df)) %>% 
+    map_dfr(~p_value(!!.[['h_nought']], !!.[['test_output']], 
+                     combined_df, verbose = FALSE)) %>% 
     left_join(h_xwalk, by = 'h') %>% 
     rename(h_nought = h, h_nought_label = h_label) %>% 
     left_join(output_xwalk, by = 'test_output') %>% 
@@ -411,7 +442,7 @@ p_df = cross(lst(h_nought, test_output)) %>%
            h_nought, test_output, n_false, n_true)
 
 severity_plot = ggplot(p_df, 
-       aes(output_label, p, fill = h_nought_label)) +
+                       aes(output_label, p, fill = h_nought_label)) +
     # geom_point(aes(color = h_nought_label)) +
     geom_segment(aes(yend = 0, xend = output_label, 
                      color = after_scale(fill)), 
@@ -429,7 +460,9 @@ severity_plot
 severity_plot + scale_y_log10()
 
 do.call(write_plot, splice('fig_3_evidence_severity', 
-                           plot = severity_plot, plot_defaults))
+                           plot = severity_plot + 
+                               scale_x_discrete(guide = guide_axis(n.dodge = 2)), 
+                           plot_defaults))
 
 p_df %>% 
     mutate(h_nought_label = str_replace(h_nought_label, 
@@ -452,21 +485,15 @@ p_df %>%
 h1 = exprs('δ = 0' = delta_fct == '0', 
            'δ is mixed' = delta_fct == 'mixed')
 
-h2 = exprs('δ = 0.2' = delta_fct == '0.2', 
-           'δ = 0.4' = delta_fct == '0.4', 
-           'δ = 0.6' = delta_fct == '0.6', 
-           'δ = 0.2, 0.4, 0.6' = delta_fct %in% c('0.2', '0.4', '0.6'), 
-           'δ is mixed' = delta_fct == 'mixed', 
-           'δ = 0' = delta_fct == '0', 
-           'δ is non-zero' = delta_fct %in% c('0.2', '0.4', '0.6', 'mixed'), 
-           'δ is not mixed' = delta_fct %in% c('0.2', '0.4', '0.6', '0'))
+h2 = h_nought
 
 ## test_output is the same as for the severity analysis
 
 ## We can use the same crosswalks as above
 
 ## Calculate the likelihood ratios
-llr_df = likelihood_ratio(h1, h2, test_output, combined_df) %>% 
+llr_df = likelihood_ratio(h1, h2, test_output, combined_df, 
+                          verbose = FALSE) %>% 
     left_join(h_xwalk, by = c('h1' = 'h')) %>% 
     rename(h1_label = h_label) %>% 
     left_join(h_xwalk, by = c('h2' = 'h')) %>% 
@@ -480,8 +507,9 @@ llr_df = likelihood_ratio(h1, h2, test_output, combined_df) %>%
            h1, h2, test_output, everything())
 
 
-ggplot(llr_df, 
-       aes(output_label, llr, fill = h2_label)) +
+llr_plot_zero = llr_df %>% 
+    filter(h1_label == 'δ = 0') %>% 
+    ggplot(aes(output_label, llr, fill = h2_label)) +
     geom_hline(yintercept = 0, linetype = 'dashed') +
     geom_rect(inherit.aes = FALSE,
               xmin = -Inf, xmax = Inf,
@@ -512,17 +540,30 @@ ggplot(llr_df,
                  size = 1) +
     geom_point(size = 2, shape = 21) +
     facet_wrap(vars(h1_label, h2_label), scales = 'free', 
-               nrow = 2, ncol = 7) +
-    coord_cartesian(ylim = c(-1, 3.5)) +
+               nrow = 3) +
+    coord_cartesian(ylim = c(-.5, 2.5)) +
     scale_fill_viridis_d(option = 'C', name = 'H2', guide = FALSE) +
     labs(color = 'H2', x = 'test output', 
-         y = 'log likelihood ratio') +
-    theme(axis.text.x = element_text(size = 8))
+         y = 'log likelihood ratio') #+
+    # theme(axis.text.x = element_text(size = 8)) + 
+    # scale_x_discrete(guide = guide_axis(n.dodge = 2))
+    # scale_x_discrete(guide = guide_axis(angle = 20))
+llr_plot_zero
 
-ggplotly()
+ggplotly(llr_plot_zero)
 
-do.call(write_plot, c('fig_4_evidence_likelihood', 
-                      list(height = 3, width = 6, scale = 2)))
+do.call(write_plot, splice('fig_4_evidence_likelihood_zero', 
+                      plot = llr_plot_zero,
+                      plot_defaults))
+
+llr_plot_mix = llr_plot_zero %+% 
+    filter(llr_df, h1_label == 'δ is mixed') +
+    coord_cartesian(ylim = c(-.75, .75))
+llr_plot_mix
+
+do.call(write_plot, splice('fig_5_evidence_likelihood_mix', 
+                      plot = llr_plot_mix,
+                      plot_defaults))
 
 ## Test outcomes and H2 where the evidence is infinite
 llr_df %>% 
@@ -554,6 +595,8 @@ power.t.test(delta = .05, sd = 1, sig.level = .05, power = .2)
 power.t.test(delta = .05, sd = 1, sig.level = .05, power = .5)
 power.t.test(delta = .05, sd = 1, sig.level = .05, power = .8)
 
+#+ power_sim, cache = TRUE
+## 110 sec
 set.seed(2020-07-27)
 tic()
 power_analysis = many_metas(NN = 500, N = 25,
@@ -610,6 +653,7 @@ power_analysis %>%
 ## Varying N ----
 #' The supplemental analysis in this section shows how varying the number of studies $N$ influences the type II error rate of the t- and TOST test for a slope of 1. That is, we examine the probability of a slope *different* from 1 when the real effect is zero.  In the main analysis, TOST had an especially bad type II error rate — nearly 80% — with N = 20 studies.  We use the same study design as the main analysis, with delta = 0 and n = 60. 
 
+#+ vary_N_sim, cache = TRUE
 {
     set.seed(2020-10-19)
     tic()

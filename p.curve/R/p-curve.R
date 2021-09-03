@@ -1,5 +1,15 @@
 library(magrittr)
 
+#' Convert quosure to text
+#'
+#' rlang::quo_as_text() is recommended for this, but abbreviates long calls, and as a result some of the quosures we use have identical results.  Instead, we wrap rlang::quo_text(), taking care of the low default width argument.
+#' @param quo A quosure
+#' @return A length-one character vector representing the quosure's call
+#' @export
+quo_as_text = function(quo) {
+    quo_text(quo, width = 300L)
+}
+
 #' Draw samples
 #'
 #' Draws samples of size `n` from two normal distributions.
@@ -184,21 +194,21 @@ qq_slope = function(studies, alpha = 0.05, delta = .1) {
                                               plot = FALSE,
                                               verbose = FALSE) %>%
                 list()},
-    tost = purrr::map(tost, tibble::as_tibble)) %>%
-    tidyr::unnest(tost) %>%
-    dplyr::select(estimate, std.error,
-                  tost.t1 = TOST_t1, tost.p1 = TOST_p1,
-                  tost.t2 = TOST_t2, tost.p2 = TOST_p2) %>%
-    dplyr::mutate(tost.p.value = max(tost.p1, tost.p2),
-                  tost.comp = dplyr::if_else(tost.p.value < alpha,
-                                             'slope = 1', 'slope ≠ 1'))
+                tost = purrr::map(tost, tibble::as_tibble)) %>%
+        tidyr::unnest(tost) %>%
+        dplyr::select(estimate, std.error,
+                      tost.t1 = TOST_t1, tost.p1 = TOST_p1,
+                      tost.t2 = TOST_t2, tost.p2 = TOST_p2) %>%
+        dplyr::mutate(tost.p.value = max(tost.p1, tost.p2),
+                      tost.comp = dplyr::if_else(tost.p.value < alpha,
+                                                 'slope = 1', 'slope ≠ 1'))
 
-combined_df = dplyr::full_join(t_df, tost_df,
-                               by = c('estimate', 'std.error')) %>%
-    dplyr::bind_cols(ks_df) %>%
-    dplyr::rename_all(~stringr::str_c('slope_', .))
+    combined_df = dplyr::full_join(t_df, tost_df,
+                                   by = c('estimate', 'std.error')) %>%
+        dplyr::bind_cols(ks_df) %>%
+        dplyr::rename_all(~stringr::str_c('slope_', .))
 
-return(combined_df)
+    return(combined_df)
 }
 # qq_slope(studies)
 
@@ -410,6 +420,7 @@ many_metas = function(NN,
 #' @param h Bare (unquoted) expression for H0 (eg, `delta == 0.2`)
 #' @param test_output Bare (unquoted) expression for the test output (eg, `aic_comp == 'quadratic'`)
 #' @param dataf Data frame of simulation results, as returned by `many_metas()`
+#' @param verbose Message `h` and `test_output`
 #' @return Dataframe with columns
 #'   \item{h}{Expression for H0, as a string}
 #'   \item{test_output}{Expression for the test output, as a string}
@@ -417,17 +428,26 @@ many_metas = function(NN,
 #'   \item{n_true}{Number of rows post-filtering where `test_output` is false}
 #'   \item{p}{Share of rows `n_true/(n_false + n_true)`}
 #' @export
-p_value = function(h, test_output, dataf, ...) {
+p_value = function(h, test_output, dataf, verbose = TRUE) {
     h = rlang::enquo(h)
     test_output = rlang::enquo(test_output)
+    if (verbose) {
+        message(quo_as_text(h))
+        message(quo_as_text(test_output))
+    }
 
-    # return(rlang::as_label(h))
+    # return(rlang::quo_as_text(h))
 
     counted_df = dataf %>%
         dplyr::filter(!!h) %>%
         dplyr::mutate(test_output := !!test_output) %>%
         dplyr::count(test_output) %>%
         dplyr::mutate(share = n / sum(n))
+
+    if (identical(nrow(counted_df), 0L)) {
+        ## If counted_df is empty, this means the null hypothesis is never true
+
+    }
 
     if (identical(nrow(counted_df), 1L)) {
         ## If there's only 1 row, all the test_output values are the same
@@ -454,8 +474,8 @@ p_value = function(h, test_output, dataf, ...) {
     }
 
     return_df = p %>%
-        dplyr::mutate(h = rlang::as_label(h),
-                      test_output = rlang::as_label(test_output)) %>%
+        dplyr::mutate(h = quo_as_text(h),
+                      test_output = quo_as_text(test_output)) %>%
         dplyr::select(h, test_output, n_false, n_true, p = share_true)
 
     return(return_df)
@@ -468,21 +488,23 @@ p_value = function(h, test_output, dataf, ...) {
 #' @param h2 List of `call` for H2
 #' @param test_output List of `call` for the test output
 #' @param dataf Data frame of simulation results, as returned by `many_metas()`
+#' @param verbose Verbose output from `p_value()`
 #' @return Dataframe with columns
 #'   \item{h1, h2, test_output}{Expression for H1, H2, and test output, as strings}
 #'   \item{llr}{Log (base 10) likelihood ratio L(H1; d) / L(H2; d)}
 #'   \item{n_false_h1, n_false_h2}{Number of rows post-filtering where `test_output` is true, for H1 and H2}
 #'   \item{n_true_h1, n_true_h2}{Number of rows post-filtering where `test_output` is false, for H1 and H2}
 #' @export
-likelihood_ratio = function(h1, h2, test_output, dataf) {
+likelihood_ratio = function(h1, h2, test_output, dataf, verbose = TRUE) {
     h1_df = purrr::cross(tibble::lst(h1, test_output)) %>%
-        purrr::map_dfr(~p_value(!!.[['h1']], !!.[['test_output']], dataf))
+        purrr::map_dfr(~p_value(!!.[['h1']], !!.[['test_output']], dataf,
+                                verbose = verbose))
     h2_df = purrr::cross(tibble::lst(h2, test_output)) %>%
-        purrr::map_dfr(~p_value(!!.[['h2']], !!.[['test_output']], combined_df))
+        purrr::map_dfr(~p_value(!!.[['h2']], !!.[['test_output']], combined_df, verbose = verbose))
     # return(h2_df)
 
     purrr::cross_df(lst(h1, h2)) %>%
-        dplyr::mutate(across(c(h1, h2), ~purrr::map_chr(., rlang::as_label))) %>%
+        dplyr::mutate(across(c(h1, h2), ~purrr::map_chr(., quo_as_text))) %>%
         dplyr::filter(h1 != h2) %>%
         dplyr::left_join(h1_df, by = c('h1' = 'h')) %>%
         dplyr::left_join(h2_df, by = c('h2' = 'h', 'test_output'),
