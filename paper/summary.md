@@ -2,7 +2,10 @@
 title: "Young's p-value plot does not provide evidence against air pollution hazards"
 author: "Daniel J. Hicks"
 abstract: >
-  S. Stanley Young and collaborators have criticized epidemiological studies and meta-analyses of air pollution hazards using a graphical method they call a p-value plot, claiming to find zero effects, heterogeneity, and p-hacking.  However, the p-value plot method has not been validated in a peer-reviewed publication. The aim of this study was to investigate the statistical and evidentiary properties of this method. A simulation was developed to create studies and meta-analyses with known real effects $\delta$, integrating two quantifiable conceptions of evidence from the philosophy of science literature. The simulation and analysis is publicly available and automatically reproduced.  In this simulation, the plot did not provide evidence for heterogeneity or p-hacking with respect to any condition. Under the right conditions, the plot can provide evidence of zero effects; but these conditions are not satisfied in any actual use by Young and collaborators. Young's p-value plot does not provide evidence to support the skeptical claims about air pollution hazards made by Young and collaborators.  
+  **Background**:  S. Stanley Young and collaborators have criticized epidemiological studies and meta-analyses of air pollution hazards using a graphical method they call a p-value plot, claiming to find zero effects, heterogeneity, and p-hacking.  However, the p-value plot method has not been validated in a peer-reviewed publication. The aim of this study was to investigate the statistical and evidentiary properties of this method. 
+  **Methods**: A simulation was developed to create studies and meta-analyses with known real effects $\delta$, integrating two quantifiable conceptions of evidence from the philosophy of science literature. The simulation and analysis is publicly available and automatically reproduced.  
+  **Results**: In this simulation, the plot did not provide evidence for heterogeneity or p-hacking with respect to any condition. Under the right conditions, the plot can provide evidence of zero effects; but these conditions are not satisfied in any actual use by Young and collaborators. 
+  **Conclusions**: Young's p-value plot does not provide evidence to support the skeptical claims about air pollution hazards made by Young and collaborators.  
 bibliography: Young.bib
 csl: vancouver-superscript.csl
 header-includes:
@@ -15,7 +18,8 @@ tblPrefix:
 
 \renewcommand{\P}{\ensuremath{\mathbb{P}}}
 
-**What this paper adds**:  This paper uses a simulation approach to examine the statistical and evidentiary properties of the p-value plot, a graphical method that has been used to criticize air pollution epidemiology.  These properties have not been examined in previous peer-reviewed publications.  The results show that the method is incapable of providing evidence to support claims of p-hacking and statistical heterogeneity.  While the method can produce evidence of a zero effect, this requires meeting certain conditions.  These conditions are identified, and it is observed that the published criticisms do not satisfy these conditions. 
+| 
+| **What this paper adds**:  This paper uses a simulation approach to examine the statistical and evidentiary properties of the p-value plot, a graphical method that has been used to criticize air pollution epidemiology.  These properties have not been examined in previous peer-reviewed publications.  The results show that the method is incapable of providing evidence to support claims of p-hacking and statistical heterogeneity.  While the method can produce evidence of a zero effect, this requires meeting certain conditions.  These conditions are identified, and it is observed that the published criticisms do not satisfy these conditions. 
 
 # Introduction # {#sec:intro}
 
