@@ -8,11 +8,11 @@
 #'     toc_float: true
 #' ---
 #' 
-#' This document conducts the simulation described in the paper "Young's p-value plot does not provide evidence against air pollution hazards" by [redacted] <!--Daniel J. Hicks-->, and generates all plots and tables presented in that paper.  
+#' This document conducts the simulation described in the paper "Young's p-value plot does not provide evidence against air pollution hazards" by Daniel J. Hicks, and generates all plots and tables presented in that paper.  
 #' 
-#' The source code for this project is available at [redacted] <!--<https://github.com/dhicks/p_curve>-->.  The most recent version is automatically reproduced using GitHub Actions, and the resulting `html` version of this file can be viewed at [redacted] <!--<https://dhicks.github.io/p_curve/>-->. 
+#' The source code for this project is available at <https://github.com/dhicks/p_curve>.  The most recent version is automatically reproduced using GitHub Actions, and the resulting `html` version of this file can be viewed at <https://dhicks.github.io/p_curve/>. 
 #' 
-#' After cloning the repository and installing the R dependencies listed below, the analysis, output files, and `html` version of this file can be recreated from the command line by calling `Rscript -e "rmarkdown::render('run_metas.R')"` within the `scripts` directory.  Alternavely, if `make` is installed, call `make script` from the command line within the top folder of the repository, or `make knit` from within the `scripts` folder.   
+#' After cloning the repository and installing the R dependencies listed below, the analysis, output files, and `html` version of this file can be recreated from the command line by calling `Rscript -e "rmarkdown::render('run_metas.R')"` within the `scripts` directory.  Alternatively, if `make` is installed, call `make script` from the command line within the top folder of the repository, or `make knit` from within the `scripts` folder.   
 #' 
 #' Note that reproducing the analysis creates a top-level `out` folder for plots and tables if this folder does not already exist, and quietly overwrites existing versions of the output files in this folder.  
 #' 
@@ -279,6 +279,8 @@ ggplot(combined_df, aes(young_slope, schsp_slope)) +
     scale_y_log10()
 
 ggplot2::last_plot() + scale_x_log10()
+
+do.call(write_plot, c('slopes_scatter', plot_defaults))
 
 ## Whereas Young slope is a rescaling of QQ slope;
 ## the x-axis in the QQ plot is rank/max(rank), and rank is the x-axis in the Young plot

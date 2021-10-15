@@ -2,7 +2,7 @@ PAPER := paper
 OUT := out
 SCRIPT := scripts
 
-all: script supplement paper zip diff
+all: script summary paper zip
 
 script:
 	$(MAKE) -C $(SCRIPT)
@@ -31,20 +31,29 @@ $(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md \
 	cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	# cd $(PAPER); Rscript -e "rmarkdown::render('paper.md')"
 	
+summary: $(PAPER)/summary.pdf
+$(PAPER)/summary.pdf: $(PAPER)/header.yaml $(PAPER)/summary.md \
+                    $(PAPER)/Young.bib \
+                    $(wildcard $(PAPER)/fig_*.png)
+	cd $(PAPER); pandoc header.yaml summary.md -o summary.pdf --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
+	# cd $(PAPER); Rscript -e "rmarkdown::render('summary.md')"
+	
+
+	
 diff: $(PAPER)/diff.pdf
 $(PAPER)/diff.pdf: $(PAPER)/paper_20201211.md $(PAPER)/paper.md
 	pandiff $(PAPER)/paper_20201211.md $(PAPER)/paper.md -s -o $@ --pdf-engine=lualatex
 
 
-tex: $(PAPER)/paper.tex
-$(PAPER)/paper.tex: paper
-	cd $(PAPER); pandoc header.yaml paper.md -o paper.tex  --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
+tex: $(PAPER)/summary.tex
+$(PAPER)/summary.tex: summary
+	cd $(PAPER); pandoc header.yaml summary.md -o summary.tex  --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 
 zip: $(PAPER)/paper.zip
 $(PAPER)/paper.zip: $(PAPER)/paper.pdf \
-                    $(PAPER)/paper.tex \
+                    $(PAPER)/summary.tex \
                     $(wildcard $(PAPER)/fig_*.png) \
-                    $(PAPER)/supplement.pdf \
+                    $(PAPER)/summary.pdf \
                     $(PAPER)/Young.bib
 	zip $@ $^
 
