@@ -2,7 +2,7 @@ PAPER := paper
 OUT := out
 SCRIPT := scripts
 
-all: script summary paper zip
+all: script summary paper zip title
 
 script:
 	$(MAKE) -C $(SCRIPT)
@@ -38,7 +38,9 @@ $(PAPER)/summary.pdf: $(PAPER)/header.yaml $(PAPER)/summary.md \
 	cd $(PAPER); pandoc header.yaml summary.md -o summary.pdf --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	# cd $(PAPER); Rscript -e "rmarkdown::render('summary.md')"
 	
-
+title: $(PAPER)/title.pdf
+$(PAPER)/title.pdf: $(PAPER)/title.md
+	cd $(PAPER); pandoc title.md -o title.pdf
 	
 diff: $(PAPER)/diff.pdf
 $(PAPER)/diff.pdf: $(PAPER)/paper_20201211.md $(PAPER)/paper.md
