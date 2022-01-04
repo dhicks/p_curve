@@ -219,6 +219,7 @@ qq_slope = function(studies, alpha = 0.05, delta = .1) {
 #' @param alpha Threshold for statistical significance; used by F-test and Kolmogorov-Smirnof test
 #' @details Two checks are used: an F-test for the ANOVA of the two regression models, and a comparison of AICs.
 #' @return A one-row `tibble::tibble` with the following columns:
+#'   \item{auc}{Area under the curve}
 #'   \item{f_stat}{Observed value of the F statistic}
 #'   \item{alpha}{Threshold for statistical significance used in the F-test and KS test}
 #'   \item{f_p}{p-value of the F statistic}
@@ -228,6 +229,8 @@ qq_slope = function(studies, alpha = 0.05, delta = .1) {
 #'   \item{aic_comp}{Inference from comparing AICs; one of `non-linear` or `linear`}
 #' @export
 qq_linear = function(studies, alpha = .05) {
+    auc = sum(studies$p.value)/nrow(studies)
+
     model_linear = lm(p.value ~ p.uniform, data = studies)
     model_quad = lm(p.value ~ p.uniform + I(p.uniform^2),
                     data = studies)
@@ -243,7 +246,7 @@ qq_linear = function(studies, alpha = .05) {
                               'non-linear',
                               'linear')
 
-    return(tibble::tibble(f_stat, alpha, f_p, f_comp,
+    return(tibble::tibble(auc, f_stat, alpha, f_p, f_comp,
                           aic_linear, aic_quad, aic_comp))
 }
 

@@ -328,6 +328,14 @@ ggplot(combined_df, aes(delta_fct, fill = qq_ks.comp)) +
 #                 'F-test: non-sig.' = 'non-significant',
 #                 'F-test: sig.' = 'significant')
 
+## Area under the QQ curve
+## Less area -> more nonlinear
+ggplot(combined_df, aes(delta_fct, auc, color = delta_fct)) +
+    geom_violin(scale = 'width', draw_quantiles = .5)  +
+    scale_color_brewer(palette = 'Set1', guide = FALSE) +
+    labs(x = 'real effect', 
+         y = 'area under the curve of the QQ-plot')
+
 combined_df %>%
     select(delta_fct, meta_idx, f_comp, aic_comp) %>%
     pivot_longer(c(f_comp, aic_comp),
