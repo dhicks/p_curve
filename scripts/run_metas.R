@@ -96,7 +96,7 @@ combined_df %>%
     geom_violin(draw_quantiles = .5) +
     labs(x = 'real effect',
          y = 'study-level effect estimate') +
-    scale_color_brewer(palette = 'Set1', guide = FALSE)
+    scale_color_brewer(palette = 'Set1', guide = 'none')
 
 do.call(write_plot, c('estimates_study', plot_defaults))
 
@@ -118,7 +118,7 @@ combined_df %>%
     geom_violin(draw_quantiles = .5) +
     labs(x = 'real effect',
          y = 'meta-analytic effect estimate') +
-    scale_color_brewer(palette = 'Set1', guide = FALSE)
+    scale_color_brewer(palette = 'Set1', guide = 'none')
 
 do.call(write_plot, c('estimates_meta', plot_defaults))
 
@@ -153,7 +153,7 @@ combined_df %>%
                switch = 'y') +
     labs(x = 'rank (ascending)',
          y = 'p') +
-    scale_color_brewer(palette = 'Set1', guide = FALSE)
+    scale_color_brewer(palette = 'Set1', guide = 'none')
 
 do.call(write_plot, c('fig_1_samples_young', samples_par))
 
@@ -163,7 +163,7 @@ young_composite(combined_df, alpha = .05,
     # geom_smooth(aes(group = delta_fct)) +
     labs(x = 'rank (ascending)',
          y = 'p') +
-    scale_color_brewer(palette = 'Set1', guide = FALSE)
+    scale_color_brewer(palette = 'Set1', guide = 'none')
 # guides(color = guide_legend(override.aes = list(alpha = 1)))
 
 
@@ -183,7 +183,7 @@ combined_df %>%
     labs(x = '1 - p',
          y = 'rank (descending)') +
     scale_x_continuous(breaks = scales::pretty_breaks(n = 3)) +
-    scale_color_brewer(palette = 'Set1', guide = FALSE)
+    scale_color_brewer(palette = 'Set1', guide = 'none')
 
 do.call(write_plot, c('samples_schsp', samples_par))
 
@@ -203,7 +203,7 @@ combined_df %>%
     scale_x_continuous(limits = c(1e-90, .05), 
                        breaks = scales::pretty_breaks(n = 3)) +
     scale_y_continuous(breaks = scales::pretty_breaks()) +
-    scale_color_brewer(palette = 'Set1', guide = FALSE)
+    scale_color_brewer(palette = 'Set1', guide = 'none')
 
 do.call(write_plot, c('samples_simonsohn', samples_par))
 
@@ -217,7 +217,7 @@ combined_df %>%
     geom_violin(draw_quantiles = .5, fill = NA) +
     geom_hline(yintercept = .125, alpha = .5) +
     labs(x = 'real effect', y = 'size of largest gap') +
-    scale_color_brewer(palette = 'Set1', guide = FALSE)
+    scale_color_brewer(palette = 'Set1', guide = 'none')
 
 combined_df %>% 
     select(delta_fct, meta_idx, gap, gappy) %>% 
@@ -244,7 +244,7 @@ combined_df %>%
     # geom_beeswarm(alpha = .10) +
     geom_violin(draw_quantiles = .5, fill = NA) +
     labs(x = 'real effect') +
-    scale_color_brewer(palette = 'Set1', guide = FALSE) +
+    scale_color_brewer(palette = 'Set1', guide = 'none') +
     facet_wrap(vars(method), scales = 'free')
 
 do.call(write_plot, c('slopes', plot_defaults))
@@ -332,7 +332,7 @@ ggplot(combined_df, aes(delta_fct, fill = qq_ks.comp)) +
 ## Less area -> more nonlinear
 ggplot(combined_df, aes(delta_fct, auc, color = delta_fct)) +
     geom_violin(scale = 'width', draw_quantiles = .5)  +
-    scale_color_brewer(palette = 'Set1', guide = FALSE) +
+    scale_color_brewer(palette = 'Set1', guide = 'none') +
     labs(x = 'real effect', 
          y = 'area under the curve of the QQ-plot')
 
@@ -464,7 +464,7 @@ severity_plot = ggplot(p_df,
     #           alpha = .5) +
     geom_hline(linetype = 'dashed', yintercept = .05) +
     labs(x = 'test output') +
-    scale_fill_viridis_d(option = 'C', guide = FALSE) +
+    scale_fill_viridis_d(option = 'C', guide = 'none') +
     facet_wrap(vars(h_nought_label))
 severity_plot
 severity_plot + scale_y_log10()
@@ -552,7 +552,7 @@ llr_plot_zero = llr_df %>%
     facet_wrap(vars(h1_label, h2_label), scales = 'free', 
                nrow = 3) +
     coord_cartesian(ylim = c(-.5, 2.5)) +
-    scale_fill_viridis_d(option = 'C', name = 'H2', guide = FALSE) +
+    scale_fill_viridis_d(option = 'C', name = 'H2', guide = 'none') +
     labs(color = 'H2', x = 'test output', 
          y = 'log likelihood ratio') #+
     # theme(axis.text.x = element_text(size = 8)) + 
