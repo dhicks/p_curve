@@ -12,11 +12,7 @@
 #' 
 #' The source code for this project is available at <https://github.com/dhicks/p_curve>.  The most recent version is automatically reproduced using GitHub Actions, and the resulting `html` version of this file can be viewed at <https://dhicks.github.io/p_curve/>. 
 #' 
-#' After cloning the repository and installing the R dependencies listed below, the analysis, output files, and `html` version of this file can be recreated from the command line by calling `Rscript -e "rmarkdown::render('run_metas.R')"` within the `scripts` directory.  Alternatively, if `make` is installed, call `make script` from the command line within the top folder of the repository, or `make knit` from within the `scripts` folder.   
-#' 
-#' Note that reproducing the analysis creates a top-level `out` folder for plots and tables if this folder does not already exist, and quietly overwrites existing versions of the output files in this folder.  
-#' 
-#' The workhorse functions to conduct and analyze the simulation are all found in the `p.curve` folder, which is loaded as a local package using `devtools`.  Documentation for all of these functions can be constructed by calling `devtools::document(file.path('..', 'p.curve'))` from within the `scripts` folder, and then queried in the usual way, e.g., `?many_metas`. 
+#' The workhorse functions to conduct and analyze the simulation are all included in the package `p.curve`, which is included in the repository and installed using `renv::install()`.  Documentation for all of these functions can be constructed by calling `devtools::document(file.path('..', 'p.curve'))` from within the `scripts` folder, and then queried in the usual way, e.g., `?many_metas`. 
 #' 
 
 #' # Setup

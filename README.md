@@ -13,5 +13,5 @@ This reproduction of the study is conducted automatically using GitHub Actions a
 
 Note that reproducing the analysis creates a top-level `out` folder for plots and tables if this folder does not already exist, and quietly overwrites existing versions of the output files in this folder.  
 
-The workhorse functions to conduct and analyze the simulation are all found in the `p.curve` folder, which is loaded as a local package using `renv`.  Documentation for all of these functions can be constructed by calling `devtools::document(file.path('..', 'p.curve'))` from within the `scripts` folder, and then queried in the usual way, e.g., `?many_metas`. 
+The workhorse functions to conduct and analyze the simulation are all included in the package `p.curve`, which is included in the repository and installed using `renv::install()`.  Documentation for all of these functions can be constructed by calling `devtools::document(file.path('..', 'p.curve'))` from within the `scripts` folder, and then queried in the usual way, e.g., `?many_metas`. 
 
