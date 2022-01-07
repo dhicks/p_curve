@@ -249,6 +249,16 @@ combined_df %>%
 
 do.call(write_plot, c('slopes', plot_defaults))
 
+## QQ plot slopes only
+combined_df |> 
+    rename(qq_slope = qq_estimate) |> 
+    select(delta_fct, qq_slope) |> 
+    ggplot(aes(delta_fct, qq_slope, color = delta_fct)) +
+    geom_violin(draw_quantiles = .5, scale = 'width') +
+    geom_hline(yintercept = c(.9, 1.1), linetype = 'dashed') +
+    scale_color_brewer(palette = 'Set1', guide = 'none') +
+    labs(x = 'real effect')
+
 combined_df %>%
     rename(qq_slope = qq_estimate) %>% 
     group_by(delta_fct) %>%
@@ -331,7 +341,7 @@ ggplot(combined_df, aes(delta_fct, fill = qq_ks.comp)) +
 ## Area under the QQ curve
 ## Less area -> more nonlinear
 ggplot(combined_df, aes(delta_fct, auc, color = delta_fct)) +
-    geom_violin(scale = 'width', draw_quantiles = .5)  +
+    geom_violin(scale = 'width', draw_quantiles = c(.5))  +
     scale_color_brewer(palette = 'Set1', guide = 'none') +
     labs(x = 'real effect', 
          y = 'area under the curve of the QQ-plot')
