@@ -4,7 +4,7 @@
 \alias{likelihood_ratio}
 \title{Calculate the log likelihood ratio}
 \usage{
-likelihood_ratio(h1, h2, test_output, dataf)
+likelihood_ratio(h1, h2, test_output, dataf, verbose = TRUE)
 }
 \arguments{
 \item{h1}{List of \code{call} (created by \code{exprs()}) for H1}
@@ -14,6 +14,8 @@ likelihood_ratio(h1, h2, test_output, dataf)
 \item{test_output}{List of \code{call} for the test output}
 
 \item{dataf}{Data frame of simulation results, as returned by \code{many_metas()}}
+
+\item{verbose}{Verbose output from \code{p_value()}}
 }
 \value{
 Dataframe with columns

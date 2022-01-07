@@ -1,14 +1,14 @@
 #' ---
-#' title: "Analysis for 'Young\\'s p-value plot does not provide evidence against air pollution hazards'"
-#' author: ''
-#' email: ''
+#' title: "Analysis for \"The p-value plot does not provide evidence against air pollution hazards\""
+#' author: 'Daniel J. Hicks (UC Merced)'
+#' email: 'hicks.daniel.j@gmail.com'
 #' output:
 #'   html_document:
 #'     toc: true
 #'     toc_float: true
 #' ---
 #' 
-#' This document conducts the simulation described in the paper "Young's p-value plot does not provide evidence against air pollution hazards" by Daniel J. Hicks, and generates all plots and tables presented in that paper.  
+#' This document conducts the simulation described in the paper "The p-value plot does not provide evidence against air pollution hazards" by Daniel J. Hicks, and generates all plots and tables presented in that paper.  
 #' 
 #' The source code for this project is available at <https://github.com/dhicks/p_curve>.  The most recent version is automatically reproduced using GitHub Actions, and the resulting `html` version of this file can be viewed at <https://dhicks.github.io/p_curve/>. 
 #' 
@@ -33,9 +33,7 @@ library(tictoc)
 library(assertthat)
 
 ## Local package with simulation functions
-load_all(file.path('..', 'p.curve'))
-## Run the next line to recreate the documentation for this package
-# document(file.path('..', 'p.curve'))
+library(p.curve)
 
 out_folder = file.path('..', 'out')
 if (!dir.exists(out_folder)) {

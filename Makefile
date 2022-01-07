@@ -4,6 +4,9 @@ SCRIPT := scripts
 
 all: script summary paper zip title
 
+setup: 
+	cd scripts; Rscript setup.R
+
 script:
 	$(MAKE) -C $(SCRIPT)
 

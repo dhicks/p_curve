@@ -4,7 +4,15 @@
 \alias{many_metas}
 \title{Run the simulation: "Do many meta-analyses"}
 \usage{
-many_metas(NN, N, delta, n)
+many_metas(
+  NN,
+  N,
+  delta,
+  n,
+  alpha = 0.05,
+  tost_delta = 0.1,
+  gap_threshold = 0.125
+)
 }
 \arguments{
 \item{NN}{Number of times to run the simulation for each condition}
@@ -14,6 +22,12 @@ many_metas(NN, N, delta, n)
 \item{delta}{Real effect size (vector)}
 
 \item{n}{Sample size per group for each simulated study (vector)}
+
+\item{alpha}{Threshold for statistical significance, used in various null hypothesis tests}
+
+\item{tost_delta}{Radius for the equivalence bounds for TOST test of slope: slope is substantially different from 1 if it is outside of the interval \verb{[1-delta, 1+delta]}.}
+
+\item{gap_threshold}{Threshold for a "gap" in a p-value plot to count as "gappy"}
 }
 \value{
 A dataframe containing one row per simulation run and the following columns:

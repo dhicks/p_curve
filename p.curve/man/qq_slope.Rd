@@ -16,8 +16,8 @@ qq_slope(studies, alpha = 0.05, delta = 0.1)
 \value{
 A one-row dataframe with the columns
 \item{slope_estimate, slope_std.error}{Estimated slope and its standard error}
-\item{slope_z.statistic, slope_z.p.value}{Difference between \code{slope_estimate} and 1 in standard error units; statistic for a Z-test; its p-value}
-\item{slope_z.comp}{Z-test call for whether the slope is stat. sig. different from 1}
+\item{slope_t.statistic, slope_t.p.value}{Difference between \code{slope_estimate} and 1 in standard error units; statistic for t-test; its p-value}
+\item{slope_t.comp}{t-test call for whether the slope is stat. sig. different from 1}
 \item{slope_tost.t1, slope_tost.p1, slope_tost.t2, slope_tost.p2}{T-statistics and p-values for one-sample TOST}
 \item{slope_tost.p.value}{Combined p-value for one-sample TOST}
 \item{slope_tost.comp}{TOST call for whether the slope is equivalent to 1}
@@ -25,5 +25,5 @@ A one-row dataframe with the columns
 \item{slope_ks.comp}{Inference from the KS stat; one of \code{non-uniform} or \code{uniform}}
 }
 \description{
-Calculates the slope of the QQ-plot against the uniform distribution using a Kolmogorov-Smirnov test, Z-test against the null that the slope is exactly 1, and TOST against the null that the slope is substantially different from 1.
+Calculates the slope of the QQ-plot using a linear regression, then compares it against the uniform distribution using a Kolmogorov-Smirnov test, t-test against the null that the slope is exactly 1, and TOST against the null that the slope is substantially different from 1.
 }

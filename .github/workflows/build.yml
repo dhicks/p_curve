@@ -50,12 +50,13 @@ jobs:
       # Install dependencies from DESCRIPTION
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install libcurl4-openssl-dev
-          sudo apt-get install libgit2-dev
-          Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
-          Rscript -e "install.packages('remotes')"
-          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+          make setup
+          # sudo apt-get update
+          # sudo apt-get install libcurl4-openssl-dev
+          # sudo apt-get install libgit2-dev
+          # Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
+          # Rscript -e "install.packages('remotes')"
+          # Rscript -e "remotes::install_deps(dependencies = TRUE)"
 
       # Reproduce the analysis
       - name: make script

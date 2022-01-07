@@ -2,7 +2,7 @@
 % Please edit documentation in R/p-curve.R
 \name{t_test}
 \alias{t_test}
-\title{Tidy version of a t-test}
+\title{Tidy version of a 2-sample t-test}
 \usage{
 t_test(samples)
 }

@@ -4,7 +4,7 @@
 \alias{p_value}
 \title{Calculate p-value}
 \usage{
-p_value(h, test_output, dataf)
+p_value(h, test_output, dataf, verbose = TRUE)
 }
 \arguments{
 \item{h}{Bare (unquoted) expression for H0 (eg, \code{delta == 0.2})}
@@ -12,6 +12,8 @@ p_value(h, test_output, dataf)
 \item{test_output}{Bare (unquoted) expression for the test output (eg, \code{aic_comp == 'quadratic'})}
 
 \item{dataf}{Data frame of simulation results, as returned by \code{many_metas()}}
+
+\item{verbose}{Message \code{h} and \code{test_output}}
 }
 \value{
 Dataframe with columns

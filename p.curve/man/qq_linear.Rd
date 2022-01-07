@@ -13,6 +13,7 @@ qq_linear(studies, alpha = 0.05)
 }
 \value{
 A one-row \code{tibble::tibble} with the following columns:
+\item{auc}{Area under the curve}
 \item{f_stat}{Observed value of the F statistic}
 \item{alpha}{Threshold for statistical significance used in the F-test and KS test}
 \item{f_p}{p-value of the F statistic}
