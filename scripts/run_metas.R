@@ -214,10 +214,12 @@ do.call(write_plot, c('samples_simonsohn', samples_par))
 combined_df %>% 
     select(delta_fct, meta_idx, gap, gappy) %>% 
     ggplot(aes(delta_fct, gap, color = delta_fct)) +
-    geom_violin(draw_quantiles = .5, fill = NA) +
+    geom_violin(draw_quantiles = .5, fill = NA, scale = 'width') +
     geom_hline(yintercept = .125, alpha = .5) +
     labs(x = 'real effect', y = 'size of largest gap') +
     scale_color_brewer(palette = 'Set1', guide = 'none')
+
+do.call(write_plot, c('gaps', samples_par))
 
 combined_df %>% 
     select(delta_fct, meta_idx, gap, gappy) %>% 
@@ -242,7 +244,7 @@ combined_df %>%
                  names_to = 'method', values_to = 'slope') %>%
     ggplot(aes(delta_fct, slope, color = delta_fct)) +
     # geom_beeswarm(alpha = .10) +
-    geom_violin(draw_quantiles = .5, fill = NA) +
+    geom_violin(draw_quantiles = .5, fill = NA, scale = 'width') +
     labs(x = 'real effect') +
     scale_color_brewer(palette = 'Set1', guide = 'none') +
     facet_wrap(vars(method), scales = 'free')
@@ -258,6 +260,8 @@ combined_df |>
     geom_hline(yintercept = c(.9, 1.1), linetype = 'dashed') +
     scale_color_brewer(palette = 'Set1', guide = 'none') +
     labs(x = 'real effect')
+
+do.call(write_plot, c('slopes_qq', plot_defaults))
 
 combined_df %>%
     rename(qq_slope = qq_estimate) %>% 
@@ -345,6 +349,8 @@ ggplot(combined_df, aes(delta_fct, auc, color = delta_fct)) +
     scale_color_brewer(palette = 'Set1', guide = 'none') +
     labs(x = 'real effect', 
          y = 'area under the curve of the QQ-plot')
+
+do.call(write_plot, c('auc', plot_defaults))
 
 combined_df %>%
     select(delta_fct, meta_idx, f_comp, aic_comp) %>%
