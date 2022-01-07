@@ -63,11 +63,11 @@ $(PAPER)/paper.zip: $(PAPER)/paper.pdf \
 	zip $@ $^
 
 
-docx: $(PAPER)/paper.docx
-$(PAPER)/paper.docx: $(PAPER)/header.yaml $(PAPER)/paper.md $(PAPER)/Young.bib \
+docx: $(PAPER)/summary.docx
+$(PAPER)/summary.docx: $(PAPER)/header.yaml $(PAPER)/summary.md $(PAPER)/Young.bib \
            $(wildcard $(OUT)/*.png) \
            $(wildcard $(OUT)/*.tex)
-	cd $(PAPER); pandoc header.yaml paper.md -o paper.docx --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml summary.md -o summary.docx --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	
 wc: 
 	pdftotext $(PAPER)/paper.pdf - | wc -w
