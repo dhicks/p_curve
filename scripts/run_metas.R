@@ -498,6 +498,26 @@ p_df %>%
     write_lines(file.path(out_folder, 'severity.tex'))
 
 
+## Sander Greenland's "surprisal," $-log_2(p)$, as a continuous measure of inconsistency with the null hypothesis.  Higher values indicate greater surprise — this test outcome is surprising given the null hypothesis.  
+surprise_trans = scales::trans_new('surprise', 
+                                   \(p) -log2(p), 
+                                   \(s) 2^-s)
+
+ggplot(p_df, 
+       aes(output_label, p, fill = h_nought_label)) + 
+    geom_segment(aes(yend = 1, xend = output_label, 
+                     color = after_scale(fill)), 
+                 size = 1) +
+    geom_point(size = 2, shape = 21) +
+    labs(x = 'test output', 
+         y = 'surprisal (bits)') +
+    scale_fill_viridis_d(option = 'C', guide = 'none') +
+    scale_y_continuous(trans = surprise_trans, 
+                       labels = \(p) -log2(p),
+                       breaks = scales::log_breaks(base = 2)) +
+    facet_wrap(vars(h_nought_label))
+
+
 
 #' # Likelihood analysis
 #+ likelihood analysis
