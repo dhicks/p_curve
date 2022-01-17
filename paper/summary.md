@@ -1,22 +1,46 @@
 ---
 title: "The p-value plot does not provide evidence against air pollution hazards"
 author: "Daniel J. Hicks"
-abstract: >
+<!--abstract: >
   **Background**:  A number of papers by Young and collaborators have criticized epidemiological studies and meta-analyses of air pollution hazards using a graphical method that the authors call a p-value plot, claiming to find zero effects, heterogeneity, and p-hacking.  However, the p-value plot method has not been validated in a peer-reviewed publication. The aim of this study was to investigate the statistical and evidentiary properties of this method. 
   **Methods**: A simulation was developed to create studies and meta-analyses with known real effects $\delta$, integrating two quantifiable conceptions of evidence from the philosophy of science literature. The simulation and analysis is publicly available and automatically reproduced.  
   **Results**: In this simulation, the plot did not provide evidence for heterogeneity or p-hacking with respect to any condition. Under the right conditions, the plot can provide evidence of zero effects; but these conditions are not satisfied in any actual use by Young and collaborators. 
-  **Conclusions**: The p-value plot does not provide evidence to support the skeptical claims about air pollution hazards made by Young and collaborators.  
+  **Conclusions**: The p-value plot does not provide evidence to support the skeptical claims about air pollution hazards made by Young and collaborators.-->
 bibliography: Young.bib
-csl: vancouver-superscript.csl
+csl: epidemiology.csl
+notes-after-punctuation: true
 header-includes:
   - \usepackage{booktabs}
   - \usepackage{longtable}
+  - \usepackage{setspace}
+  - \doublespacing
 tblPrefix:
   - "table"
   - "tables"
 ---
 
+\raggedright
+\setlength{\parskip}{1em}
 \renewcommand{\P}{\ensuremath{\mathbb{P}}}
+
+| Type: Review
+| Title: The p-value plot does not provide evidence against air pollution hazards
+| Authors:  Daniel J. Hicks (University of California, Merced)
+| Contact: Daniel J. Hicks: 5200 N Lake Road, University of California, Merced, Merced, CA, 95343, USA, <dhicks4@ucmerced.edu>
+| Running head: P-value plot
+| COI: The author has no conflicts of interest to disclose
+| Sources of financial support:  No specific funding has been used in the development of this project
+| Data and code:  The complete code and manuscript for this paper is available at <https://github.com/dhicks/p_curve>. The automatically-reproduced analysis can be viewed at <https://dhicks.github.io/p_curve/>. 
+
+\newpage
+
+# Abstract #
+
+  **Background**:  A number of papers by Young and collaborators have criticized epidemiological studies and meta-analyses of air pollution hazards using a graphical method that the authors call a p-value plot, claiming to find zero effects, heterogeneity, and p-hacking.  However, the p-value plot method has not been validated in a peer-reviewed publication. The aim of this study was to investigate the statistical and evidentiary properties of this method. 
+  **Methods**: A simulation was developed to create studies and meta-analyses with known real effects $\delta$, integrating two quantifiable conceptions of evidence from the philosophy of science literature. The simulation and analysis is publicly available and automatically reproduced.  
+  **Results**: In this simulation, the plot did not provide evidence for heterogeneity or p-hacking with respect to any condition. Under the right conditions, the plot can provide evidence of zero effects; but these conditions are not satisfied in any actual use by Young and collaborators. 
+  **Conclusions**: The p-value plot does not provide evidence to support the skeptical claims about air pollution hazards made by Young and collaborators.  
+
 
 | 
 | **What this paper adds**:  This paper uses a simulation approach to examine the statistical and evidentiary properties of the p-value plot, a graphical method that has been used to criticize air pollution epidemiology.  These properties have not been examined in previous peer-reviewed publications.  The results show that the method is incapable of providing evidence to support claims of p-hacking and statistical heterogeneity.  While the method can produce evidence of a zero effect, the method only has this ability under certain conditions.  These conditions are identified, and it is observed that the published criticisms do not satisfy these conditions. 
@@ -25,7 +49,7 @@ tblPrefix:
 
 In numerous recent works [@YoungCerealinducedGenderSelection2009; @YoungAssessingGeographicHeterogeneity2013; @YouPM2OzoneIndicators2018; @YoungReliabilityEnvironmentalEpidemiology2019; @YoungAmbientAirPollution2019; @YoungCombinedBackgroundInformation2019; @YoungEvaluationMetaanalysisAir2019; @YoungReExtendedMortality2020; @YoungPM2AllcauseMortality2020; @YoungParticulateMatterExposure2020; @KindzierskiEvaluationMetaAnalysisAmbient2021; @YoungShiftingSandsUnsound2021], statistician S. Stanley Young and collaborators have criticized epidemiological studies and meta-analyses of the harmful effects of air pollution.  These authors have used a graphical method they call a p-value plot, claiming that this method reveals that zero effects, heterogeneity, and p-hacking are widespread in environmental epidemiology.  
 
-Young and collaborators have drawn highly skeptical conclusions about the hazards of air pollution using their p-value plot method, claiming that "causality of PM10/PM2.5 on heart attacks is not supported" [@YoungReliabilityEnvironmentalEpidemiology2019] and "There is no convincing evidence of an effect of PM2.5 on all-cause mortality" [@YoungPM2AllcauseMortality2020]; Young has advocated that "regulation of PM2.5 should be abandoned altogether" [@YoungSuggestionsEPA2017].  While recent papers in this body of work have not yet been highly cited in the academic literature, one paper by these authors [@YoungAirQualityAcute2017] was cited in the scientific review of US EPA's Ozone Integrated Science Assessment [@USEPACleanAirScientificAdvisoryCommitteeReviewEPAIntegrated2020, p.D-50]; this review was conducted while Young was serving on US EPA's Science Advisory Board [@USEPAMembersScienceAdvisory2017].  <!-- In addition, at least some of Young's work on air pollution has been funded by the American Petroleum Institute [@YoungAirQualityEnvironmental2017; @YoungAirQualityAcute2017; @YouPM2OzoneIndicators2018; @YoungReliabilityEnvironmentalEpidemiology2019; @YoungEvaluationMetaanalysisAir2019]. -->  So it is highly plausible that this body of work could be cited in the future.  
+Young and collaborators have drawn highly skeptical conclusions about the hazards of air pollution using their p-value plot method, claiming that "causality of PM10/PM2.5 on heart attacks is not supported" [@YoungReliabilityEnvironmentalEpidemiology2019] and "There is no convincing evidence of an effect of PM2.5 on all-cause mortality" [@YoungPM2AllcauseMortality2020]; Young has advocated that "regulation of PM2.5 should be abandoned altogether" [@YoungSuggestionsEPA2017].  While recent papers in this body of work have not yet been highly cited in the academic literature, one paper by these authors [@YoungAirQualityAcute2017] was cited in the scientific review of US EPA's Ozone Integrated Science Assessment [@USEPACleanAirScientificAdvisoryCommitteeReviewEPAIntegrated2020]<!-- , D-50 -->; this review was conducted while Young was serving on US EPA's Science Advisory Board [@USEPAMembersScienceAdvisory2017].  <!-- In addition, at least some of Young's work on air pollution has been funded by the American Petroleum Institute [@YoungAirQualityEnvironmental2017; @YoungAirQualityAcute2017; @YouPM2OzoneIndicators2018; @YoungReliabilityEnvironmentalEpidemiology2019; @YoungEvaluationMetaanalysisAir2019]. -->  So it is highly plausible that this body of work could be cited in the future.  
 
 However, Young and collaborators have provided only a minimal analysis of the statistical properties of the p-value plot method, in a set of publicly available but non-peer-reviewed notes [@YoungCombinedBackgroundInformation2019].  They have sometimes attempted to justify their method by citing plots of p-values developed by other authors [@SchwederPlotsPvaluesEvaluate1982; @SimonsohnPcurveKeyFiledrawer2014].  But these other plots are designed to answer different questions, are constructed in different ways, and have different statistical properties. 
 
@@ -46,11 +70,11 @@ To formally define the p-value plot, we begin with a set of $N$ p-values $\P = \
 
 Next, let $rank_{asc}(p_i)$ be the (1-indexed) *ascending rank* of $p_i \in \P$, i.e., $rank_{asc}(p_i)$ is the number of p-values $p_j \in \P$ less than or equal to $p_i$.  The smallest p-value has ascending rank 1, and the largest p-value has ascending rank $N$.  Without loss of generality, if \P is already in ascending order $p_1 < p_2 < \cdots < p_N$, then $rank_{asc}(p_i) = i$.  The p-value plot is the graph $(i, p_i)$.  Note that this is equivalent to a rescaled QQ-plot of $\P$ against the uniform distribution, with the theoretical quantiles $q_i = \frac{i}{N} = \frac{rank_{asc}(p_i)}{N}$.  
 
-Young and collaborators explain their interpretation of the plot as follows:  "Evaluation of a p-value plot follows a logical path. Is the p-value plot [sic] homogeneous? If the points roughly [sic] on a 45-degree, they are homogeneous and consistent with randomness; a lessor slope with all points roughly on a line indicates a consistent effect even if some of the individual p-values are not considered statistically significant. If the effects differ, one from another, beyond chance, then the effects are heterogeneous" [@YoungReliabilityEnvironmentalEpidemiology2019 48].  
+Young and collaborators explain their interpretation of the plot as follows:  "Evaluation of a p-value plot follows a logical path. Is the p-value plot [sic] homogeneous? If the points roughly [sic] on a 45-degree, they are homogeneous and consistent with randomness; a lessor slope with all points roughly on a line indicates a consistent effect even if some of the individual p-values are not considered statistically significant. If the effects differ, one from another, beyond chance, then the effects are heterogeneous" [@YoungReliabilityEnvironmentalEpidemiology2019 <!-- 48 -->].  
 
 A "45-degree line" typically refers to the graph of an identity function or the line $y = x$, which forms a 45-degree angle with respect to both the x- and y-axes.  This interpretation makes sense for the equivalent QQ-plot, where both axes are on the scale $[0, 1]$; here a slope of 1 indicates that the underlying distribution $P$ is uniformly distributed, which in turn indicates that the real effect is zero.  Strictly speaking, this interpretation does not make sense for the p-value plot as defined, where the x-axis (rank) is on the scale $[1, N]$ and the y-axis (p-value) is on the scale $[0, 1]$.  I will assume that a "45-degree line" typically means that the slope of the equivalent QQ-plot is 1.  It appears that slopes are only evaluated visually; there are no reports of fitting regression models or using any other quantitative methods to measure slopes.  
 
-There are frequent claims that the p-value plot contains a "hockey stick" or "bilinear" pattern [@YoungReliabilityEnvironmentalEpidemiology2019; @YoungAmbientAirPollution2019; @YoungCombinedBackgroundInformation2019; @YoungEvaluationMetaanalysisAir2019; @YoungShiftingSandsUnsound2021 106ff], which has "small p-values to the lower left ... and then points ascending in a roughly 45-degree line" [@YoungEvaluationMetaanalysisAir2019 5].  In this context, "45-degree line" seems to mean that the right-hand side of the plot is linear, even if it does not have a slope of 1.  This non-linear "hockey stick" pattern is taken to indicate some combination of heterogeneous effects, p-hacking, and researcher misconduct.  On two occasions a formal test for non-linearity was conducted by comparing a linear and quadratic regression using an F-test [@YoungReliabilityEnvironmentalEpidemiology2019 50; @YoungCombinedBackgroundInformation2019 18].  More often there is no explanation of how the "hockey stick" pattern was determined to be present or absent.  
+There are frequent claims that the p-value plot contains a "hockey stick" or "bilinear" pattern [@YoungReliabilityEnvironmentalEpidemiology2019; @YoungAmbientAirPollution2019; @YoungCombinedBackgroundInformation2019; @YoungEvaluationMetaanalysisAir2019; @YoungShiftingSandsUnsound2021 <!-- 106ff -->], which has "small p-values to the lower left ... and then points ascending in a roughly 45-degree line" [@YoungEvaluationMetaanalysisAir2019 <!-- 5 -->].  In this context, "45-degree line" seems to mean that the right-hand side of the plot is linear, even if it does not have a slope of 1.  This non-linear "hockey stick" pattern is taken to indicate some combination of heterogeneous effects, p-hacking, and researcher misconduct.  On two occasions a formal test for non-linearity was conducted by comparing a linear and quadratic regression using an F-test [@YoungReliabilityEnvironmentalEpidemiology2019 <!-- 50 -->; @YoungCombinedBackgroundInformation2019 <!-- 18 -->].  More often there is no explanation of how the "hockey stick" pattern was determined to be present or absent.  
 
 ## Simulation design ##
 
@@ -92,7 +116,7 @@ The severity conception of evidence is associated with philosopher of science De
 
 I use Mayo's *weak severity criterion*: 
 
-> One does not have evidence for a claim if nothing has been done to rule out ways the claim may be false. If data $x$ agree with a claim [$H$] but the method used is practically guaranteed to find such agreement, and had little or no capability of finding flaws with [$H$] even if they exist, then we have bad evidence, no test (BENT). [@MayoStatisticalInferenceSevere2018 5]
+> One does not have evidence for a claim if nothing has been done to rule out ways the claim may be false. If data $x$ agree with a claim [$H$] but the method used is practically guaranteed to find such agreement, and had little or no capability of finding flaws with [$H$] even if they exist, then we have bad evidence, no test (BENT). [@MayoStatisticalInferenceSevere2018 <!-- 5 -->]
 
 On this conception of evidence, a test or analytical method $T$ with observed output $t$ can provide evidence supporting a target hypothesis $H$ only if $T$ would have given a different output if $H$ were false.  (Note that the test $T$ can give any kind of output:  $T = t$ might mean that an test statistic is greater than or equal to some value, or that a plot has some purely qualitative visual feature.)  Hypothesis testing assesses this counterfactual condition using the p-value.  In its most general form, the p-value can be defined as $p = pr(T = t | \lnot H)$, where the role of $\lnot H$ ("not H," the logical negation of the hypothesis of interest) is played by a null hypothesis $H_0$. (Throughout this paper, I am distinguishing a *zero hypothesis* — that some effect is exactly zero — from a *null hypothesis* — the alternate or rival hypothesis used to calculate a p-value.  For instance, the TOST procedure as used in this study has the null hypothesis that the true slope is in the set $\{0.9, 1.1\}$.)  A "small" p-value indicates that the counterfactual is probably true, that is, if $H$ were false then $T$ would probably have given a different output.  On the other hand, a "large" p-value indicates that the test "is practically guaranteed" to produce this output, and so in this case by the weak severity principle "we have bad evidence, no test." 
 

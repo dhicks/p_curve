@@ -1,5 +1,5 @@
 | Type: Review
-| Title: Young's p-value plot does not provide evidence against air pollution hazards
+| Title: The p-value plot does not provide evidence against air pollution hazards
 | Authors:  Daniel J. Hicks (University of California, Merced)
 | Contact: Daniel J. Hicks: 5200 N Lake Road, University of California, Merced, Merced, CA, 95343, USA, <dhicks4@ucmerced.edu>
 | Running head: P-value plot

@@ -1,3 +1,8 @@
+## As of 2022-01-13 need to use dev version of pandoc
+## <https://github.com/jgm/pandoc/commit/4fdbb30a97d0b10d64888783d803d1654da1975d>
+## But this breaks other stuff?  Runs in a regular command line after setting up PATH
+PATH=~/.local/bin:$PATH
+
 PAPER := paper
 OUT := out
 SCRIPT := scripts
@@ -15,7 +20,7 @@ supplement: $(PAPER)/supplement.pdf
 $(PAPER)/supplement.pdf: $(PAPER)/header.yaml $(PAPER)/supplement.md $(PAPER)/Young.bib \
            $(wildcard $(OUT)/*.png) \
            $(wildcard $(OUT)/*.tex)
-	cd $(PAPER); pandoc header.yaml supplement.md -o supplement.pdf --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml supplement.md -o supplement.pdf --filter=/usr/local/bin/pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 
 
 ## Figures
@@ -31,7 +36,7 @@ paper: $(PAPER)/paper.pdf
 $(PAPER)/paper.pdf: $(PAPER)/header.yaml $(PAPER)/paper.md \
                     $(PAPER)/Young.bib \
                     $(wildcard $(PAPER)/fig_*.png)
-	cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml paper.md -o paper.pdf --filter=/usr/local/bin/pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	# cd $(PAPER); Rscript -e "rmarkdown::render('paper.md')"
 	
 summary: $(PAPER)/summary.pdf
@@ -52,7 +57,7 @@ $(PAPER)/diff.pdf: $(PAPER)/paper_20201211.md $(PAPER)/paper.md
 
 tex: $(PAPER)/summary.tex
 $(PAPER)/summary.tex: summary
-	cd $(PAPER); pandoc header.yaml summary.md -o summary.tex  --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml summary.md -o summary.tex  --filter=/usr/local/bin/pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 
 zip: $(PAPER)/paper.zip
 $(PAPER)/paper.zip: $(PAPER)/paper.pdf \
@@ -67,7 +72,7 @@ docx: $(PAPER)/summary.docx
 $(PAPER)/summary.docx: $(PAPER)/header.yaml $(PAPER)/summary.md $(PAPER)/Young.bib \
            $(wildcard $(OUT)/*.png) \
            $(wildcard $(OUT)/*.tex)
-	cd $(PAPER); pandoc header.yaml summary.md -o summary.docx --filter=pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
+	cd $(PAPER); pandoc header.yaml summary.md -o summary.docx --filter=/usr/local/bin/pandoc-crossref --citeproc --pdf-engine=lualatex --wrap=preserve
 	
 wc: 
 	pdftotext $(PAPER)/paper.pdf - | wc -w
