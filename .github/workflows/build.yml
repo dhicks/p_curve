@@ -57,7 +57,8 @@ jobs:
           sudo apt-get install libcurl4-openssl-dev
           sudo apt-get install libgit2-dev
           Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
-          make setup
+          # make setup
+          cd scripts; Rscript setup.R
           # Rscript -e "install.packages('remotes')"
           # Rscript -e "remotes::install_deps(dependencies = TRUE)"
 
