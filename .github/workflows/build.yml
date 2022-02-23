@@ -13,17 +13,9 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  #where:
-    #runs-on: ubuntu-latest
-    #steps:
-      #- run: Rscript -e "Sys.getenv('R_LIBS_USER')"
-      #- run: which curl
-      #- run: echo $PATH
-      #- run: ls /usr/local/lib/pkgconfig/
-
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-18.04
+    runs-on: macos-10.15
 
     env:
         RENV_PATHS_ROOT: ~/.local/share/renv
@@ -31,15 +23,15 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       ## Set up R
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
+      # - name: Set up R
+      #   uses: r-lib/actions/setup-r@v2
     
       # Install pandoc using setup-pandoc
       # NB After updating Makefile, switch to pandoc 2.11
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@v1
         with:
-          pandoc-version: '2.11' # The pandoc version to download (if necessary) and use.
+          pandoc-version: '2.13' # The pandoc version to download (if necessary) and use.
       #- run: echo "# Test" | pandoc -t html
   
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -57,12 +49,9 @@ jobs:
       # Install dependencies from DESCRIPTION
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install libcurl4-openssl-dev
-          sudo apt-get install libgit2-dev
           Rscript -e "dir.create(Sys.getenv('R_LIBS_USER'), recursive = TRUE)"
-          # make setup
-          cd scripts; Rscript setup.R
+          make setup
+          # cd scripts; Rscript setup.R
           # Rscript -e "install.packages('remotes')"
           # Rscript -e "remotes::install_deps(dependencies = TRUE)"
 
