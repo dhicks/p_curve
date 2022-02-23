@@ -1,7 +1,7 @@
 ## As of 2022-01-13 need to use dev version of pandoc
 ## <https://github.com/jgm/pandoc/commit/4fdbb30a97d0b10d64888783d803d1654da1975d>
 ## But this breaks other stuff?  Runs in a regular command line after setting up PATH
-PATH=~/.local/bin:$PATH
+# PATH=~/.local/bin:$PATH
 
 PAPER := paper
 OUT := out
